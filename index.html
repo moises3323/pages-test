@@ -4,18 +4,11 @@
   <meta charset="UTF-8">
   <title>Flip Card</title>
   <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #ffffff;
-    }
     .flip-container {
       perspective: 1000px;
       width: 300px;
       height: 200px;
+      margin: auto;
     }
     .flipper {
       width: 100%;
@@ -37,9 +30,9 @@
       font-family: sans-serif;
     }
     .front {
-      background: #4CAF50;
-      color: white;
-      font-size: 20px;
+      background-image: url('https://blog.redmondequine.com/hubfs/image%20%289%29.png');
+      background-size: cover;
+      background-position: center;
     }
     .back {
       background: #f1f1f1;
@@ -49,16 +42,33 @@
       padding: 10px;
       box-sizing: border-box;
     }
+    .cards-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
   </style>
 </head>
 <body>
-  <div class="flip-container" onclick="
-    const flip = this.querySelector('.flipper');
-    flip.style.transform = flip.style.transform === 'rotateY(180deg)' ? 'rotateY(0deg)' : 'rotateY(180deg)';
-  ">
-    <div class="flipper">
-      <div class="front">Haz clic aquí</div>
-      <div class="back">¡Hola! Este es el reverso de la tarjeta.</div>
+  <div class="cards-container">
+    <div class="flip-container" onclick="this.querySelector('.flipper').style.transform = this.querySelector('.flipper').style.transform === 'rotateY(180deg)' ? 'rotateY(0deg)' : 'rotateY(180deg)'">
+      <div class="flipper">
+        <div class="front"></div>
+        <div class="back">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+      </div>
+    </div>
+    <div class="flip-container" onclick="this.querySelector('.flipper').style.transform = this.querySelector('.flipper').style.transform === 'rotateY(180deg)' ? 'rotateY(0deg)' : 'rotateY(180deg)'">
+      <div class="flipper">
+        <div class="front"></div>
+        <div class="back">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+      </div>
+    </div>
+    <div class="flip-container" onclick="this.querySelector('.flipper').style.transform = this.querySelector('.flipper').style.transform === 'rotateY(180deg)' ? 'rotateY(0deg)' : 'rotateY(180deg)'">
+      <div class="flipper">
+        <div class="front"></div>
+        <div class="back">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+      </div>
     </div>
   </div>
 </body>
