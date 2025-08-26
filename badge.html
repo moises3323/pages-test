@@ -306,7 +306,8 @@
                 let issuedRecord = null;
                 try {
                     const cd = await getCustomData();
-                    const assertions = (cd && cd.badges) || (cd && cd.assertions) || [];
+                    const store = (cd && cd.data) ? cd.data : cd; // Canvas GET returns { ns, data }
+                    const assertions = (store && store.badges) || (store && store.assertions) || [];
 
                     const qsLocal = new URLSearchParams(location.search);
                     const courseNameParamLocal = qsLocal.get("courseName") || document.getElementById('bf-course').value;
@@ -448,7 +449,8 @@
                     // Intenta leer; si falla, seguimos con objeto vacío
                     let base = {};
                     try { base = await getCustomData(); } catch (_) { base = {}; }
-                    const list = Array.isArray(base.badges) ? base.badges : [];
+                    const store = (base && base.data) ? base.data : base;
+                    const list = Array.isArray(store.badges) ? store.badges : [];
 
                     const entry = {
                         key,
