@@ -165,9 +165,13 @@
 
         /**************** HELPER PARA LLAMAR AL WORKER ****************/
         async function w(path) {
-            const res = await fetch(API_BASE + path, { method: "GET" });
-            if (!res.ok) throw new Error(`API ${path} -> ${res.status}`);
-            return res.json();
+            const url = API_BASE + path;
+            const res = await fetch(url, { method: "GET" });
+            const text = await res.text();
+            if (!res.ok) {
+                throw new Error(`API ${path} -> ${res.status}: ${text.substring(0,180)}`);
+            }
+            try { return JSON.parse(text); } catch { return text; }
         }
 
         /**************** Canvas data via proxy (sin tokens en el navegador) ****************/
@@ -193,6 +197,13 @@
         async function getCourse(courseId) { return w(`/api/course?courseId=${courseId}`); }
         async function getModules(courseId) { return w(`/api/modules?courseId=${courseId}`); }
         async function getModuleItems(courseId, moduleId) { return w(`/api/module-items?courseId=${courseId}&moduleId=${moduleId}`); }
+
+        function tryFindModuleIdByName(mods, nameFromQuery) {
+            if (!mods || !nameFromQuery) return null;
+            const needle = nameFromQuery.trim().toLowerCase();
+            const hit = mods.find(m => (m.name || '').trim().toLowerCase() === needle);
+            return hit ? hit.id : null;
+        }
 
         /**************** ELEMENTOS UI ****************/
         const form = document.getElementById('badge-form');
@@ -220,7 +231,24 @@
                 // 2) Curso
                 if (!courseId) {
                     const courses = await getCoursesPreferred();
-                    const candidate = Array.isArray(courses) && courses.length ? courses[0] : null;
+                    const courseNameParam = qs.get("courseName");
+
+                    let candidate = null;
+
+                    if (courseNameParam) {
+                        const needle = courseNameParam.trim().toLowerCase();
+                        candidate = (Array.isArray(courses) ? courses : []).find(
+                            c => (c.name || '').trim().toLowerCase() === needle
+                        );
+                        if (!candidate) {
+                            console.warn(`El courseName='${courseNameParam}' no existe entre tus cursos. Usando el primero.`);
+                        }
+                    }
+
+                    if (!candidate && Array.isArray(courses) && courses.length) {
+                        candidate = courses[0];
+                    }
+
                     courseId = candidate?.id || candidate?.course_id;
                 }
                 if (!courseId) throw new Error('No courseId available');
@@ -229,9 +257,20 @@
 
                 // 3) Módulo
                 const mods = await getModules(courseId);
+                // If a moduleName=... comes in the URL, prefer it when moduleId is absent
+                const moduleNameParam = qs.get("moduleName");
+                if (!moduleId && moduleNameParam) {
+                    moduleId = tryFindModuleIdByName(mods, moduleNameParam);
+                }
+                // If still no moduleId, default to first module
                 if (!moduleId) moduleId = mods?.[0]?.id;
-                const mod = (mods || []).find(m => String(m.id) === String(moduleId));
-                document.getElementById('bf-module').value = mod?.name || `Module ${moduleId}`;
+                // Validate that the requested moduleId actually exists in this course
+                let mod = (mods || []).find(m => String(m.id) === String(moduleId));
+                if (!mod) {
+                    console.warn(`El moduleId=${moduleId} no existe en courseId=${courseId}. Using first module.`);
+                    moduleId = mods?.[0]?.id;
+                    mod = (mods || []).find(m => String(m.id) === String(moduleId));
+                }
 
                 // 4) Estado de completion del módulo
                 const items = await getModuleItems(courseId, moduleId);
@@ -271,7 +310,7 @@
                 }
             } catch (e) {
                 console.error(e);
-                alert('No fue posible traer datos de Canvas desde el proxy. Verifica el Worker y permisos.');
+                alert('No fue posible traer datos de Canvas desde el proxy. ' + (e && e.message ? e.message : 'Verifica el Worker y permisos.'));
                 // En caso de error permitimos generar manualmente
                 btnGenerate.disabled = false;
                 btnGenerate.textContent = 'Generate Badge';
