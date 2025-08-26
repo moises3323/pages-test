@@ -321,11 +321,16 @@
                     issuedRecord = assertions.find(a => compatKeys.includes(String(a.key)));
                     console.log('Emisión previa encontrada (si existe):', issuedRecord);
                     if (issuedRecord) {
-                        btnGenerate.disabled = false;
-                        btnGenerate.textContent = 'Re-generate Badge';
-                        // Si prefieres ocultar el botón cuando ya existe, descomenta:
-                        // document.getElementById('bf-generate').style.display = 'none';
-                        // dl.style.display = 'inline-block';
+                        // Prefill fecha con la guardada si estaba vacía
+                        const dateEl = document.getElementById('bf-date');
+                        if (issuedRecord.issuedAt && dateEl && !dateEl.value) {
+                            dateEl.value = issuedRecord.issuedAt;
+                        }
+                        // Autogenera el preview con los datos actuales (sin click)
+                        await renderPreviewFromInputs(issuedRecord.issuedAt);
+                        // Oculta el botón y deja visible la descarga
+                        btnGenerate.style.display = 'none';
+                        dl.style.display = 'inline-block';
                     }
                 } catch (e) {
                     console.warn('Lectura Custom Data falló (no bloqueante):', e.message || e);
@@ -360,8 +365,9 @@
 
                 // 6) Habilitar/Deshabilitar botón
                 if (issuedRecord) {
-                    btnGenerate.disabled = false;
-                    btnGenerate.textContent = 'Re-generate Badge';
+                    // Update UI: ocultar botón y mostrar descarga
+                    btnGenerate.style.display = 'none';
+                    dl.style.display = 'inline-block';
                 } else {
                     btnGenerate.disabled = !complete;
                     btnGenerate.textContent = complete ? 'Generate Badge' : `Complete module to enable`;
@@ -427,6 +433,17 @@
                 img.onerror = reject;
                 img.src = url;
             });
+        }
+
+        async function renderPreviewFromInputs(dateOverride) {
+            const name = document.getElementById('bf-name').value.trim();
+            const course = document.getElementById('bf-course').value.trim();
+            const module = document.getElementById('bf-module').value.trim();
+            const bgUrl = document.getElementById('bf-bg').value.trim();
+            const dateEl = document.getElementById('bf-date');
+            const date = (dateOverride || (dateEl && dateEl.value) || new Date().toISOString().slice(0, 10));
+            const svg = makeBadgeSVG({ name, course, module, date, bgUrl });
+            await svgToPng(svg);
         }
 
         form.addEventListener('submit', async (e) => {
