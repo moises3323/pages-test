@@ -358,8 +358,13 @@
                 if (dateEl && !dateEl.value) dateEl.value = new Date().toISOString().slice(0, 10);
 
                 // 6) Habilitar/Deshabilitar botón
-                btnGenerate.disabled = !complete;
-                btnGenerate.textContent = complete ? 'Generate Badge' : `Complete module to enable`;
+                if (issuedRecord) {
+                    btnGenerate.disabled = false;
+                    btnGenerate.textContent = 'Re-generate Badge';
+                } else {
+                    btnGenerate.disabled = !complete;
+                    btnGenerate.textContent = complete ? 'Generate Badge' : `Complete module to enable`;
+                }
 
                 // Debug opcional en consola
                 if (!complete && required > 0) {
@@ -457,6 +462,9 @@
 
                     await putCustomData({ badges: list });
                     console.log('Custom Data actualizado', { badges: list });
+                    // Update UI state to reflect issuance
+                    btnGenerate.disabled = false;
+                    btnGenerate.textContent = 'Re-generate Badge';
                 }
             } catch (err) {
                 console.warn('No se pudo guardar en Custom Data:', err.message || err);
