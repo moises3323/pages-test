@@ -223,6 +223,10 @@
                 const qs = new URLSearchParams(location.search);
                 let courseId = qs.get("courseId");
                 let moduleId = qs.get("moduleId");
+                const courseNameParam = qs.get("courseName");
+                const moduleNameParam = qs.get("moduleName");
+                if (courseNameParam) document.getElementById('bf-course').value = courseNameParam;
+                if (moduleNameParam) document.getElementById('bf-module').value = moduleNameParam;
 
                 // 1) Usuario (nombre)
                 const me = await getSelf();
@@ -231,7 +235,6 @@
                 // 2) Curso
                 if (!courseId) {
                     const courses = await getCoursesPreferred();
-                    const courseNameParam = qs.get("courseName");
 
                     let candidate = null;
 
@@ -253,12 +256,13 @@
                 }
                 if (!courseId) throw new Error('No courseId available');
                 const course = await getCourse(courseId);
-                document.getElementById('bf-course').value = course?.name || `Course ${courseId}`;
+                if (!courseNameParam) {
+                  document.getElementById('bf-course').value = course?.name || `Course ${courseId}`;
+                }
 
                 // 3) Módulo
                 const mods = await getModules(courseId);
                 // If a moduleName=... comes in the URL, prefer it when moduleId is absent
-                const moduleNameParam = qs.get("moduleName");
                 if (!moduleId && moduleNameParam) {
                     moduleId = tryFindModuleIdByName(mods, moduleNameParam);
                 }
@@ -270,6 +274,9 @@
                     console.warn(`El moduleId=${moduleId} no existe en courseId=${courseId}. Using first module.`);
                     moduleId = mods?.[0]?.id;
                     mod = (mods || []).find(m => String(m.id) === String(moduleId));
+                }
+                if (!moduleNameParam) {
+                  document.getElementById('bf-module').value = mod?.name || `Module ${moduleId}`;
                 }
 
                 // 4) Estado de completion del módulo
