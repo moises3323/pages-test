@@ -237,11 +237,24 @@
                 const items = await getModuleItems(courseId, moduleId);
                 const required = items.filter(i => i?.completion_requirement).length;
                 const done = items.filter(i => i?.completion_requirement?.completed).length;
-                const complete = required > 0 && done >= required;
 
-                console.log(`Módulo ${moduleId} tiene ${required} items requeridos, ${done} completados.`);
+                // Fallback policy: if the module has 0 requirements configured in Canvas,
+                // we can't track per‑student completion. By default we ENABLE the button.
+                // Use ?strict=1 in the URL to require requirements and keep it disabled.
+                const strict = qs.get("strict") === "1";
+                let complete;
+                if (required === 0) {
+                    complete = !strict; // enable unless strict mode requested
+                    console.warn(
+                        `Módulo ${moduleId} sin requisitos de finalización en Canvas; ` +
+                        (complete ? 'habilitando emisión (fallback).' : 'modo estricto activo: mantener deshabilitado.')
+                    );
+                } else {
+                    complete = done >= required;
+                }
+
+                console.log(`Módulo ${moduleId}: requeridos=${required}, completados=${done}, complete=${complete}`);
                 console.log('Items del módulo:', items);
-                console.log('Completion:', complete);
 
                 // 5) Fecha default hoy si está vacío
                 const dateEl = document.getElementById('bf-date');
@@ -252,7 +265,7 @@
                 btnGenerate.textContent = complete ? 'Generate Badge' : `Complete module to enable`;
 
                 // Debug opcional en consola
-                if (!complete) {
+                if (!complete && required > 0) {
                     const pending = items.filter(i => i?.completion_requirement && !i.completion_requirement.completed);
                     console.log('Items pendientes:', pending.map(p => p.title));
                 }
