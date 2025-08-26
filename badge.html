@@ -308,7 +308,7 @@
                     const cd = await getCustomData();
                     const store = (cd && cd.data) ? cd.data : cd; // Canvas GET returns { ns, data }
                     const assertions = (store && store.badges) || (store && store.assertions) || [];
-
+                    console.log('Emisiones previas leídas de Custom Data:', assertions);
                     const qsLocal = new URLSearchParams(location.search);
                     const courseNameParamLocal = qsLocal.get("courseName") || document.getElementById('bf-course').value;
                     const moduleNameParamLocal = qsLocal.get("moduleName") || document.getElementById('bf-module').value;
@@ -319,7 +319,7 @@
                     ].filter(Boolean);
 
                     issuedRecord = assertions.find(a => compatKeys.includes(String(a.key)));
-
+                    console.log('Emisión previa encontrada (si existe):', issuedRecord);
                     if (issuedRecord) {
                         btnGenerate.disabled = false;
                         btnGenerate.textContent = 'Re-generate Badge';
