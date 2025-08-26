@@ -197,7 +197,12 @@
 
         /**************** Custom Data helpers ****************/
         async function getCustomData(ns = BADGE_NS) {
-          return w(`/api/custom-data?ns=${encodeURIComponent(ns)}`);
+          const url = API_BASE + `/api/custom-data?ns=${encodeURIComponent(ns)}`;
+          const res = await fetch(url, { method: 'GET' });
+          const text = await res.text();
+          if (res.status === 404) return {}; // namespace vacío en Canvas
+          if (!res.ok) throw new Error(`GET custom-data -> ${res.status}: ${text.substring(0,180)}`);
+          try { return JSON.parse(text); } catch { return {}; }
         }
         async function putCustomData(payload, ns = BADGE_NS) {
           const res = await fetch(API_BASE + `/api/custom-data?ns=${encodeURIComponent(ns)}`, {
@@ -290,6 +295,20 @@
                 }
                 if (!moduleNameParam) {
                   document.getElementById('bf-module').value = mod?.name || `Module ${moduleId}`;
+                }
+
+                // 3.5) Revisar si ya hay emisión guardada para este curso/módulo
+                let issuedRecord = null;
+                try {
+                  const cd = await getCustomData();
+                  const assertions = (cd && cd.badges) || (cd && cd.assertions) || [];
+                  issuedRecord = assertions.find(a => a.key === makeKey(courseId, moduleId));
+                  if (issuedRecord) {
+                    btnGenerate.disabled = false;
+                    btnGenerate.textContent = 'Re-generate Preview';
+                  }
+                } catch (e) {
+                  console.warn('Lectura Custom Data falló (no bloqueante):', e.message || e);
                 }
 
                 // 4) Estado de completion del módulo
@@ -400,9 +419,12 @@
               const courseId = qs.get("courseId");
               const moduleId = qs.get("moduleId");
               const key = makeKey(courseId || course, moduleId || module);
-              const cd = await getCustomData();
-              const base = (cd && typeof cd === 'object') ? cd : {};
+
+              // Intenta leer; si falla, seguimos con objeto vacío
+              let base = {};
+              try { base = await getCustomData(); } catch (_) { base = {}; }
               const list = Array.isArray(base.badges) ? base.badges : [];
+
               const entry = {
                 key,
                 courseId,
@@ -412,9 +434,9 @@
               };
               const idx = list.findIndex(x => x.key === key);
               if (idx >= 0) list[idx] = entry; else list.push(entry);
-              const newPayload = { badges: list };
-              await putCustomData(newPayload);
-              console.log('Custom Data actualizado', newPayload);
+
+              await putCustomData({ badges: list });
+              console.log('Custom Data actualizado', { badges: list });
             } catch (err) {
               console.warn('No se pudo guardar en Custom Data:', err.message || err);
             }
