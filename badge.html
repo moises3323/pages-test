@@ -172,7 +172,24 @@
 
         /**************** Canvas data via proxy (sin tokens en el navegador) ****************/
         async function getSelf() { return w(`/api/self`); }
-        async function getCourses() { return w(`/api/courses`); }
+        async function getCoursesPreferred() {
+          // 1) cursos activos del usuario
+          let courses = await w(`/api/courses`);
+          if (Array.isArray(courses) && courses.length) return courses;
+
+          // 2) favoritos (dashboard)
+          courses = await w(`/api/fav-courses`);
+          if (Array.isArray(courses) && courses.length) return courses;
+
+          // 3) enrollments -> course_id -> course
+          const enrolls = await w(`/api/enrollments`);
+          const ids = [...new Set((enrolls || []).map(e => e.course_id))];
+          const resolved = [];
+          for (const id of ids.slice(0, 5)) {
+            try { resolved.push(await getCourse(id)); } catch {}
+          }
+          return resolved;
+        }
         async function getCourse(courseId) { return w(`/api/course?courseId=${courseId}`); }
         async function getModules(courseId) { return w(`/api/modules?courseId=${courseId}`); }
         async function getModuleItems(courseId, moduleId) { return w(`/api/module-items?courseId=${courseId}&moduleId=${moduleId}`); }
@@ -202,9 +219,9 @@
 
                 // 2) Curso
                 if (!courseId) {
-                    const courses = await getCourses();
+                    const courses = await getCoursesPreferred();
                     const candidate = Array.isArray(courses) && courses.length ? courses[0] : null;
-                    courseId = candidate?.id;
+                    courseId = candidate?.id || candidate?.course_id;
                 }
                 if (!courseId) throw new Error('No courseId available');
                 const course = await getCourse(courseId);
@@ -221,6 +238,10 @@
                 const required = items.filter(i => i?.completion_requirement).length;
                 const done = items.filter(i => i?.completion_requirement?.completed).length;
                 const complete = required > 0 && done >= required;
+
+                console.log(`Módulo ${moduleId} tiene ${required} items requeridos, ${done} completados.`);
+                console.log('Items del módulo:', items);
+                console.log('Completion:', complete);
 
                 // 5) Fecha default hoy si está vacío
                 const dateEl = document.getElementById('bf-date');
