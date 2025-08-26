@@ -142,7 +142,7 @@
                 <input id="bf-bg" type="url" placeholder="https://.../background.png" />
             </label>
             <div class="actions">
-                <button id="bf-generate" type="submit" class="btn-primary">Generate Badge</button>
+                <button id="bf-generate" type="submit" class="btn-primary" disabled>Generate Badge</button>
                 <a id="bf-download" download="badge.png" class="btn" style="display:none">Download PNG</a>
             </div>
         </form>
@@ -160,12 +160,91 @@
     </main>
 
     <script>
+        /**************** CONFIG DEL PROXY (ajusta la URL si cambia) ****************/
+        const API_BASE = "https://canvas-proxy.moisess.workers.dev"; // <-- tu Worker URL
+
+        /**************** HELPER PARA LLAMAR AL WORKER ****************/
+        async function w(path) {
+            const res = await fetch(API_BASE + path, { method: "GET" });
+            if (!res.ok) throw new Error(`API ${path} -> ${res.status}`);
+            return res.json();
+        }
+
+        /**************** Canvas data via proxy (sin tokens en el navegador) ****************/
+        async function getSelf() { return w(`/api/self`); }
+        async function getCourses() { return w(`/api/courses`); }
+        async function getCourse(courseId) { return w(`/api/course?courseId=${courseId}`); }
+        async function getModules(courseId) { return w(`/api/modules?courseId=${courseId}`); }
+        async function getModuleItems(courseId, moduleId) { return w(`/api/module-items?courseId=${courseId}&moduleId=${moduleId}`); }
+
+        /**************** ELEMENTOS UI ****************/
         const form = document.getElementById('badge-form');
         const outSvg = document.getElementById('badge-svg-out');
         const canvas = document.getElementById('badge-canvas');
         const ctx = canvas.getContext('2d');
         const dl = document.getElementById('bf-download');
+        const btnGenerate = document.getElementById('bf-generate');
 
+        /**************** AUTOCOMPLETADO DESDE CANVAS ****************/
+        (async function initAutoFill() {
+            try {
+                // Deshabilitado mientras cargamos datos
+                btnGenerate.disabled = true;
+                btnGenerate.textContent = 'Loading…';
+
+                const qs = new URLSearchParams(location.search);
+                let courseId = qs.get("courseId");
+                let moduleId = qs.get("moduleId");
+
+                // 1) Usuario (nombre)
+                const me = await getSelf();
+                document.getElementById('bf-name').value = me.name || me.short_name || "Student";
+
+                // 2) Curso
+                if (!courseId) {
+                    const courses = await getCourses();
+                    const candidate = Array.isArray(courses) && courses.length ? courses[0] : null;
+                    courseId = candidate?.id;
+                }
+                if (!courseId) throw new Error('No courseId available');
+                const course = await getCourse(courseId);
+                document.getElementById('bf-course').value = course?.name || `Course ${courseId}`;
+
+                // 3) Módulo
+                const mods = await getModules(courseId);
+                if (!moduleId) moduleId = mods?.[0]?.id;
+                const mod = (mods || []).find(m => String(m.id) === String(moduleId));
+                document.getElementById('bf-module').value = mod?.name || `Module ${moduleId}`;
+
+                // 4) Estado de completion del módulo
+                const items = await getModuleItems(courseId, moduleId);
+                const required = items.filter(i => i?.completion_requirement).length;
+                const done = items.filter(i => i?.completion_requirement?.completed).length;
+                const complete = required > 0 && done >= required;
+
+                // 5) Fecha default hoy si está vacío
+                const dateEl = document.getElementById('bf-date');
+                if (dateEl && !dateEl.value) dateEl.value = new Date().toISOString().slice(0, 10);
+
+                // 6) Habilitar/Deshabilitar botón
+                btnGenerate.disabled = !complete;
+                btnGenerate.textContent = complete ? 'Generate Badge' : `Complete module to enable`;
+
+                // Debug opcional en consola
+                if (!complete) {
+                    const pending = items.filter(i => i?.completion_requirement && !i.completion_requirement.completed);
+                    console.log('Items pendientes:', pending.map(p => p.title));
+                }
+            } catch (e) {
+                console.error(e);
+                alert('No fue posible traer datos de Canvas desde el proxy. Verifica el Worker y permisos.');
+                // En caso de error permitimos generar manualmente
+                btnGenerate.disabled = false;
+                btnGenerate.textContent = 'Generate Badge';
+            }
+        })();
+
+        /**************** GENERACIÓN DE SVG Y PNG (sin cambios de lógica) ****************/
         function makeBadgeSVG({ name, course, module, date, bgUrl }) {
             const issued = date || new Date().toISOString().slice(0, 10);
             const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
