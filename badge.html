@@ -166,7 +166,7 @@
             const res = await fetch(url, { method: "GET" });
             const text = await res.text();
             if (!res.ok) {
-                throw new Error(`API ${path} -> ${res.status}: ${text.substring(0,180)}`);
+                throw new Error(`API ${path} -> ${res.status}: ${text.substring(0, 180)}`);
             }
             try { return JSON.parse(text); } catch { return text; }
         }
@@ -174,22 +174,22 @@
         /**************** Canvas data via proxy (sin tokens en el navegador) ****************/
         async function getSelf() { return w(`/api/self`); }
         async function getCoursesPreferred() {
-          // 1) cursos activos del usuario
-          let courses = await w(`/api/courses`);
-          if (Array.isArray(courses) && courses.length) return courses;
+            // 1) cursos activos del usuario
+            let courses = await w(`/api/courses`);
+            if (Array.isArray(courses) && courses.length) return courses;
 
-          // 2) favoritos (dashboard)
-          courses = await w(`/api/fav-courses`);
-          if (Array.isArray(courses) && courses.length) return courses;
+            // 2) favoritos (dashboard)
+            courses = await w(`/api/fav-courses`);
+            if (Array.isArray(courses) && courses.length) return courses;
 
-          // 3) enrollments -> course_id -> course
-          const enrolls = await w(`/api/enrollments`);
-          const ids = [...new Set((enrolls || []).map(e => e.course_id))];
-          const resolved = [];
-          for (const id of ids.slice(0, 5)) {
-            try { resolved.push(await getCourse(id)); } catch {}
-          }
-          return resolved;
+            // 3) enrollments -> course_id -> course
+            const enrolls = await w(`/api/enrollments`);
+            const ids = [...new Set((enrolls || []).map(e => e.course_id))];
+            const resolved = [];
+            for (const id of ids.slice(0, 5)) {
+                try { resolved.push(await getCourse(id)); } catch { }
+            }
+            return resolved;
         }
         async function getCourse(courseId) { return w(`/api/course?courseId=${courseId}`); }
         async function getModules(courseId) { return w(`/api/modules?courseId=${courseId}`); }
@@ -197,25 +197,25 @@
 
         /**************** Custom Data helpers ****************/
         async function getCustomData(ns = BADGE_NS) {
-          const url = API_BASE + `/api/custom-data?ns=${encodeURIComponent(ns)}`;
-          const res = await fetch(url, { method: 'GET' });
-          const text = await res.text();
-          if (res.status === 404) return {}; // namespace vacío en Canvas
-          if (!res.ok) throw new Error(`GET custom-data -> ${res.status}: ${text.substring(0,180)}`);
-          try { return JSON.parse(text); } catch { return {}; }
+            const url = API_BASE + `/api/custom-data?ns=${encodeURIComponent(ns)}`;
+            const res = await fetch(url, { method: 'GET' });
+            const text = await res.text();
+            if (res.status === 404) return {}; // namespace vacío en Canvas
+            if (!res.ok) throw new Error(`GET custom-data -> ${res.status}: ${text.substring(0, 180)}`);
+            try { return JSON.parse(text); } catch { return {}; }
         }
         async function putCustomData(payload, ns = BADGE_NS) {
-          const res = await fetch(API_BASE + `/api/custom-data?ns=${encodeURIComponent(ns)}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          const text = await res.text();
-          if (!res.ok) throw new Error(`PUT custom-data -> ${res.status}: ${text.substring(0,180)}`);
-          try { return JSON.parse(text); } catch { return text; }
+            const res = await fetch(API_BASE + `/api/custom-data?ns=${encodeURIComponent(ns)}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const text = await res.text();
+            if (!res.ok) throw new Error(`PUT custom-data -> ${res.status}: ${text.substring(0, 180)}`);
+            try { return JSON.parse(text); } catch { return text; }
         }
 
-        function makeKey(courseId, moduleId){ return `${courseId}:${moduleId}`; }
+        function makeKey(courseId, moduleId) { return `${courseId}:${moduleId}`; }
 
         function tryFindModuleIdByName(mods, nameFromQuery) {
             if (!mods || !nameFromQuery) return null;
@@ -277,7 +277,7 @@
                 if (!courseId) throw new Error('No courseId available');
                 const course = await getCourse(courseId);
                 if (!courseNameParam) {
-                  document.getElementById('bf-course').value = course?.name || `Course ${courseId}`;
+                    document.getElementById('bf-course').value = course?.name || `Course ${courseId}`;
                 }
 
                 // 3) Módulo
@@ -296,24 +296,38 @@
                     mod = (mods || []).find(m => String(m.id) === String(moduleId));
                 }
                 if (!moduleNameParam) {
-                  document.getElementById('bf-module').value = mod?.name || `Module ${moduleId}`;
+                    document.getElementById('bf-module').value = mod?.name || `Module ${moduleId}`;
                 }
                 // Guardar los IDs resueltos globalmente
                 RESOLVED.courseId = courseId;
                 RESOLVED.moduleId = moduleId;
 
-                // 3.5) Revisar si ya hay emisión guardada para este curso/módulo
+                // 3.5) Revisar si ya hay emisión guardada para este curso/módulo (compat IDs y nombres)
                 let issuedRecord = null;
                 try {
-                  const cd = await getCustomData();
-                  const assertions = (cd && cd.badges) || (cd && cd.assertions) || [];
-                  issuedRecord = assertions.find(a => a.key === makeKey(RESOLVED.courseId, RESOLVED.moduleId));
-                  if (issuedRecord) {
-                    btnGenerate.disabled = false;
-                    btnGenerate.textContent = 'Re-generate Preview';
-                  }
+                    const cd = await getCustomData();
+                    const assertions = (cd && cd.badges) || (cd && cd.assertions) || [];
+
+                    const qsLocal = new URLSearchParams(location.search);
+                    const courseNameParamLocal = qsLocal.get("courseName") || document.getElementById('bf-course').value;
+                    const moduleNameParamLocal = qsLocal.get("moduleName") || document.getElementById('bf-module').value;
+
+                    const compatKeys = [
+                        makeKey(RESOLVED.courseId, RESOLVED.moduleId),                                 // v2 (IDs)
+                        `${(courseNameParamLocal || '').trim()}:${(moduleNameParamLocal || '').trim()}`    // v1 (nombres)
+                    ].filter(Boolean);
+
+                    issuedRecord = assertions.find(a => compatKeys.includes(String(a.key)));
+
+                    if (issuedRecord) {
+                        btnGenerate.disabled = false;
+                        btnGenerate.textContent = 'Re-generate Badge';
+                        // Si prefieres ocultar el botón cuando ya existe, descomenta:
+                        // document.getElementById('bf-generate').style.display = 'none';
+                        // dl.style.display = 'inline-block';
+                    }
                 } catch (e) {
-                  console.warn('Lectura Custom Data falló (no bloqueante):', e.message || e);
+                    console.warn('Lectura Custom Data falló (no bloqueante):', e.message || e);
                 }
 
                 // 4) Estado de completion del módulo
@@ -420,32 +434,32 @@
             await svgToPng(svg);
             // Save issuance to Custom Data
             try {
-              const courseId = RESOLVED.courseId;
-              const moduleId = RESOLVED.moduleId;
-              const key = makeKey(courseId, moduleId);
-              if (!courseId || !moduleId) {
-                console.warn('No courseId/moduleId resolved; omitiendo guardado de Custom Data.');
-              } else {
-                // Intenta leer; si falla, seguimos con objeto vacío
-                let base = {};
-                try { base = await getCustomData(); } catch (_) { base = {}; }
-                const list = Array.isArray(base.badges) ? base.badges : [];
+                const courseId = RESOLVED.courseId;
+                const moduleId = RESOLVED.moduleId;
+                const key = makeKey(courseId, moduleId);
+                if (!courseId || !moduleId) {
+                    console.warn('No courseId/moduleId resolved; omitiendo guardado de Custom Data.');
+                } else {
+                    // Intenta leer; si falla, seguimos con objeto vacío
+                    let base = {};
+                    try { base = await getCustomData(); } catch (_) { base = {}; }
+                    const list = Array.isArray(base.badges) ? base.badges : [];
 
-                const entry = {
-                  key,
-                  courseId,
-                  moduleId,
-                  issuedAt: date || new Date().toISOString().slice(0,10),
-                  title: `${module} — ${course}`
-                };
-                const idx = list.findIndex(x => x.key === key);
-                if (idx >= 0) list[idx] = entry; else list.push(entry);
+                    const entry = {
+                        key,
+                        courseId,
+                        moduleId,
+                        issuedAt: date || new Date().toISOString().slice(0, 10),
+                        title: `${module} — ${course}`
+                    };
+                    const idx = list.findIndex(x => x.key === key);
+                    if (idx >= 0) list[idx] = entry; else list.push(entry);
 
-                await putCustomData({ badges: list });
-                console.log('Custom Data actualizado', { badges: list });
-              }
+                    await putCustomData({ badges: list });
+                    console.log('Custom Data actualizado', { badges: list });
+                }
             } catch (err) {
-              console.warn('No se pudo guardar en Custom Data:', err.message || err);
+                console.warn('No se pudo guardar en Custom Data:', err.message || err);
             }
         });
     </script>
