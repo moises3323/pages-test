@@ -152,16 +152,13 @@
                 <h3 style="margin:6px 0 10px;">Preview</h3>
                 <canvas id="badge-canvas" width="800" height="800"></canvas>
             </div>
-            <div>
-                <h3 style="margin:6px 0 10px;">SVG (for designers)</h3>
-                <textarea id="badge-svg-out" readonly></textarea>
-            </div>
         </div>
     </main>
 
     <script>
         /**************** CONFIG DEL PROXY (ajusta la URL si cambia) ****************/
         const API_BASE = "https://canvas-proxy.moisess.workers.dev"; // <-- tu Worker URL
+        const BADGE_NS = "pixel.badges";
 
         /**************** HELPER PARA LLAMAR AL WORKER ****************/
         async function w(path) {
@@ -198,6 +195,23 @@
         async function getModules(courseId) { return w(`/api/modules?courseId=${courseId}`); }
         async function getModuleItems(courseId, moduleId) { return w(`/api/module-items?courseId=${courseId}&moduleId=${moduleId}`); }
 
+        /**************** Custom Data helpers ****************/
+        async function getCustomData(ns = BADGE_NS) {
+          return w(`/api/custom-data?ns=${encodeURIComponent(ns)}`);
+        }
+        async function putCustomData(payload, ns = BADGE_NS) {
+          const res = await fetch(API_BASE + `/api/custom-data?ns=${encodeURIComponent(ns)}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const text = await res.text();
+          if (!res.ok) throw new Error(`PUT custom-data -> ${res.status}: ${text.substring(0,180)}`);
+          try { return JSON.parse(text); } catch { return text; }
+        }
+
+        function makeKey(courseId, moduleId){ return `${courseId}:${moduleId}`; }
+
         function tryFindModuleIdByName(mods, nameFromQuery) {
             if (!mods || !nameFromQuery) return null;
             const needle = nameFromQuery.trim().toLowerCase();
@@ -207,7 +221,6 @@
 
         /**************** ELEMENTOS UI ****************/
         const form = document.getElementById('badge-form');
-        const outSvg = document.getElementById('badge-svg-out');
         const canvas = document.getElementById('badge-canvas');
         const ctx = canvas.getContext('2d');
         const dl = document.getElementById('bf-download');
@@ -380,8 +393,31 @@
             const date = document.getElementById('bf-date').value;
             const bgUrl = document.getElementById('bf-bg').value.trim();
             const svg = makeBadgeSVG({ name, course, module, date, bgUrl });
-            outSvg.value = svg;
             await svgToPng(svg);
+            // Save issuance to Custom Data
+            try {
+              const qs = new URLSearchParams(location.search);
+              const courseId = qs.get("courseId");
+              const moduleId = qs.get("moduleId");
+              const key = makeKey(courseId || course, moduleId || module);
+              const cd = await getCustomData();
+              const base = (cd && typeof cd === 'object') ? cd : {};
+              const list = Array.isArray(base.badges) ? base.badges : [];
+              const entry = {
+                key,
+                courseId,
+                moduleId,
+                issuedAt: date || new Date().toISOString().slice(0,10),
+                title: `${module} — ${course}`
+              };
+              const idx = list.findIndex(x => x.key === key);
+              if (idx >= 0) list[idx] = entry; else list.push(entry);
+              const newPayload = { badges: list };
+              await putCustomData(newPayload);
+              console.log('Custom Data actualizado', newPayload);
+            } catch (err) {
+              console.warn('No se pudo guardar en Custom Data:', err.message || err);
+            }
         });
     </script>
 </body>
