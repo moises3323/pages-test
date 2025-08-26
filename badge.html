@@ -230,6 +230,8 @@
         const ctx = canvas.getContext('2d');
         const dl = document.getElementById('bf-download');
         const btnGenerate = document.getElementById('bf-generate');
+        // IDs resueltos que usaremos para guardar/leer Custom Data
+        const RESOLVED = { courseId: null, moduleId: null };
 
         /**************** AUTOCOMPLETADO DESDE CANVAS ****************/
         (async function initAutoFill() {
@@ -296,13 +298,16 @@
                 if (!moduleNameParam) {
                   document.getElementById('bf-module').value = mod?.name || `Module ${moduleId}`;
                 }
+                // Guardar los IDs resueltos globalmente
+                RESOLVED.courseId = courseId;
+                RESOLVED.moduleId = moduleId;
 
                 // 3.5) Revisar si ya hay emisión guardada para este curso/módulo
                 let issuedRecord = null;
                 try {
                   const cd = await getCustomData();
                   const assertions = (cd && cd.badges) || (cd && cd.assertions) || [];
-                  issuedRecord = assertions.find(a => a.key === makeKey(courseId, moduleId));
+                  issuedRecord = assertions.find(a => a.key === makeKey(RESOLVED.courseId, RESOLVED.moduleId));
                   if (issuedRecord) {
                     btnGenerate.disabled = false;
                     btnGenerate.textContent = 'Re-generate Preview';
@@ -415,28 +420,30 @@
             await svgToPng(svg);
             // Save issuance to Custom Data
             try {
-              const qs = new URLSearchParams(location.search);
-              const courseId = qs.get("courseId");
-              const moduleId = qs.get("moduleId");
-              const key = makeKey(courseId || course, moduleId || module);
+              const courseId = RESOLVED.courseId;
+              const moduleId = RESOLVED.moduleId;
+              const key = makeKey(courseId, moduleId);
+              if (!courseId || !moduleId) {
+                console.warn('No courseId/moduleId resolved; omitiendo guardado de Custom Data.');
+              } else {
+                // Intenta leer; si falla, seguimos con objeto vacío
+                let base = {};
+                try { base = await getCustomData(); } catch (_) { base = {}; }
+                const list = Array.isArray(base.badges) ? base.badges : [];
 
-              // Intenta leer; si falla, seguimos con objeto vacío
-              let base = {};
-              try { base = await getCustomData(); } catch (_) { base = {}; }
-              const list = Array.isArray(base.badges) ? base.badges : [];
+                const entry = {
+                  key,
+                  courseId,
+                  moduleId,
+                  issuedAt: date || new Date().toISOString().slice(0,10),
+                  title: `${module} — ${course}`
+                };
+                const idx = list.findIndex(x => x.key === key);
+                if (idx >= 0) list[idx] = entry; else list.push(entry);
 
-              const entry = {
-                key,
-                courseId,
-                moduleId,
-                issuedAt: date || new Date().toISOString().slice(0,10),
-                title: `${module} — ${course}`
-              };
-              const idx = list.findIndex(x => x.key === key);
-              if (idx >= 0) list[idx] = entry; else list.push(entry);
-
-              await putCustomData({ badges: list });
-              console.log('Custom Data actualizado', { badges: list });
+                await putCustomData({ badges: list });
+                console.log('Custom Data actualizado', { badges: list });
+              }
             } catch (err) {
               console.warn('No se pudo guardar en Custom Data:', err.message || err);
             }
