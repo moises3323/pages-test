@@ -1,2 +1,89 @@
-<script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js" type="module"></script>
-<dotlottie-wc src="https://lottie.host/d0630dc0-7b1c-47d8-8c6c-2ad29a6d2161/d5iA9Iur5g.lottie" style="width: 300px;height: 300px" speed="1" autoplay loop></dotlottie-wc>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Insignia — Redmond Collections</title>
+  <style>
+    :root {
+      --fg: #111;
+      --muted: #666;
+      --brand: #0b6efd;
+      --card: #fff;
+      --bg: #f7f7f8;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap {
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 32px 16px;
+    }
+    .card {
+      max-width: 720px;
+      width: 100%;
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: 0 6px 24px rgba(0,0,0,.08);
+      padding: 28px 24px 24px;
+    }
+    h1 {
+      font-size: clamp(22px, 3vw, 28px);
+      line-height: 1.2;
+      margin: 0 0 8px;
+      text-align: center;
+    }
+    p.lead {
+      margin: 0 0 18px;
+      text-align: center;
+      color: var(--muted);
+      font-size: clamp(14px, 2.2vw, 16px);
+    }
+    .anim {
+      display: block;
+      margin: 8px auto 4px;
+      width: min(360px, 92vw);
+      height: min(360px, 92vw);
+      border: 0;
+      border-radius: 12px;
+    }
+    .actions { text-align: center; margin-top: 10px; }
+    .btn {
+      appearance: none;
+      border: 0;
+      background: var(--brand);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn:focus { outline: 3px solid rgba(11,110,253,.35); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card" aria-labelledby="t">
+      <h1 id="t">¡Has completado el módulo <strong>Redmond Collections</strong>! 🐣</h1>
+      <p class="lead">Este pollito acaba de salir del huevo — ¡así se ve el progreso! Sigue aprendiendo para hacerlo crecer y desbloquear la siguiente insignia.</p>
+
+      <iframe class="anim" title="Insignia animada — Redmond Collections"
+        src="https://lottie.host/embed/d0630dc0-7b1c-47d8-8c6c-2ad29a6d2161/d5iA9Iur5g.lottie"
+        loading="lazy" allowfullscreen></iframe>
+
+      <div class="actions">
+        <a class="btn" href="#" onclick="history.back(); return false;">Continuar con el curso</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
