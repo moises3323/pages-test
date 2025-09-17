@@ -72,9 +72,9 @@
 </head>
 <body>
   <main class="wrap">
-    <section class="card" aria-labelledby="t">
-      <h1 id="t">¡Has completado el módulo <strong>Redmond Collections</strong>! 🐣</h1>
-      <p class="lead">Este pollito acaba de salir del huevo — ¡así se ve el progreso! Sigue aprendiendo para hacerlo crecer y desbloquear la siguiente insignia.</p>
+    <section class="card" aria-labelledby="t" data-badge="redmond">
+      <h1 id="t">You have completed the <strong>Redmond Collections</strong> module! 🐣</h1>
+      <p class="lead">This chick just hatched — this is what progress looks like! Keep learning to help it grow and unlock the next badge.</p>
 
       <iframe class="anim" title="Insignia animada — Redmond Collections"
         src="https://lottie.host/embed/d0630dc0-7b1c-47d8-8c6c-2ad29a6d2161/d5iA9Iur5g.lottie"
@@ -84,9 +84,9 @@
         <a class="btn" href="#" onclick="history.back(); return false;">Continuar con el curso</a>
       </div>
     </section>
-    <section class="card" aria-labelledby="t2" style="margin-top:24px;">
-      <h1 id="t2">¡Has desbloqueado el logro <strong>Pollito en crecimiento</strong>! 🐥</h1>
-      <p class="lead">Ahora tu pollito empieza a crecer — cada módulo completado lo fortalece. ¡Continúa aprendiendo para alcanzar la siguiente etapa!</p>
+    <section class="card" aria-labelledby="t2" data-badge="pollito" style="margin-top:24px;">
+      <h1 id="t2">You have unlocked the <strong>Growing Chick</strong> achievement! 🐥</h1>
+      <p class="lead">Your chick is starting to grow — every module you finish makes it stronger. Keep going to reach the next stage!</p>
 
       <iframe class="anim" title="Insignia animada — Pollito"
         src="https://lottie.host/embed/4798af10-ab11-4215-8a32-c95d4b24e747/n2Ir6OAzZ5.lottie"
@@ -96,9 +96,9 @@
         <a class="btn" href="#" onclick="history.back(); return false;">Seguir al próximo módulo</a>
       </div>
     </section>
-    <section class="card" aria-labelledby="t3" style="margin-top:24px;">
-      <h1 id="t3">¡Felicidades! Has alcanzado la <strong>Insignia del Gallo</strong> 🐓</h1>
-      <p class="lead">Tu pollito ha crecido hasta convertirse en un gallo fuerte — símbolo de constancia y aprendizaje. ¡Has completado el curso con éxito!</p>
+    <section class="card" aria-labelledby="t3" data-badge="gallo" style="margin-top:24px;">
+      <h1 id="t3">Congratulations! You have earned the <strong>Rooster Badge</strong> 🐓</h1>
+      <p class="lead">Your chick has grown into a strong rooster — a symbol of commitment and learning. You have completed the course successfully!</p>
 
       <iframe class="anim" title="Insignia animada — Gallo"
         src="https://lottie.host/embed/b5514760-7b6a-46c1-a72a-76a189ac7878/YNmprLGw4P.lottie"
@@ -109,5 +109,30 @@
       </div>
     </section>
   </main>
+  <script>
+    (function () {
+      const sections = Array.from(document.querySelectorAll('section[data-badge]'));
+      if (!sections.length) {
+        return;
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const requested = params.get('badge');
+      let active = sections[0];
+
+      if (requested) {
+        const match = sections.find((section) => section.dataset.badge === requested);
+        if (match) {
+          active = match;
+        }
+      }
+
+      sections.forEach((section) => {
+        if (section !== active) {
+          section.hidden = true;
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
