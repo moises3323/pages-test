@@ -160,8 +160,9 @@
       .section-scroll {
         flex: 1;
         overflow-y: auto;
-        padding-right: 8px;
-        padding-bottom: 24px;
+        /* padding-right: 8px;
+        padding-bottom: 24px; */
+        padding: 20px;
       }
 
       .section-copy h1,
@@ -347,7 +348,7 @@
         align-items: center;
         justify-content: space-between;
         gap: 24px;
-        font-weight: 600;
+        font-weight: 400;
         color: var(--gray-700);
         text-decoration: none;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -358,9 +359,10 @@
         width: 32px;
         height: 32px;
         border-radius: 12px;
-        background: linear-gradient(135deg, var(--purple-600), var(--purple-300));
-        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M12 3l9 6v12H3V9l9-6zm0 2.18L6 9v9h12V9l-6-3.82z'/%3E%3C/svg%3E")
-          center/18px 18px no-repeat;
+        background:
+          url("imgs/svg/FeaturedIcon.svg") center/18px 18px no-repeat,
+          linear-gradient(135deg, var(--purple-600), var(--purple-300));
+        box-shadow: 0 10px 25px rgba(94, 59, 255, 0.2);
       }
 
       .card-stack .card svg {
@@ -620,41 +622,14 @@
                   <div class="card">
                     Donate high-level creative services to our partner foundation
                     in Guatemala.
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                      <path
-                        d="M12 5l8 4.5v9L12 23l-8-4.5v-9L12 5m0-2L2 8v10l10 5.5 10-5.5V8L12 3z"
-                      ></path>
-                    </svg>
                   </div>
                   <div class="card">
                     Support the development of education, wellness, and cultural
                     initiatives.
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                      <path
-                        d="M12 2a7 7 0 017 7c0 3.5-2.57 6.43-6 6.92V21h-2v-5.08A7.001 7.001 0 0112 2m0 2a5 5 0 00-5 5c0 2.76 2 5 5 5s5-2.24 5-5a5 5 0 00-5-5z"
-                      ></path>
-                    </svg>
                   </div>
                   <div class="card">
                     Seed social ventures committed to sustainability for Meso
                     Foundation partners.
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                      <path
-                        d="M12 3a9 9 0 019 9 9 9 0 01-18 0 9 9 0 019-9m0 2a7 7 0 100 14 7 7 0 000-14m0 2l3 5h-6l3-5zm0 11.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3z"
-                      ></path>
-                    </svg>
-                  </div>
-                </div>
-                <div class="carousel">
-                  <img
-                    src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=900&q=80"
-                    alt="Pixel team members collaborating outdoors"
-                    loading="lazy"
-                  />
-                  <div class="thumbs">
-                    <span></span>
-                    <span></span>
-                    <span></span>
                   </div>
                 </div>
               </div>
@@ -785,13 +760,8 @@
               </div>
               <div class="learn-more-gallery">
                 <img
-                  src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80"
+                  src="imgs/png/ninos.png"
                   alt="Group of kids hugging"
-                  loading="lazy"
-                />
-                <img
-                  src="https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=900&q=80"
-                  alt="Group of students smiling outdoors"
                   loading="lazy"
                 />
               </div>
