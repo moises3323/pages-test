@@ -54,7 +54,7 @@
 
       .module-stack {
         position: relative;
-        min-height: 600px;
+        min-height: 500px;
         padding-bottom: 32px;
         width: 100%;
         max-width: 1100px;
@@ -360,7 +360,7 @@
         height: 32px;
         border-radius: 12px;
         background:
-          url("imgs/svg/FeaturedIcon.svg") center/18px 18px no-repeat,
+          url("imgs/svg/FeaturedIcon.svg") center/32px 32px no-repeat,
           linear-gradient(135deg, var(--purple-600), var(--purple-300));
         box-shadow: 0 10px 25px rgba(94, 59, 255, 0.2);
       }
@@ -379,36 +379,203 @@
       }
 
       .carousel {
+        position: relative;
         border-radius: 28px;
         overflow: hidden;
-        position: relative;
+        background: var(--bg-card);
         box-shadow: var(--shadow-sm);
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 16px;
+        aspect-ratio: 16 / 9;
+        isolation: isolate;
       }
 
-      .carousel img {
-        width: 100%;
-        height: auto;
-        display: block;
-      }
-
-      .carousel .thumbs {
+      .carousel-track {
         display: flex;
-        gap: 12px;
-        padding: 0 16px 16px;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.45s cubic-bezier(0.25, 0.8, 0.25, 1);
+        will-change: transform;
       }
 
-      .carousel .thumbs span {
+      .carousel-slide {
+        flex: 0 0 100%;
+        height: 100%;
+      }
+
+      .carousel-slide img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .carousel-control {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: none;
+        background: #ffffff;
+        color: var(--purple-600);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 30px rgba(31, 35, 53, 0.16);
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        z-index: 2;
+      }
+
+      .carousel-control[data-carousel-prev] {
+        left: 24px;
+      }
+
+      .carousel-control[data-carousel-next] {
+        right: 24px;
+      }
+
+      .carousel-control:hover {
+        transform: translateY(-50%) scale(1.05);
+        box-shadow: 0 16px 36px rgba(31, 35, 53, 0.18);
+      }
+
+      .carousel-control svg {
+        width: 18px;
+        height: 18px;
+        fill: currentColor;
+      }
+
+      .carousel-dots {
+        position: absolute;
+        left: 50%;
+        bottom: 22px;
+        transform: translateX(-50%);
+        display: inline-flex;
+        gap: 12px;
+        padding: 10px 18px;
+        background: rgba(255, 255, 255, 0.92);
+        border-radius: 999px;
+        box-shadow: 0 12px 26px rgba(31, 35, 53, 0.12);
+        z-index: 1;
+      }
+
+      .carousel-dot {
         width: 10px;
         height: 10px;
-        background: var(--gray-200);
         border-radius: 999px;
+        border: none;
+        background: var(--gray-200);
+        cursor: pointer;
+        transition: width 0.2s ease, background 0.2s ease;
       }
 
-      .carousel .thumbs span:first-child {
-        width: 32px;
+      .carousel-dot.is-active {
+        width: 28px;
+        background: var(--purple-600);
+      }
+
+      .carousel {
+        position: relative;
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        background: var(--bg-card);
+        aspect-ratio: 16 / 9;
+        isolation: isolate;
+      }
+
+      .carousel-track {
+        display: flex;
+        width: 100%;
+        transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        will-change: transform;
+        height: 100%;
+      }
+
+      .carousel-slide {
+        flex: 0 0 100%;
+        height: 100%;
+        position: relative;
+      }
+
+      .carousel-slide img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        pointer-events: none;
+      }
+
+      .carousel-control {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: none;
+        background: #ffffff;
+        color: var(--purple-600);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 12px 24px rgba(31, 35, 53, 0.16);
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        z-index: 2;
+      }
+
+      .carousel-control:hover {
+        transform: translateY(-50%) scale(1.05);
+        box-shadow: 0 16px 32px rgba(31, 35, 53, 0.18);
+      }
+
+      .carousel-control:focus-visible {
+        outline: 2px solid var(--purple-600);
+        outline-offset: 2px;
+      }
+
+      .carousel-control[data-carousel-prev] {
+        left: 24px;
+      }
+
+      .carousel-control[data-carousel-next] {
+        right: 24px;
+      }
+
+      .carousel-control svg {
+        width: 18px;
+        height: 18px;
+        fill: currentColor;
+      }
+
+      .carousel-dots {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: inline-flex;
+        gap: 12px;
+        padding: 10px 18px;
+        background: rgba(255, 255, 255, 0.88);
+        border-radius: 999px;
+        box-shadow: 0 12px 24px rgba(31, 35, 53, 0.12);
+        z-index: 1;
+      }
+
+      .carousel-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        border: none;
+        background: var(--gray-200);
+        cursor: pointer;
+        transition: width 0.2s ease, background 0.2s ease;
+      }
+
+      .carousel-dot.is-active {
+        width: 28px;
         background: var(--purple-600);
       }
 
@@ -541,6 +708,27 @@
           justify-content: center;
           width: 100%;
         }
+
+        .carousel {
+          aspect-ratio: 4 / 3;
+        }
+
+        .carousel-control[data-carousel-prev] {
+          left: 16px;
+        }
+
+        .carousel-control[data-carousel-next] {
+          right: 16px;
+        }
+
+        .carousel-dot {
+          width: 8px;
+          height: 8px;
+        }
+
+        .carousel-dot.is-active {
+          width: 20px;
+        }
       }
 
       @media (max-width: 540px) {
@@ -559,7 +747,12 @@
   <body>
     <div class="page">
       <header class="brand">
-        <span class="pixel-logo">PIXEL</span>
+        <img
+          src="imgs/png/logo_pixel.png"
+          alt="Pixel logo"
+          width="auto"
+          height="60"
+          class="pixel-logo"/>
       </header>
 
       <div class="module-stack">
@@ -690,28 +883,82 @@
                 <ul>
                   <li>We ask more questions.</li>
                   <li>We offer strategic insight, not just execution.</li>
-                  <li>We bring human understanding into the creative process.</li>
-                </ul>
-                <p>
-                  Our goal is to express brands beautifully while helping them
-                  evolve with integrity, purpose, and clarity.
-                </p>
-              </div>
-              <div class="carousel">
+              <li>We bring human understanding into the creative process.</li>
+            </ul>
+            <p>
+              Our goal is to express brands beautifully while helping them
+              evolve with integrity, purpose, and clarity.
+            </p>
+          </div>
+          <div class="carousel" data-carousel>
+            <button
+              class="carousel-control"
+              type="button"
+              aria-label="Slide anterior"
+              data-carousel-prev
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
+              </svg>
+            </button>
+            <div class="carousel-track">
+              <div class="carousel-slide is-active">
                 <img
-                  src="https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=900&q=80"
+                  src="imgs/jpg/team_pixel.jpg"
                   alt="Pixel team celebrating together outdoors"
                   loading="lazy"
                 />
-                <div class="thumbs">
-                  <span class="is-active"></span>
-                  <span></span>
-                  <span></span>
-                </div>
+              </div>
+              <div class="carousel-slide">
+                <img
+                  src="https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=900&q=80"
+                  alt="Students smiling outdoors"
+                  loading="lazy"
+                />
+              </div>
+              <div class="carousel-slide">
+                <img
+                  src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80"
+                  alt="Creative team collaborating around laptops"
+                  loading="lazy"
+                />
               </div>
             </div>
+            <button
+              class="carousel-control"
+              type="button"
+              aria-label="Siguiente slide"
+              data-carousel-next
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8.59 16.59 10 18l6-6-6-6-1.41 1.41L13.17 12z"></path>
+              </svg>
+            </button>
+            <div class="carousel-dots" role="tablist" aria-label="Navegación de slides">
+              <button
+                class="carousel-dot is-active"
+                type="button"
+                aria-label="Ir al slide 1"
+                data-carousel-dot="0"
+                aria-current="true"
+              ></button>
+              <button
+                class="carousel-dot"
+                type="button"
+                aria-label="Ir al slide 2"
+                data-carousel-dot="1"
+              ></button>
+              <button
+                class="carousel-dot"
+                type="button"
+                aria-label="Ir al slide 3"
+                data-carousel-dot="2"
+              ></button>
+            </div>
           </div>
-        </section>
+        </div>
+      </div>
+    </section>
 
         <section id="learn-more" class="module-section" data-step="5">
           <div class="section-scroll">
@@ -719,7 +966,7 @@
               <div class="section-copy">
                 <h2>Still Curious? Learn More!</h2>
                 <div class="card-stack">
-                  <a class="card" href="https://wearepixel.org" target="_blank">
+                  <a class="card" href="https://www.mesofoundation.org/pixel/" target="_blank">
                     Pixel Website
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                       <path
@@ -729,7 +976,7 @@
                   </a>
                   <a
                     class="card"
-                    href="https://mesofoundation.org"
+                    href="https://www.mesofoundation.org/blog/"
                     target="_blank"
                     rel="noopener"
                   >
@@ -740,7 +987,7 @@
                       ></path>
                     </svg>
                   </a>
-                  <a class="card" href="#" target="_blank">
+                  <a class="card" href="https://www.mesofoundation.org/blog/" target="_blank">
                     About Meso
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                       <path
@@ -748,7 +995,7 @@
                       ></path>
                     </svg>
                   </a>
-                  <a class="card" href="#" target="_blank">
+                  <a class="card" href="https://www.mesofoundation.org/our-journey/" target="_blank">
                     Redmond Experience
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                       <path
@@ -1001,6 +1248,79 @@
         } else if (typeof prefersReducedMotion.addListener === "function") {
           prefersReducedMotion.addListener(updateMotionPreference);
         }
+
+        const initCarousel = (carousel) => {
+          const track = carousel.querySelector(".carousel-track");
+          if (!track) return;
+
+          const slides = Array.from(track.querySelectorAll(".carousel-slide"));
+          if (slides.length <= 1) return;
+
+          const prevButton = carousel.querySelector("[data-carousel-prev]");
+          const nextButton = carousel.querySelector("[data-carousel-next]");
+          const dots = Array.from(
+            carousel.querySelectorAll("[data-carousel-dot]")
+          );
+
+          let activeIndex = slides.findIndex((slide) =>
+            slide.classList.contains("is-active")
+          );
+          if (activeIndex < 0) activeIndex = 0;
+
+          const updateUI = (index) => {
+            slides.forEach((slide, slideIndex) => {
+              slide.classList.toggle("is-active", slideIndex === index);
+            });
+
+            dots.forEach((dot, dotIndex) => {
+              const isActive = dotIndex === index;
+              dot.classList.toggle("is-active", isActive);
+              if (isActive) {
+                dot.setAttribute("aria-current", "true");
+              } else {
+                dot.removeAttribute("aria-current");
+              }
+            });
+          };
+
+          const showSlide = (index) => {
+            const total = slides.length;
+            const nextIndex =
+              ((index % total) + total) % total;
+            activeIndex = nextIndex;
+
+            if (reduceMotion) {
+              track.style.transitionDuration = "0s";
+            } else {
+              track.style.transitionDuration = "";
+            }
+            track.style.transform = `translateX(-${nextIndex * 100}%)`;
+            updateUI(nextIndex);
+          };
+
+          prevButton?.addEventListener("click", () => {
+            showSlide(activeIndex - 1);
+          });
+
+          nextButton?.addEventListener("click", () => {
+            showSlide(activeIndex + 1);
+          });
+
+          dots.forEach((dot) => {
+            dot.addEventListener("click", () => {
+              const index = Number(dot.dataset.carouselDot);
+              if (Number.isFinite(index)) {
+                showSlide(index);
+              }
+            });
+          });
+
+          showSlide(activeIndex);
+        };
+
+        document
+          .querySelectorAll("[data-carousel]")
+          .forEach((carousel) => initCarousel(carousel));
 
         const showStep = (
           step,
