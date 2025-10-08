@@ -57,7 +57,7 @@
         min-height: 400px;
         padding-bottom: 32px;
         width: 100%;
-        max-width: 1100px;
+        /* max-width: 1100px; */
         margin: 0 auto;
       }
 
@@ -118,6 +118,16 @@
         pointer-events: auto;
         transform: translateX(0);
         z-index: 1;
+      }
+
+      #introduction {
+        background-image:
+          url("imgs/jpg/ru_pixel.jpg");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-blend-mode: normal;
+        border-radius: 28px; 
       }
 
       .module-stack[data-transition="forward"] .module-section.will-enter,
@@ -774,13 +784,13 @@
         >
           <div class="section-scroll">
             <div class="section-content">
-              <div class="section-copy">
+              <div class="section-copy" style="margin-top: 40px;">
                 <div class="tag-list">
-                  <span class="tag">Design</span>
-                  <span>8 min read</span>
+                  <span class="tag">Brand</span>
+                  <span style="color: #ffffff;">8 min read</span>
                 </div>
-                <h1>Welcome to Pixel</h1>
-                <p>
+                <h1 style="color: #ffffff;">Welcome to Pixel</h1>
+                <p style="color: #ffffff;">
                   We’ve learned that collaboration can make our teams stronger,
                   and our individual designs better. This intro module shares who
                   we are, why we do what we do, and how we bring impact to life.
@@ -789,13 +799,13 @@
                   <span>Create for Good</span>
                 </div>
               </div>
-              <div class="media-card">
+              <!-- <div class="media-card">
                 <img
                   src="imgs/png/office_day.png"
                   alt="Pixel team smiling together"
                   loading="lazy"
                 />
-              </div>
+              </div> -->
             </div>
           </div>
         </section>
