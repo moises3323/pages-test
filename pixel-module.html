@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pixel Module</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        color-scheme: light;
+        --bg-page: #f8f7fb;
+        --bg-card: #ffffff;
+        --purple-100: #ede7ff;
+        --purple-300: #b7a5ff;
+        --purple-500: #8454ff;
+        --purple-600: #6c3ef2;
+        --purple-700: #4b2dcc;
+        --gray-900: #202332;
+        --gray-700: #4f5366;
+        --gray-500: #7e849d;
+        --gray-200: #d7d9e4;
+        --shadow-lg: 0 30px 60px rgba(48, 49, 70, 0.12);
+        --shadow-sm: 0 12px 30px rgba(48, 49, 70, 0.08);
+        font-family: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont,
+          sans-serif;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg-page);
+        color: var(--gray-900);
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      .page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 56px 32px 80px;
+      }
+
+      .module-stack {
+        position: relative;
+        min-height: 600px;
+        padding-bottom: 32px;
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      header.brand {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-bottom: 40px;
+      }
+
+      header.brand span {
+        font-weight: 700;
+        font-size: 24px;
+        letter-spacing: 1px;
+      }
+
+      .pixel-logo {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--gray-900);
+      }
+
+      .pixel-logo::after {
+        content: "";
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        background: conic-gradient(
+          from 0deg,
+          #ff5a5f 0 25%,
+          #ffbe0b 25% 50%,
+          #06d6a0 50% 75%,
+          #118ab2 75% 100%
+        );
+        border-radius: 4px;
+      }
+
+      .module-section {
+        width: 100%;
+        height: 600px;
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        opacity: 0;
+        pointer-events: none;
+        overflow: hidden;
+        transform: translateX(64px);
+        transition: opacity 0.45s cubic-bezier(0.25, 0.8, 0.25, 1),
+          transform 0.45s cubic-bezier(0.25, 0.8, 0.25, 1);
+        z-index: 0;
+      }
+
+      .module-section.is-active {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateX(0);
+        z-index: 1;
+      }
+
+      .module-stack[data-transition="forward"] .module-section.will-enter,
+      .module-stack:not([data-transition]) .module-section.will-enter {
+        transform: translateX(64px);
+      }
+
+      .module-stack[data-transition="backward"] .module-section.will-enter {
+        transform: translateX(-64px);
+      }
+
+      .module-stack[data-transition="forward"] .module-section.was-active {
+        transform: translateX(-64px);
+      }
+
+      .module-stack[data-transition="backward"] .module-section.was-active {
+        transform: translateX(64px);
+      }
+
+      .module-stack[data-transition] .module-section.will-enter.is-active {
+        transform: translateX(0);
+      }
+
+      .section-header {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 32px;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 40px;
+      }
+
+      .section-content {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 48px;
+        align-items: center;
+      }
+
+      .section-scroll {
+        flex: 1;
+        overflow-y: auto;
+        padding-right: 8px;
+        padding-bottom: 24px;
+      }
+
+      .section-copy h1,
+      .section-copy h2 {
+        margin: 0 0 16px;
+        font-size: clamp(32px, 4vw, 40px);
+        line-height: 1.1;
+      }
+
+      .section-copy h2 {
+        font-size: clamp(28px, 3.5vw, 34px);
+      }
+
+      .section-copy p {
+        margin: 0 0 16px;
+        font-size: 18px;
+        line-height: 1.6;
+        color: var(--gray-700);
+      }
+
+      .section-copy ul {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--gray-700);
+        font-size: 17px;
+        line-height: 1.6;
+      }
+
+      .media-card {
+        border-radius: 28px;
+        overflow: hidden;
+        background: #151822;
+        position: relative;
+        box-shadow: var(--shadow-sm);
+        min-height: 320px;
+      }
+
+      .media-card video,
+      .media-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .media-card .play-button {
+        position: absolute;
+        inset: 50%;
+        transform: translate(-50%, -50%);
+        width: 74px;
+        height: 74px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(8px);
+        display: grid;
+        place-items: center;
+      }
+
+      .media-card .play-button::after {
+        content: "▶";
+        color: #ffffff;
+        font-size: 28px;
+        padding-left: 4px;
+      }
+
+      .tag-list {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        color: var(--gray-500);
+        margin-bottom: 16px;
+        font-size: 14px;
+      }
+
+      .tag {
+        background: var(--purple-100);
+        color: var(--purple-600);
+        border-radius: 999px;
+        padding: 6px 16px;
+        font-weight: 600;
+      }
+
+      .highlight-card {
+        border-radius: 18px;
+        padding: 18px 24px;
+        background: var(--purple-100);
+        color: var(--purple-600);
+        font-weight: 600;
+        display: inline-flex;
+        gap: 12px;
+        align-items: center;
+        box-shadow: inset 0 0 0 1px rgba(132, 84, 255, 0.3);
+      }
+
+      .quote-card {
+        background: var(--bg-card);
+        border-radius: 24px;
+        padding: 28px;
+        box-shadow: var(--shadow-sm);
+        display: grid;
+        gap: 16px;
+      }
+
+      .quote-card h3 {
+        margin: 0;
+        font-size: 22px;
+      }
+
+      .quote-card p {
+        margin: 0;
+        color: var(--gray-700);
+        line-height: 1.6;
+      }
+
+      .stack-footer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+        margin-top: 40px;
+      }
+
+      .stack-footer table-of-contents {
+        flex: 1 1 0%;
+        margin: 0;
+        min-width: 0;
+        max-width: 720px;
+      }
+
+      .stack-footer .cta-button {
+        flex-shrink: 0;
+        white-space: nowrap;
+      }
+
+      .cta-button .icon-finish {
+        display: none;
+      }
+
+      .cta-button.is-finish .icon-next {
+        display: none;
+      }
+
+      .cta-button.is-finish .icon-finish {
+        display: inline;
+      }
+
+      .cta-button {
+        background: var(--purple-600);
+        border-radius: 999px;
+        padding: 14px 28px;
+        color: #ffffff;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        transition: background 0.2s ease;
+      }
+
+      .cta-button:hover {
+        background: var(--purple-700);
+      }
+
+      .cta-button svg {
+        width: 16px;
+        height: 16px;
+        fill: currentColor;
+      }
+
+      .card-stack {
+        display: grid;
+        gap: 18px;
+      }
+
+      .card-stack .card {
+        border-radius: 20px;
+        padding: 20px 24px;
+        background: var(--bg-card);
+        box-shadow: inset 0 0 0 1px rgba(132, 84, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        font-weight: 600;
+        color: var(--gray-700);
+        text-decoration: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .card-stack .card::before {
+        content: "";
+        width: 32px;
+        height: 32px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--purple-600), var(--purple-300));
+        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M12 3l9 6v12H3V9l9-6zm0 2.18L6 9v9h12V9l-6-3.82z'/%3E%3C/svg%3E")
+          center/18px 18px no-repeat;
+      }
+
+      .card-stack .card svg {
+        width: 18px;
+        height: 18px;
+        fill: var(--purple-600);
+        flex-shrink: 0;
+      }
+
+      .card-stack .card:hover {
+        transform: translateY(-3px);
+        box-shadow: inset 0 0 0 1px rgba(132, 84, 255, 0.35),
+          0 18px 36px rgba(48, 49, 70, 0.12);
+      }
+
+      .carousel {
+        border-radius: 28px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: var(--shadow-sm);
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .carousel img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .carousel .thumbs {
+        display: flex;
+        gap: 12px;
+        padding: 0 16px 16px;
+      }
+
+      .carousel .thumbs span {
+        width: 10px;
+        height: 10px;
+        background: var(--gray-200);
+        border-radius: 999px;
+      }
+
+      .carousel .thumbs span:first-child {
+        width: 32px;
+        background: var(--purple-600);
+      }
+
+      .learn-more-gallery {
+        display: grid;
+        gap: 16px;
+      }
+
+      .learn-more-gallery img {
+        width: 100%;
+        border-radius: 28px;
+        box-shadow: var(--shadow-sm);
+        object-fit: cover;
+      }
+
+      table-of-contents {
+        display: block;
+        width: 100%;
+        margin: 0;
+      }
+
+      table-of-contents .toc {
+        background: var(--bg-card);
+        border-radius: 28px;
+        padding: 24px;
+        box-shadow: var(--shadow-sm);
+        display: grid;
+        gap: 18px;
+      }
+
+      .toc-title {
+        font-weight: 700;
+        color: var(--purple-600);
+        font-size: 16px;
+      }
+
+      .toc-items {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+      }
+
+      .toc-item {
+        background: transparent;
+        border: none;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--gray-500);
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: color 0.2s ease;
+      }
+
+      .toc-item:hover {
+        color: var(--purple-600);
+      }
+
+      .toc-item.is-active {
+        color: var(--purple-600);
+      }
+
+      .toc-item.is-active .toc-arrow {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .toc-arrow {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--purple-100);
+        color: var(--purple-600);
+        font-size: 14px;
+        opacity: 0;
+        transform: translateX(-6px);
+        transition: all 0.2s ease;
+      }
+
+      .toc-progress {
+        height: 6px;
+        background: #eceef7;
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .toc-progress span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--purple-500), var(--purple-600));
+        transition: width 0.3s ease;
+      }
+
+      @media (max-width: 1024px) {
+        .section-content {
+          grid-template-columns: 1fr;
+        }
+
+        .media-card {
+          order: -1;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .page {
+          padding: 32px 20px 64px;
+        }
+
+        .module-section {
+          padding: 32px 24px;
+        }
+
+        .section-scroll {
+          padding-right: 0;
+        }
+
+        .stack-footer {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .stack-footer .cta-button {
+          justify-content: center;
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 540px) {
+        .section-copy h1,
+        .section-copy h2 {
+          font-size: clamp(28px, 7vw, 32px);
+        }
+
+        .section-copy p,
+        .section-copy ul {
+          font-size: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="brand">
+        <span class="pixel-logo">PIXEL</span>
+      </header>
+
+      <div class="module-stack">
+        <section
+          id="introduction"
+          class="module-section is-active"
+          data-step="1"
+        >
+          <div class="section-scroll">
+            <div class="section-content">
+              <div class="section-copy">
+                <div class="tag-list">
+                  <span class="tag">Design</span>
+                  <span>8 min read</span>
+                </div>
+                <h1>Welcome to Pixel.</h1>
+                <p>
+                  We’ve learned that collaboration can make our teams stronger,
+                  and our individual designs better. This intro module shares who
+                  we are, why we do what we do, and how we bring impact to life.
+                </p>
+                <div class="highlight-card">
+                  <span>Create for Good</span>
+                </div>
+              </div>
+              <div class="media-card">
+                <img
+                  src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=900&q=80"
+                  alt="Pixel team smiling together"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="our-what" class="module-section" data-step="2">
+          <div class="section-scroll">
+            <div class="section-content">
+              <div class="section-copy">
+                <h2>Our What</h2>
+                <p>
+                  We’re a full-service creative agency with a unique business
+                  model. Great design should do more than sell a product—it should
+                  serve people, elevate voices, and make good possible.
+                </p>
+                <p>
+                  Pixel provides high-level, end-to-end creative services. We work
+                  primarily with companies in the United States and partner
+                  organizations for the Meso Foundation in Guatemala.
+                </p>
+                <p>
+                  Every engagement blends strategy, execution, and cultural
+                  context so our partners receive meaningful, measurable impact.
+                </p>
+              </div>
+              <div class="section-copy">
+                <h2 class="sr-only">Our Revenue Model</h2>
+                <div class="card-stack">
+                  <div class="card">
+                    Donate high-level creative services to our partner foundation
+                    in Guatemala.
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M12 5l8 4.5v9L12 23l-8-4.5v-9L12 5m0-2L2 8v10l10 5.5 10-5.5V8L12 3z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="card">
+                    Support the development of education, wellness, and cultural
+                    initiatives.
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M12 2a7 7 0 017 7c0 3.5-2.57 6.43-6 6.92V21h-2v-5.08A7.001 7.001 0 0112 2m0 2a5 5 0 00-5 5c0 2.76 2 5 5 5s5-2.24 5-5a5 5 0 00-5-5z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="card">
+                    Seed social ventures committed to sustainability for Meso
+                    Foundation partners.
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M12 3a9 9 0 019 9 9 9 0 01-18 0 9 9 0 019-9m0 2a7 7 0 100 14 7 7 0 000-14m0 2l3 5h-6l3-5zm0 11.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3z"
+                      ></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="carousel">
+                  <img
+                    src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=900&q=80"
+                    alt="Pixel team members collaborating outdoors"
+                    loading="lazy"
+                  />
+                  <div class="thumbs">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="our-why" class="module-section" data-step="3">
+          <div class="section-scroll">
+            <div class="section-content">
+              <div class="media-card">
+                <img
+                  src="https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=900&q=80"
+                  alt="Video cover showing play icon"
+                  loading="lazy"
+                />
+                <div class="play-button" aria-hidden="true"></div>
+              </div>
+              <div class="section-copy">
+                <h2>Our Why</h2>
+                <p>
+                  Our motto is simple: Create for Good. We believe creativity is a
+                  powerful tool for transformation—social, cultural, and personal.
+                  Pixel was created to be a vehicle for that transformation.
+                </p>
+                <p>We are:</p>
+                <ul>
+                  <li>
+                    Creating access to education by funding and branding a K-12
+                    school in Guatemala.
+                  </li>
+                  <li>
+                    Supporting programs in the school like Indigo, a space
+                    dedicated to creativity.
+                  </li>
+                  <li>
+                    Building businesses that generate sustainability while
+                    honoring the land, culture, and dignity of the people we work
+                    with.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="different" class="module-section" data-step="4">
+          <div class="section-scroll">
+            <div class="section-content">
+              <div class="section-copy">
+                <h2>What Makes Us Different?</h2>
+                <p>
+                  We don’t just take briefs and deliver assets. Pixel embeds with
+                  teams to co-create solutions that honor the people and culture
+                  behind every project.
+                </p>
+                <p>That means:</p>
+                <ul>
+                  <li>We ask more questions.</li>
+                  <li>We offer strategic insight, not just execution.</li>
+                  <li>We bring human understanding into the creative process.</li>
+                </ul>
+                <p>
+                  Our goal is to express brands beautifully while helping them
+                  evolve with integrity, purpose, and clarity.
+                </p>
+              </div>
+              <div class="carousel">
+                <img
+                  src="https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=900&q=80"
+                  alt="Pixel team celebrating together outdoors"
+                  loading="lazy"
+                />
+                <div class="thumbs">
+                  <span class="is-active"></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="learn-more" class="module-section" data-step="5">
+          <div class="section-scroll">
+            <div class="section-content">
+              <div class="section-copy">
+                <h2>Still Curious? Learn More!</h2>
+                <div class="card-stack">
+                  <a class="card" href="https://wearepixel.org" target="_blank">
+                    Pixel Website
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3zM5 5h5V3H3v7h2V5zm0 14v-5H3v7h7v-2H5z"
+                      ></path>
+                    </svg>
+                  </a>
+                  <a
+                    class="card"
+                    href="https://mesofoundation.org"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    Meso Foundation Website
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3zM5 5h5V3H3v7h2V5zm0 14v-5H3v7h7v-2&H5z"
+                      ></path>
+                    </svg>
+                  </a>
+                  <a class="card" href="#" target="_blank">
+                    About Meso
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3zM5 5h5V3H3v7h2V5zm0 14v-5&H3v7h7v-2&H5z"
+                      ></path>
+                    </svg>
+                  </a>
+                  <a class="card" href="#" target="_blank">
+                    Redmond Experience
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3zM5 5h5V3H3v7h2V5zm0 14v-5&H3v7h7v-2&H5z"
+                      ></path>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+              <div class="learn-more-gallery">
+                <img
+                  src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80"
+                  alt="Group of kids hugging"
+                  loading="lazy"
+                />
+                <img
+                  src="https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=900&q=80"
+                  alt="Group of students smiling outdoors"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="stack-footer">
+        <table-of-contents
+          data-items='[{"label":"Introduction","target":"#introduction"},{"label":"Our What","target":"#our-what"},{"label":"Our Why","target":"#our-why"},{"label":"Different","target":"#different"},{"label":"Learn More","target":"#learn-more"}]'
+          active-index="1"
+        ></table-of-contents>
+        <a class="cta-button stack-cta" href="#our-what" data-goto="next">
+          <span class="cta-label">Continue</span>
+          <svg class="icon-next" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414 4.95-4.95z"
+            ></path>
+          </svg>
+          <svg class="icon-finish" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M9.707 16.293L5.414 12 4 13.414l5.707 5.707L20 8.828 18.586 7.414z"
+            ></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <script>
+      class TableOfContents extends HTMLElement {
+        constructor() {
+          super();
+          this.handleClick = this.handleClick.bind(this);
+        }
+
+        static get observedAttributes() {
+          return ["active-index"];
+        }
+
+        connectedCallback() {
+          this.render();
+        }
+
+        attributeChangedCallback(name, _oldValue, _newValue) {
+          if (name === "active-index" && this.isConnected) {
+            this.render();
+          }
+        }
+
+        get items() {
+          try {
+            return JSON.parse(this.dataset.items || "[]");
+          } catch (error) {
+            console.warn("Invalid Table of Contents data-items", error);
+            return [];
+          }
+        }
+
+        get activeIndex() {
+          const value = parseInt(this.getAttribute("active-index"), 10);
+          return Number.isFinite(value) && value > 0 ? value : 1;
+        }
+
+        handleClick(event) {
+          event.preventDefault();
+          const button = event.currentTarget;
+          if (!(button instanceof HTMLButtonElement)) return;
+          const targetSelector = button.getAttribute("data-target");
+          const newIndex = Number(button.getAttribute("data-index"));
+          if (!Number.isFinite(newIndex)) return;
+
+          this.setAttribute("active-index", String(newIndex));
+          this.dispatchEvent(
+            new CustomEvent("toc-change", {
+              bubbles: true,
+              detail: {
+                index: newIndex,
+                target: targetSelector,
+              },
+            })
+          );
+        }
+
+        render() {
+          this.innerHTML = "";
+          const items = this.items;
+          if (!items.length) return;
+
+          const activeIndex = Math.min(
+            Math.max(this.activeIndex, 1),
+            items.length
+          );
+          const container = document.createElement("div");
+          container.className = "toc";
+
+          const title = document.createElement("div");
+          title.className = "toc-title";
+          title.textContent = this.getAttribute("title") || "Table of contents";
+          container.appendChild(title);
+
+          const nav = document.createElement("div");
+          nav.className = "toc-items";
+
+          items.forEach((item, index) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "toc-item";
+            button.setAttribute("data-index", String(index + 1));
+            button.setAttribute("data-target", item.target);
+            button.setAttribute("aria-label", `Go to ${item.label}`);
+            button.addEventListener("click", this.handleClick);
+
+            if (index + 1 === activeIndex) {
+              button.classList.add("is-active");
+            }
+
+            const arrow = document.createElement("span");
+            arrow.className = "toc-arrow";
+            arrow.setAttribute("aria-hidden", "true");
+            arrow.textContent = "→";
+
+            const label = document.createElement("span");
+            label.textContent = item.label;
+
+            button.append(arrow, label);
+            nav.appendChild(button);
+          });
+
+          container.appendChild(nav);
+
+          const progress = document.createElement("div");
+          progress.className = "toc-progress";
+
+          const progressBar = document.createElement("span");
+          const denominator = Math.max(items.length - 1, 1);
+          const percentage =
+            items.length === 1
+              ? 100
+              : ((activeIndex - 1) / denominator) * 100;
+          progressBar.style.width = `${percentage}%`;
+          progress.appendChild(progressBar);
+
+          container.appendChild(progress);
+          this.appendChild(container);
+        }
+      }
+
+      customElements.define("table-of-contents", TableOfContents);
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const stack = document.querySelector(".module-stack");
+        if (!stack) return;
+
+        const sections = Array.from(
+          stack.querySelectorAll(".module-section")
+        );
+        if (!sections.length) return;
+
+        const tocElements = Array.from(
+          document.querySelectorAll("table-of-contents")
+        );
+
+        const stackCTA = document.querySelector(".stack-cta");
+        const ctaLabel = stackCTA
+          ? stackCTA.querySelector(".cta-label")
+          : null;
+
+        let currentStep = 1;
+        let removePreviousListener = null;
+
+        const clampStep = (step) =>
+          Math.min(Math.max(step, 1), sections.length);
+
+        const syncTOCs = (step) => {
+          const value = String(step);
+          tocElements.forEach((toc) => {
+            if (toc.getAttribute("active-index") !== value) {
+              toc.setAttribute("active-index", value);
+            }
+          });
+        };
+
+        const updateCTA = (step) => {
+          if (!stackCTA || !sections.length) return;
+
+          const isLastStep = step >= sections.length;
+          const targetSection = isLastStep
+            ? sections[0]
+            : sections[Math.min(step, sections.length - 1)];
+
+          stackCTA.dataset.goto = isLastStep ? "start" : "next";
+          stackCTA.classList.toggle("is-finish", isLastStep);
+
+          if (ctaLabel) {
+            ctaLabel.textContent = isLastStep ? "Finish" : "Continue";
+          }
+
+          if (targetSection && targetSection.id) {
+            stackCTA.setAttribute("href", `#${targetSection.id}`);
+          } else {
+            stackCTA.removeAttribute("href");
+          }
+        };
+
+        const setImmediateState = (step) => {
+          removePreviousListener = null;
+          sections.forEach((section, index) => {
+            const isActive = index + 1 === step;
+            section.classList.toggle("is-active", isActive);
+            section.classList.remove("will-enter", "was-active");
+            section.setAttribute("aria-hidden", isActive ? "false" : "true");
+            section.toggleAttribute("inert", !isActive);
+          });
+          stack.dataset.transition = "forward";
+          syncTOCs(step);
+          updateCTA(step);
+        };
+
+        const scrollToStack = () => {
+          const top =
+            stack.getBoundingClientRect().top + window.scrollY - 24;
+          window.scrollTo({
+            top: Math.max(top, 0),
+            behavior: reduceMotion ? "auto" : "smooth",
+          });
+        };
+
+        const prefersReducedMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        );
+        let reduceMotion = prefersReducedMotion.matches;
+        const updateMotionPreference = (event) => {
+          reduceMotion = event.matches;
+        };
+        if (typeof prefersReducedMotion.addEventListener === "function") {
+          prefersReducedMotion.addEventListener("change", updateMotionPreference);
+        } else if (typeof prefersReducedMotion.addListener === "function") {
+          prefersReducedMotion.addListener(updateMotionPreference);
+        }
+
+        const showStep = (
+          step,
+          { scroll = true, animate = true } = {}
+        ) => {
+          const nextStep = clampStep(step);
+          if (nextStep === currentStep) {
+            if (scroll) scrollToStack();
+            return;
+          }
+
+          if (removePreviousListener) {
+            removePreviousListener();
+            removePreviousListener = null;
+          }
+
+          const currentIndex = currentStep - 1;
+          const nextIndex = nextStep - 1;
+          const outgoing = sections[currentIndex];
+          const incoming = sections[nextIndex];
+
+          sections.forEach((section) => {
+            section.classList.remove("will-enter", "was-active");
+          });
+
+          const shouldAnimate = animate && !reduceMotion;
+          const direction = nextStep > currentStep ? "forward" : "backward";
+          stack.dataset.transition = direction;
+
+          if (!shouldAnimate) {
+            currentStep = nextStep;
+            setImmediateState(currentStep);
+            if (scroll) scrollToStack();
+            return;
+          }
+
+          if (incoming) {
+            incoming.classList.add("will-enter");
+            incoming.removeAttribute("inert");
+            incoming.setAttribute("aria-hidden", "false");
+          }
+
+          if (outgoing && outgoing !== incoming) {
+            outgoing.classList.add("was-active");
+          }
+
+          requestAnimationFrame(() => {
+            if (outgoing && outgoing !== incoming) {
+              outgoing.classList.remove("is-active");
+              outgoing.setAttribute("aria-hidden", "true");
+              outgoing.setAttribute("inert", "");
+            }
+
+            if (incoming) {
+              incoming.classList.add("is-active");
+            }
+          });
+
+          if (incoming) {
+            const cleanup = () => {
+              incoming.classList.remove("will-enter");
+              if (outgoing && outgoing !== incoming) {
+                outgoing.classList.remove("was-active");
+              }
+              removePreviousListener = null;
+            };
+
+            const handleTransitionEnd = (event) => {
+              if (
+                event.target !== incoming ||
+                event.propertyName !== "transform"
+              ) {
+                return;
+              }
+              incoming.removeEventListener("transitionend", handleTransitionEnd);
+              cleanup();
+            };
+
+            incoming.addEventListener("transitionend", handleTransitionEnd);
+            removePreviousListener = () => {
+              incoming.removeEventListener("transitionend", handleTransitionEnd);
+              cleanup();
+            };
+          }
+
+          currentStep = nextStep;
+          updateCTA(currentStep);
+          syncTOCs(currentStep);
+
+          if (scroll) {
+            scrollToStack();
+          }
+        };
+
+        setImmediateState(currentStep);
+
+        if (stackCTA) {
+          stackCTA.addEventListener("click", (event) => {
+            event.preventDefault();
+            const action = stackCTA.dataset.goto;
+            if (action === "next") {
+              showStep(currentStep + 1);
+            } else if (action === "start") {
+              showStep(1);
+            }
+          });
+        }
+
+        document.addEventListener("toc-change", (event) => {
+          const toc = event.target;
+          if (!(toc instanceof TableOfContents)) return;
+          if (!tocElements.includes(toc)) return;
+
+          const { index } = event.detail || {};
+          if (!index) return;
+          showStep(index);
+        });
+
+        const refreshOnResize = () => {
+          setImmediateState(currentStep);
+        };
+
+        window.addEventListener("resize", refreshOnResize);
+      });
+    </script>
+  </body>
+</html>
