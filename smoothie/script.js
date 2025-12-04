@@ -1,0 +1,428 @@
+const ingredients = [
+  { id: "peanut", name: "Peanut Butter", measure: "2 tbsp", icon: "🥜" },
+  { id: "almond", name: "Almond Butter", measure: "2 tbsp", icon: "🌰" },
+  { id: "maple", name: "Maple Syrup", measure: "2 tbsp", icon: "🍁" },
+  { id: "flax", name: "Flax Seeds", measure: "2 tbsp", icon: "🌾" },
+  { id: "strawberries", name: "Strawberries", measure: "3/4 cup", icon: "🍓" },
+  { id: "milk", name: "Milk", measure: "4 oz", icon: "🥛" },
+  { id: "ice", name: "Ice", measure: "1 cup", icon: "🧊" },
+];
+
+const correctOrder = ingredients.map(({ id }) => id);
+
+const LAYER_HEIGHT = 24;
+const BLEND_DURATION_MS = 5000;
+
+const blendContent = document.querySelector(".blend-content");
+const dropzone = document.getElementById("dropzone");
+const jarInner = document.querySelector(".jar-inner");
+const dropText = document.querySelector(".drop-text");
+const dial = document.querySelector(".dial");
+const carousel = document.getElementById("carousel");
+const resetBtn = document.getElementById("reset-btn");
+const prevBtn = document.querySelector(".carousel-btn.prev");
+const nextBtn = document.querySelector(".carousel-btn.next");
+let isBlending = false;
+let addedIngredients = [];
+let audioCtx;
+let blendTimeoutId = null;
+let activeOscillator = null;
+let floatingEmojis = [];
+const ingredientColors = {
+  peanut: [198, 146, 86],
+  almond: [210, 170, 120],
+  maple: [230, 140, 70],
+  flax: [185, 160, 90],
+  strawberries: [255, 95, 130],
+  milk: [245, 245, 255],
+  ice: [200, 230, 255],
+};
+
+function createIngredientCard({ id, name, measure, icon }) {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.draggable = true;
+  card.dataset.id = id;
+
+  const iconEl = document.createElement("div");
+  iconEl.className = "icon";
+  iconEl.textContent = icon;
+
+  const title = document.createElement("h3");
+  title.textContent = name;
+
+  card.append(iconEl, title);
+
+  if (measure) {
+    const measureEl = document.createElement("p");
+    measureEl.textContent = measure;
+    card.append(measureEl);
+  }
+
+  card.addEventListener("dragstart", (e) => {
+    e.dataTransfer.setData("text/plain", id);
+    e.dataTransfer.setData("emoji", icon);
+  });
+
+  return card;
+}
+
+function renderIngredientCards() {
+  carousel.innerHTML = "";
+  ingredients.forEach((ingredient) => {
+    const card = createIngredientCard(ingredient);
+    carousel.appendChild(card);
+  });
+}
+
+renderIngredientCards();
+
+function addLayer(id) {
+  const layer = document.createElement("div");
+  layer.className = `layer ${id}`;
+  layer.style.height = "0px";
+  blendContent.appendChild(layer);
+
+  requestAnimationFrame(() => {
+    layer.style.height = `${LAYER_HEIGHT}px`;
+    layer.style.transform = `translateY(${Math.random() * 4}px) scaleX(${
+      0.96 + Math.random() * 0.07
+    })`;
+  });
+}
+
+function addFloatingEmoji(emoji) {
+  const float = document.createElement("div");
+  float.classList.add("ingredient-inside");
+  float.textContent = emoji;
+
+  float.style.left = `${12 + Math.random() * 72}%`;
+  float.style.bottom = `${12 + Math.random() * 60}%`;
+
+  blendContent.appendChild(float);
+  floatingEmojis.push(float);
+}
+
+dropzone.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  dropzone.classList.add("dragover");
+});
+
+dropzone.addEventListener("dragleave", () => {
+  dropzone.classList.remove("dragover");
+});
+
+dropzone.addEventListener("drop", (e) => {
+  e.preventDefault();
+  dropzone.classList.remove("dragover");
+
+  const ingredient = e.dataTransfer.getData("text/plain");
+  const emoji = e.dataTransfer.getData("emoji");
+
+  if (!ingredient || addedIngredients.includes(ingredient)) {
+    alert("That ingredient is already inside or not valid.");
+    return;
+  }
+
+  const card = document.querySelector(`[data-id="${ingredient}"]`);
+  card.classList.add("used");
+  card.setAttribute("draggable", "false");
+
+  flyToBlender(emoji, e);
+  addLayer(ingredient);
+  addFloatingEmoji(emoji);
+
+  addedIngredients.push(ingredient);
+
+  const count = addedIngredients.length;
+  if (count === correctOrder.length) {
+    dropzone.classList.add("ready");
+    dropText.textContent = "Tap the button to blend";
+  } else {
+    dropText.textContent = `Added ${count}/${correctOrder.length}`;
+  }
+});
+
+function flyToBlender(emoji, dropEvent) {
+  const fly = document.createElement("div");
+  fly.classList.add("fly-emoji");
+  fly.textContent = emoji;
+  document.body.appendChild(fly);
+
+  const jarRect = jarInner.getBoundingClientRect();
+  const startX = dropEvent.clientX || 0;
+  const startY = dropEvent.clientY || 0;
+
+  const tx = jarRect.left + jarRect.width / 2 - startX;
+  const ty = jarRect.top + jarRect.height * 0.45 - startY;
+
+  fly.style.left = `${startX}px`;
+  fly.style.top = `${startY}px`;
+  fly.style.setProperty("--tx", `${tx}px`);
+  fly.style.setProperty("--ty", `${ty}px`);
+
+  setTimeout(() => fly.remove(), 700);
+}
+
+function startBlend() {
+  if (isBlending) return;
+  isBlending = true;
+  const isComplete = addedIngredients.length === correctOrder.length;
+  dropText.textContent = isComplete
+    ? "Blending..."
+    : "Blending (ingredients missing)...";
+  dropzone.classList.add("blending");
+  playBlendSound(BLEND_DURATION_MS);
+  renderSmoothieFill(false, { durationMs: BLEND_DURATION_MS, reveal: true });
+  fadeOutFloatingEmojis();
+  fadeOutLayers(BLEND_DURATION_MS);
+
+  if (blendTimeoutId) clearTimeout(blendTimeoutId);
+  blendTimeoutId = setTimeout(() => {
+    dropzone.classList.remove("blending");
+    const isCorrect = isSequenceCorrect();
+    renderSmoothieFill(isComplete && isCorrect, {
+      durationMs: 900,
+      reveal: false,
+    });
+
+    if (isComplete && isCorrect) {
+      dropText.textContent = "Smoothie completed! 🥤✨";
+      launchConfetti();
+    } else {
+      let message = "Check: ";
+      if (!isComplete) message += "some ingredients are missing. ";
+      if (!isCorrect) message += "the order is incorrect.";
+      const summary = message.trim();
+      dropText.textContent = summary;
+      alert(summary);
+    }
+    isBlending = false;
+    blendTimeoutId = null;
+  }, BLEND_DURATION_MS);
+}
+
+dial.addEventListener("click", startBlend);
+resetBtn.addEventListener("click", resetGame);
+
+function scrollCarousel(direction) {
+  const cardWidth = 170; // card width + gap
+  carousel.scrollBy({ left: direction * cardWidth, behavior: "smooth" });
+}
+
+prevBtn.addEventListener("click", () => scrollCarousel(-1));
+nextBtn.addEventListener("click", () => scrollCarousel(1));
+
+function isSequenceCorrect() {
+  if (addedIngredients.length !== correctOrder.length) return false;
+  return addedIngredients.every((id, idx) => id === correctOrder[idx]);
+}
+
+function playBlendSound(durationMs = 5000) {
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return;
+  if (!audioCtx) audioCtx = new AudioCtx();
+  if (audioCtx.state === "suspended") audioCtx.resume();
+
+  if (activeOscillator) {
+    try {
+      activeOscillator.stop();
+    } catch {}
+    activeOscillator = null;
+  }
+
+  const oscillator = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  oscillator.type = "sawtooth";
+  oscillator.frequency.setValueAtTime(85, audioCtx.currentTime);
+
+  gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.12, audioCtx.currentTime + 0.15);
+  gain.gain.exponentialRampToValueAtTime(
+    0.05,
+    audioCtx.currentTime + durationMs / 1000 - 0.2
+  );
+  gain.gain.linearRampToValueAtTime(
+    0.0001,
+    audioCtx.currentTime + durationMs / 1000
+  );
+
+  oscillator.connect(gain).connect(audioCtx.destination);
+  oscillator.start();
+  oscillator.stop(audioCtx.currentTime + durationMs / 1000);
+
+  activeOscillator = oscillator;
+  oscillator.onended = () => {
+    if (activeOscillator === oscillator) activeOscillator = null;
+  };
+}
+
+function resetGame() {
+  if (blendTimeoutId) {
+    clearTimeout(blendTimeoutId);
+    blendTimeoutId = null;
+  }
+  if (activeOscillator) {
+    try {
+      activeOscillator.stop();
+    } catch {}
+    activeOscillator = null;
+  }
+
+  isBlending = false;
+  addedIngredients = [];
+  dropzone.classList.remove("blending", "ready");
+  dropText.textContent = "⬇ Drop here ⬇";
+  blendContent.innerHTML = "";
+  floatingEmojis = [];
+
+  document.querySelectorAll(".card").forEach((card) => {
+    card.classList.remove("used");
+    card.setAttribute("draggable", "true");
+  });
+}
+
+function fadeOutFloatingEmojis() {
+  floatingEmojis.forEach((node, idx) => {
+    const delay = idx * 120;
+    setTimeout(() => node.classList.add("fade-out"), delay);
+    setTimeout(() => node.remove(), delay + 1400);
+  });
+  floatingEmojis = [];
+}
+
+function renderSmoothieFill(
+  isCompleted = false,
+  { durationMs = 800, reveal = false } = {}
+) {
+  let fill = blendContent.querySelector(".smoothie-fill");
+  if (!fill) {
+    fill = document.createElement("div");
+    fill.className = "smoothie-fill";
+    blendContent.prepend(fill);
+  }
+  fill.classList.toggle("completed", isCompleted);
+
+  let rgb = getBlendColor(addedIngredients);
+  const targetTone = isCompleted ? [255, 130, 170] : [255, 140, 170];
+  rgb = blendTowards(rgb, targetTone, isCompleted ? 0.55 : 0.25);
+
+  const top = adjustColor(rgb, 22);
+  const bottom = adjustColor(rgb, -28);
+  fill.style.setProperty("--smoothie-top", toRgba(top, 0.94));
+  fill.style.setProperty("--smoothie-bottom", toRgba(bottom, 0.98));
+
+  const targetHeight = Math.max(
+    40,
+    Math.min(190, (addedIngredients.length / correctOrder.length) * 190)
+  );
+  const heightDuration = Math.min(durationMs, 1200);
+  fill.style.transition = `height ${heightDuration}ms ease, background 0.6s ease, opacity ${durationMs}ms ease`;
+
+  if (reveal) {
+    fill.style.opacity = "0";
+    requestAnimationFrame(() => {
+      fill.style.height = `${targetHeight}px`;
+      fill.style.opacity = "1";
+    });
+  } else {
+    fill.style.opacity = "1";
+    requestAnimationFrame(() => {
+      fill.style.height = `${targetHeight}px`;
+    });
+  }
+}
+
+function launchConfetti() {
+  const colors = [
+    "#f7b267",
+    "#f25f5c",
+    "#70c1b3",
+    "#ffe066",
+    "#247ba0",
+    "#b5179e",
+  ];
+  const total = 220;
+  const duration = 6 + Math.random() * 2;
+  const words = ["Congrats!"];
+
+  for (let i = 0; i < total; i++) {
+    const piece = document.createElement("div");
+    piece.className = "confetti";
+    const color = colors[i % colors.length];
+    const left = Math.random() * 100;
+    const delay = Math.random() * 0.3;
+    const travel = (Math.random() - 0.5) * 60; // x drift
+    const start = -8 - Math.random() * 70; // vh
+
+    piece.style.background = color;
+    piece.style.left = `${left}vw`;
+    piece.style.setProperty("--duration", `${duration + Math.random()}s`);
+    piece.style.setProperty("--x", `${travel}vw`);
+    piece.style.setProperty("--start", `${start}vh`);
+    piece.style.animationDelay = `${delay}s`;
+
+    document.body.appendChild(piece);
+    setTimeout(() => piece.remove(), (duration + 3) * 1000);
+  }
+
+  words.forEach((text, idx) => {
+    const word = document.createElement("div");
+    word.className = "confetti-word";
+    word.textContent = text;
+    const left = 50;
+    const wordDuration = duration + 1 + Math.random();
+    const delay = idx * 0.1;
+    const travel = 0;
+    const start = -12 - Math.random() * 10;
+
+    word.style.left = `${left}vw`;
+    word.style.setProperty("--duration", `${wordDuration}s`);
+    word.style.setProperty("--x", `${travel}vw`);
+    word.style.setProperty("--start", `${start}vh`);
+    word.style.animationDelay = `${delay}s`;
+
+    document.body.appendChild(word);
+    setTimeout(() => word.remove(), (wordDuration + 2) * 1000);
+  });
+}
+
+function getBlendColor(ids) {
+  if (!ids.length) return [248, 201, 212];
+  const total = ids.reduce(
+    (acc, id) => {
+      const c = ingredientColors[id] || [220, 200, 200];
+      acc[0] += c[0];
+      acc[1] += c[1];
+      acc[2] += c[2];
+      return acc;
+    },
+    [0, 0, 0]
+  );
+  return total.map((v) => v / ids.length);
+}
+
+function adjustColor(rgb, delta) {
+  return rgb.map((v) => Math.min(255, Math.max(0, v + delta)));
+}
+
+function toRgba(rgb, alpha = 1) {
+  const [r, g, b] = rgb.map(Math.round);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function blendTowards(base, target, weight = 0.3) {
+  const w = Math.min(1, Math.max(0, weight));
+  return base.map((v, i) => v * (1 - w) + target[i] * w);
+}
+
+function fadeOutLayers(durationMs = 800) {
+  const layers = Array.from(blendContent.querySelectorAll(".layer"));
+  const trans = `opacity ${durationMs}ms ease, filter ${durationMs}ms ease`;
+  layers.forEach((layer) => {
+    layer.style.transition = trans;
+    layer.classList.add("fade-out");
+  });
+  setTimeout(() => layers.forEach((layer) => layer.remove()), durationMs + 180);
+}

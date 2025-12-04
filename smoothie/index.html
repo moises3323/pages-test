@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Build Your Smoothie</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <div class="container">
+
+        <header>
+            <h1>🥤 Build Your Smoothie</h1>
+            <h2>Strawberry Flax (16oz)</h2>
+        </header>
+
+        <main>
+            <section class="ingredients-carousel">
+                <div class="carousel-header">
+                    <button class="carousel-btn prev" aria-label="Previous">◀</button>
+                    <p>Drag to the blender in the right order.</p>
+                    <button class="carousel-btn next" aria-label="Next">▶</button>
+                </div>
+                <div class="reset-row">
+                    <button id="reset-btn" class="reset-btn" type="button">Restart game</button>
+                </div>
+                <div class="carousel-track" id="carousel"></div>
+            </section>
+
+            <section class="blender-zone">
+                <div id="dropzone" class="blender">
+                    <p class="drop-text">⬇ Drop here ⬇</p>
+                    <div class="lid">
+                        <div class="lid-button"></div>
+                    </div>
+
+                    <div class="jar">
+                        <div class="jar-handle"></div>
+                        <div class="jar-inner">
+                            <div class="jar-glow"></div>
+                            <div class="blades"></div>
+                            <div class="blend-content"></div>
+                            <div class="swirl"></div>
+                        </div>
+                        <div class="jar-neck"></div>
+                    </div>
+
+                    <div class="base">
+                        <div class="base-line"></div>
+                        <div class="status-light"></div>
+                        <button class="dial" type="button" aria-label="Start blender">
+                            <div class="dial-center"></div>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
