@@ -17,7 +17,7 @@ const blendContent = document.querySelector(".blend-content");
 const dropzone = document.getElementById("dropzone");
 const jarInner = document.querySelector(".jar-inner");
 const dropText = document.querySelector(".drop-text");
-const dial = document.querySelector(".dial");
+const startBtn = document.getElementById("start-btn");
 const carousel = document.getElementById("carousel");
 const resetBtn = document.getElementById("reset-btn");
 const prevBtn = document.querySelector(".carousel-btn.prev");
@@ -202,7 +202,7 @@ function startBlend() {
   }, BLEND_DURATION_MS);
 }
 
-dial.addEventListener("click", startBlend);
+startBtn?.addEventListener("click", startBlend);
 resetBtn.addEventListener("click", resetGame);
 
 function scrollCarousel(direction) {
@@ -315,7 +315,7 @@ function renderSmoothieFill(
 
   const targetHeight = Math.max(
     40,
-    Math.min(190, (addedIngredients.length / correctOrder.length) * 190)
+    Math.min(220, (addedIngredients.length / correctOrder.length) * 220)
   );
   const heightDuration = Math.min(durationMs, 1200);
   fill.style.transition = `height ${heightDuration}ms ease, background 0.6s ease, opacity ${durationMs}ms ease`;
