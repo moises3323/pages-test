@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CTA Embed</title>
+
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background: transparent;
+    font-family: sans-serif;
+  }
+
+  /* Imagen con efecto hover */
+  .cta-img {
+    transition: transform 0.3s ease;
+    cursor: pointer;
+  }
+
+  .cta-img:hover {
+    transform: scale(1.07);
+  }
+</style>
+
+</head>
+<body>
+
+<script>
+  // Obtener parámetros de la URL
+  const params = new URLSearchParams(window.location.search);
+
+  const img   = params.get("img");
+  const link  = params.get("link");
+  const width = params.get("width") || "75"; // por defecto 75%
+
+  // Validación mínima
+  if (!img)  console.warn("CTA Embed: falta parámetro 'img'");
+  if (!link) console.warn("CTA Embed: falta parámetro 'link'");
+
+  // Inyectar el CTA
+  document.write(`
+    <a href="${link}" target="_blank" rel="noopener">
+      <img 
+        src="${img}"
+        class="cta-img"
+        style="width:${width}%; border-radius:12px;"
+      >
+    </a>
+  `);
+</script>
+
+</body>
+</html>
