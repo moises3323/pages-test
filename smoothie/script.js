@@ -1,14 +1,20 @@
 const ingredients = [
-  { id: "peanut", name: "Peanut Butter", measure: "2 tbsp", icon: "🥜" },
-  { id: "almond", name: "Almond Butter", measure: "2 tbsp", icon: "🌰" },
-  { id: "maple", name: "Maple Syrup", measure: "2 tbsp", icon: "🍁" },
-  { id: "flax", name: "Flax Seeds", measure: "2 tbsp", icon: "🌾" },
-  { id: "strawberries", name: "Strawberries", measure: "3/4 cup", icon: "🍓" },
-  { id: "milk", name: "Milk", measure: "4 oz", icon: "🥛" },
-  { id: "ice", name: "Ice", measure: "1 cup", icon: "🧊" },
+  { id: "peanut", name: "Peanut Butter", measure: "2 tbsp", icon: "🥜", required: false, order: 1 },
+  { id: "almond", name: "Almond Butter", measure: "2 tbsp", icon: "🌰", required: true, order: 2 },
+  { id: "maple", name: "Maple Syrup", measure: "2 tbsp", icon: "🍁", required: true, order: 3 },
+  { id: "flax", name: "Flax Seeds", measure: "2 tbsp", icon: "🌾", required: true, order: 4 },
+  { id: "strawberries", name: "Strawberries", measure: "3/4 cup", icon: "🍓", required: true, order: 5 },
+  { id: "milk", name: "Milk", measure: "4 oz", icon: "🥛", required: true, order: 6 },
+  { id: "ice", name: "Ice", measure: "1 cup", icon: "🧊", required: true, order: 7 },
 ];
 
-const correctOrder = ingredients.map(({ id }) => id);
+const orderedIngredients = [...ingredients].sort(
+  (a, b) => (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER)
+);
+const correctOrder = orderedIngredients.map(({ id }) => id);
+const requiredIds = orderedIngredients
+  .filter(({ required }) => required !== false)
+  .map(({ id }) => id);
 
 const LAYER_HEIGHT = 24;
 const BLEND_DURATION_MS = 5000;
@@ -17,6 +23,7 @@ const blendContent = document.querySelector(".blend-content");
 const dropzone = document.getElementById("dropzone");
 const jarInner = document.querySelector(".jar-inner");
 const dropText = document.querySelector(".drop-text");
+const lid = document.querySelector(".lid");
 const startBtn = document.getElementById("start-btn");
 const carousel = document.getElementById("carousel");
 const resetBtn = document.getElementById("reset-btn");
@@ -28,6 +35,8 @@ let audioCtx;
 let blendTimeoutId = null;
 let activeOscillator = null;
 let floatingEmojis = [];
+let isLidOpen = false;
+let lidCloseTimeout = null;
 const ingredientColors = {
   peanut: [198, 146, 86],
   almond: [210, 170, 120],
@@ -69,13 +78,47 @@ function createIngredientCard({ id, name, measure, icon }) {
 
 function renderIngredientCards() {
   carousel.innerHTML = "";
-  ingredients.forEach((ingredient) => {
+  orderedIngredients.forEach((ingredient) => {
     const card = createIngredientCard(ingredient);
     carousel.appendChild(card);
   });
 }
 
 renderIngredientCards();
+
+function setLidOpen(open) {
+  if (!lid) return;
+  if (lidCloseTimeout) {
+    clearTimeout(lidCloseTimeout);
+    lidCloseTimeout = null;
+  }
+
+  isLidOpen = open;
+  if (isLidOpen) {
+    lid.classList.remove("lid-closing");
+    dropzone.classList.add("lid-open");
+    dropzone.classList.remove("lid-locked");
+    lid.setAttribute("aria-pressed", "true");
+  } else {
+    lid.classList.add("lid-closing");
+    lid.setAttribute("aria-pressed", "false");
+    dropzone.classList.add("lid-locked");
+    lidCloseTimeout = setTimeout(() => {
+      lid.classList.remove("lid-closing");
+      dropzone.classList.remove("lid-open");
+      dropzone.classList.remove("lid-locked");
+      lidCloseTimeout = null;
+    }, 520);
+  }
+}
+
+lid?.addEventListener("click", () => setLidOpen(!isLidOpen));
+lid?.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    setLidOpen(!isLidOpen);
+  }
+});
 
 function addLayer(id) {
   const layer = document.createElement("div");
@@ -104,17 +147,30 @@ function addFloatingEmoji(emoji) {
 }
 
 dropzone.addEventListener("dragover", (e) => {
+  if (!isLidOpen) {
+    dropzone.classList.add("lid-locked");
+    dropText.textContent = "Lid closed: open it to add";
+    return;
+  }
   e.preventDefault();
   dropzone.classList.add("dragover");
 });
 
 dropzone.addEventListener("dragleave", () => {
-  dropzone.classList.remove("dragover");
+  dropzone.classList.remove("dragover", "lid-locked");
 });
 
 dropzone.addEventListener("drop", (e) => {
   e.preventDefault();
   dropzone.classList.remove("dragover");
+
+  if (!isLidOpen) {
+    dropzone.classList.add("lid-locked");
+    setTimeout(() => dropzone.classList.remove("lid-locked"), 800);
+    dropText.textContent = "Open the lid to add ingredients";
+    alert("Please open the lid before adding ingredients.");
+    return;
+  }
 
   const ingredient = e.dataTransfer.getData("text/plain");
   const emoji = e.dataTransfer.getData("emoji");
@@ -134,12 +190,14 @@ dropzone.addEventListener("drop", (e) => {
 
   addedIngredients.push(ingredient);
 
-  const count = addedIngredients.length;
-  if (count === correctOrder.length) {
+  const requiredCount = addedIngredients.filter((id) =>
+    requiredIds.includes(id)
+  ).length;
+  if (requiredCount === requiredIds.length) {
     dropzone.classList.add("ready");
     dropText.textContent = "Tap the button to blend";
   } else {
-    dropText.textContent = `Added ${count}/${correctOrder.length}`;
+    dropText.textContent = `Added ${requiredCount}/${requiredIds.length} required`;
   }
 });
 
@@ -166,11 +224,18 @@ function flyToBlender(emoji, dropEvent) {
 
 function startBlend() {
   if (isBlending) return;
+  if (isLidOpen) {
+    dropText.textContent = "Close the lid to start";
+    alert("Close the lid before turning on the blender.");
+    return;
+  }
   isBlending = true;
-  const isComplete = addedIngredients.length === correctOrder.length;
-  dropText.textContent = isComplete
+  const requiredComplete = requiredIds.every((id) =>
+    addedIngredients.includes(id)
+  );
+  dropText.textContent = requiredComplete
     ? "Blending..."
-    : "Blending (ingredients missing)...";
+    : "Blending (missing required ingredients)...";
   dropzone.classList.add("blending");
   playBlendSound(BLEND_DURATION_MS);
   renderSmoothieFill(false, { durationMs: BLEND_DURATION_MS, reveal: true });
@@ -181,17 +246,17 @@ function startBlend() {
   blendTimeoutId = setTimeout(() => {
     dropzone.classList.remove("blending");
     const isCorrect = isSequenceCorrect();
-    renderSmoothieFill(isComplete && isCorrect, {
+    renderSmoothieFill(requiredComplete && isCorrect, {
       durationMs: 900,
       reveal: false,
     });
 
-    if (isComplete && isCorrect) {
+    if (requiredComplete && isCorrect) {
       dropText.textContent = "Smoothie completed! 🥤✨";
       launchConfetti();
     } else {
       let message = "Check: ";
-      if (!isComplete) message += "some ingredients are missing. ";
+      if (!requiredComplete) message += "required ingredients are missing. ";
       if (!isCorrect) message += "the order is incorrect.";
       const summary = message.trim();
       dropText.textContent = summary;
@@ -214,8 +279,18 @@ prevBtn.addEventListener("click", () => scrollCarousel(-1));
 nextBtn.addEventListener("click", () => scrollCarousel(1));
 
 function isSequenceCorrect() {
-  if (addedIngredients.length !== correctOrder.length) return false;
-  return addedIngredients.every((id, idx) => id === correctOrder[idx]);
+  const orderMap = new Map();
+  correctOrder.forEach((id, idx) => orderMap.set(id, idx));
+
+  let lastIndex = -1;
+  for (const id of addedIngredients) {
+    const idx = orderMap.get(id);
+    if (idx === undefined) return false;
+    if (idx <= lastIndex) return false;
+    lastIndex = idx;
+  }
+
+  return requiredIds.every((id) => addedIngredients.includes(id));
 }
 
 function playBlendSound(durationMs = 5000) {
@@ -276,6 +351,7 @@ function resetGame() {
   dropText.textContent = "⬇ Drop here ⬇";
   blendContent.innerHTML = "";
   floatingEmojis = [];
+  setLidOpen(false);
 
   document.querySelectorAll(".card").forEach((card) => {
     card.classList.remove("used");
@@ -313,9 +389,10 @@ function renderSmoothieFill(
   fill.style.setProperty("--smoothie-top", toRgba(top, 0.94));
   fill.style.setProperty("--smoothie-bottom", toRgba(bottom, 0.98));
 
+  const totalForHeight = Math.max(requiredIds.length, addedIngredients.length);
   const targetHeight = Math.max(
     40,
-    Math.min(220, (addedIngredients.length / correctOrder.length) * 220)
+    Math.min(220, (addedIngredients.length / totalForHeight) * 220)
   );
   const heightDuration = Math.min(durationMs, 1200);
   fill.style.transition = `height ${heightDuration}ms ease, background 0.6s ease, opacity ${durationMs}ms ease`;
