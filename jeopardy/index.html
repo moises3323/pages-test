@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jeopardy Redmond</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="grain"></div>
+  <div class="page">
+    <header class="hero">
+      <div class="brand-block">
+        <img class="logo" src="https://cdn.shopify.com/s/files/1/0031/8606/5475/files/redmond_logo_1.svg?v=1746210673" alt="Logo Redmond" />
+        <div class="hero-copy">
+        <p class="eyebrow">Questions pulled from the 5 Redmond sites</p>
+        <h1>Jeopardy Redmond</h1>
+          <p class="subhead">15 clues (3 per site), hidden Daily Double, and Final Jeopardy. Practice mode is always on with multiple choice for solo play.</p>
+          <div class="meta-row">
+            <span>12s per clue</span>
+            <span>Random Daily Double</span>
+            <span>Final Jeopardy after clearing the board</span>
+          </div>
+        </div>
+      </div>
+      <div class="score-widget">
+        <p class="label">Score</p>
+        <div class="score" id="score">0</div>
+        <div class="stat-row">
+          <span>Remaining: <strong id="remaining">15</strong></span>
+          <span id="final-status">Final locked</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="board" id="board" aria-label="Tablero de Jeopardy"></section>
+
+    <section class="controls">
+      <div class="rules">
+        <p class="eyebrow">Quick rules</p>
+        <ul>
+          <li>Each square is $100, $200, or $300 depending on its row.</li>
+          <li>Tap to see the clue. If it is a Daily Double, wager first.</li>
+          <li>You always see 3 options (1 correct, 2 distractors); pick one to auto-score.</li>
+          <li>Use each square once; when all 15 are done, Final Jeopardy unlocks.</li>
+        </ul>
+      </div>
+      <div class="actions">
+        <button id="final-btn" class="btn" disabled>Play Final Jeopardy</button>
+        <button id="reset-btn" class="btn ghost">Restart game</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="backdrop hidden" id="backdrop"></div>
+
+  <div class="modal hidden" id="clue-modal" role="dialog" aria-modal="true" aria-labelledby="clue-title">
+    <div class="modal-header">
+      <div>
+        <p class="eyebrow" id="modal-site"></p>
+        <h3 id="clue-title"></h3>
+      </div>
+      <div class="value-tag" id="value-tag"></div>
+    </div>
+
+    <div class="banner hidden" id="daily-double-banner">Daily Double</div>
+
+    <div class="wager-block hidden" id="wager-block">
+      <p class="eyebrow">Place your wager</p>
+      <p>Choose your wager (max is your current score if it exceeds the clue value).</p>
+      <div class="wager-input">
+        <span>$</span>
+        <input type="number" id="wager-input" min="0" value="200" />
+        <button class="btn" id="confirm-wager">Confirm</button>
+      </div>
+    </div>
+
+    <p class="clue" id="clue-text"></p>
+
+    <div class="choices-wrap hidden" id="choices-wrap">
+      <p class="eyebrow">Choose your answer</p>
+      <div class="choices" id="choices"></div>
+    </div>
+
+    <div class="timer">
+      <div class="timer-bar" id="timer-bar"></div>
+      <span id="timer-label">12s</span>
+    </div>
+
+    <button class="btn primary" id="reveal-btn">Show answer</button>
+
+    <div class="answer hidden" id="answer-wrap">
+      <p class="eyebrow">Answer</p>
+      <p id="answer-text"></p>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn positive" id="correct-btn">Correct (+)</button>
+      <button class="btn negative" id="wrong-btn">Incorrect (-)</button>
+      <button class="btn ghost" id="close-btn">Back to board</button>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="final-modal" role="dialog" aria-modal="true" aria-labelledby="final-title">
+    <div class="modal-header">
+      <div>
+        <p class="eyebrow">Last chance</p>
+        <h3 id="final-title">Final Jeopardy</h3>
+      </div>
+      <div class="value-tag accent">Wager</div>
+    </div>
+
+    <div class="wager-block" id="final-wager-block">
+      <p class="eyebrow">Set your wager</p>
+      <p>Max: your current score (if negative, your wager must be 0).</p>
+      <div class="wager-input">
+        <span>$</span>
+        <input type="number" id="final-wager-input" min="0" value="0" />
+        <button class="btn" id="start-final">Show clue</button>
+      </div>
+    </div>
+
+    <p class="clue" id="final-clue"></p>
+
+    <div class="timer">
+      <div class="timer-bar" id="final-timer-bar"></div>
+      <span id="final-timer-label">18s</span>
+    </div>
+
+    <button class="btn primary" id="final-reveal">Show answer</button>
+
+    <div class="answer hidden" id="final-answer-wrap">
+      <p class="eyebrow">Answer</p>
+      <p id="final-answer"></p>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn positive" id="final-correct">Correct (+)</button>
+      <button class="btn negative" id="final-wrong">Incorrect (-)</button>
+      <button class="btn ghost" id="final-close">Close</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
