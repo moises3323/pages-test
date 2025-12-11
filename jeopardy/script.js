@@ -477,6 +477,12 @@ function openFinalModal() {
   const max = Math.max(score, 0);
   finalWagerInput.max = max;
   finalWagerInput.value = max;
+  finalWagerInput.disabled = max === 0;
+  if (max === 0) {
+    finalWagerInput.title = "Score is negative; wager is locked at $0.";
+  } else {
+    finalWagerInput.removeAttribute("title");
+  }
   finalTimerBar.style.transition = "none";
   finalTimerBar.style.width = "100%";
   finalTimerLabel.textContent = "18s";
