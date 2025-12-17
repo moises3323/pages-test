@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Clickable Cards</title>
+    <style>
+      :root {
+        --card-width: 300px;
+        --card-height: 200px;
+        --gap: 20px;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        background: #fff;
+        color: #111827;
+      }
+
+      .wrap {
+        padding: 24px;
+      }
+
+      .cards-container {
+        display: flex;
+        justify-content: center;
+        gap: var(--gap);
+        flex-wrap: wrap;
+      }
+
+      .flip-container {
+        perspective: 1000px;
+        width: var(--card-width);
+        height: var(--card-height);
+        border: 0;
+        padding: 0;
+        background: transparent;
+        cursor: pointer;
+      }
+
+      .flip-container:focus-visible {
+        outline: 3px solid #2563eb;
+        outline-offset: 4px;
+        border-radius: 10px;
+      }
+
+      .flipper {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transform-style: preserve-3d;
+        transition: transform 0.6s;
+      }
+
+      .flip-container.is-flipped .flipper {
+        transform: rotateY(180deg);
+      }
+
+      .front,
+      .back {
+        position: absolute;
+        inset: 0;
+        backface-visibility: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .front {
+        background: #e5e7eb;
+      }
+
+      .front-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .back {
+        background: #f3f4f6;
+        color: #111827;
+        transform: rotateY(180deg);
+        padding: 14px;
+        box-sizing: border-box;
+        text-align: center;
+        line-height: 1.3;
+        font-size: 16px;
+      }
+
+      .hint {
+        font-size: 12px;
+        color: #6b7280;
+        text-align: center;
+        margin-top: 12px;
+        overflow-wrap: anywhere;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div id="cards" class="cards-container" aria-label="Clickable cards"></div>
+      <div id="hint" class="hint"></div>
+    </div>
+
+    <script>
+      (function () {
+        const DEFAULT_CARDS = [
+          {
+            image:
+              "https://blog.redmondequine.com/hubfs/Raspberry%20and%20chasteberry%20for%20horses.jpg",
+            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          },
+          {
+            image:
+              "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=60",
+            text: "Personaliza este texto usando ?text2=...",
+          },
+          {
+            image:
+              "https://images.unsplash.com/photo-1520975916090-3105956dac38?auto=format&fit=crop&w=1200&q=60",
+            text: "También puedes cambiar la imagen con ?img3=...",
+          },
+        ];
+
+        const params = new URLSearchParams(window.location.search);
+
+        function coalesce(...values) {
+          for (const value of values) {
+            if (value === null || value === undefined) continue;
+            const trimmed = String(value).trim();
+            if (trimmed) return trimmed;
+          }
+          return "";
+        }
+
+        function safeParseCardsParam(value) {
+          if (!value) return null;
+          try {
+            const parsed = JSON.parse(value);
+            if (!Array.isArray(parsed)) return null;
+            return parsed.slice(0, 3).map((card) => ({
+              image: typeof card?.image === "string" ? card.image : "",
+              text: typeof card?.text === "string" ? card.text : "",
+            }));
+          } catch {
+            return null;
+          }
+        }
+
+        function getSafeImageUrl(rawUrl) {
+          const value = String(rawUrl || "").trim();
+          if (!value) return "";
+          try {
+            const url = new URL(value, window.location.href);
+            if (url.protocol === "http:" || url.protocol === "https:")
+              return url.href;
+            if (url.protocol === "data:") {
+              const lower = url.href.toLowerCase();
+              if (lower.startsWith("data:image/")) return url.href;
+              return "";
+            }
+            if (url.protocol === "blob:") return url.href;
+            return "";
+          } catch {
+            return "";
+          }
+        }
+
+        function buildCardsFromParams() {
+          const cardsFromJson = safeParseCardsParam(params.get("cards"));
+          if (cardsFromJson && cardsFromJson.length) {
+            return DEFAULT_CARDS.map((fallback, idx) => {
+              const fromParam = cardsFromJson[idx] || {};
+              return {
+                image: coalesce(getSafeImageUrl(fromParam.image), fallback.image),
+                text: coalesce(fromParam.text, fallback.text),
+              };
+            });
+          }
+
+          const cards = [];
+          for (let i = 1; i <= 3; i++) {
+            const image = coalesce(
+              getSafeImageUrl(params.get(`img${i}`)),
+              getSafeImageUrl(params.get(`image${i}`)),
+              DEFAULT_CARDS[i - 1].image,
+            );
+            const text = coalesce(
+              params.get(`text${i}`),
+              params.get(`back${i}`),
+              DEFAULT_CARDS[i - 1].text,
+            );
+            cards.push({ image, text });
+          }
+          return cards;
+        }
+
+        function normalizeCards(rawCards) {
+          const cards = Array.isArray(rawCards) ? rawCards : [];
+          return DEFAULT_CARDS.map((fallback, idx) => {
+            const candidate = cards[idx] || {};
+            const candidateImage =
+              typeof candidate?.image === "string" ? candidate.image : "";
+            const candidateText = typeof candidate?.text === "string" ? candidate.text : "";
+            return {
+              image: coalesce(getSafeImageUrl(candidateImage), fallback.image),
+              text: coalesce(candidateText, fallback.text),
+            };
+          });
+        }
+
+        function createCardElement(card, index) {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "flip-container";
+          button.setAttribute(
+            "aria-label",
+            `Card ${index + 1}. Click para voltear.`,
+          );
+
+          const flipper = document.createElement("div");
+          flipper.className = "flipper";
+
+          const front = document.createElement("div");
+          front.className = "front";
+
+          const img = document.createElement("img");
+          img.className = "front-img";
+          img.alt = "";
+          img.decoding = "async";
+          img.loading = "lazy";
+          img.src = card.image;
+
+          front.appendChild(img);
+
+          const back = document.createElement("div");
+          back.className = "back";
+          back.textContent = card.text;
+
+          flipper.appendChild(front);
+          flipper.appendChild(back);
+          button.appendChild(flipper);
+
+          button.addEventListener("click", () => {
+            button.classList.toggle("is-flipped");
+          });
+
+          return button;
+        }
+
+        const container = document.getElementById("cards");
+        const hintEl = document.getElementById("hint");
+
+        function renderCards(rawCards) {
+          const cards = normalizeCards(rawCards);
+          container.replaceChildren(
+            ...cards.map((card, index) => createCardElement(card, index)),
+          );
+        }
+
+        renderCards(buildCardsFromParams());
+
+        const hasCustomParams =
+          params.has("cards") ||
+          params.has("img1") ||
+          params.has("img2") ||
+          params.has("img3") ||
+          params.has("image1") ||
+          params.has("image2") ||
+          params.has("image3") ||
+          params.has("text1") ||
+          params.has("text2") ||
+          params.has("text3") ||
+          params.has("back1") ||
+          params.has("back2") ||
+          params.has("back3");
+
+        if (!hasCustomParams) {
+          const exampleParams = new URLSearchParams({
+            img1: "https://picsum.photos/id/237/600/400",
+            text1: "Texto atrás (card 1)",
+            img2: "https://picsum.photos/id/1025/600/400",
+            text2: "Texto atrás (card 2)",
+            img3: "https://picsum.photos/id/1069/600/400",
+            text3: "Texto atrás (card 3)",
+          });
+
+          hintEl.textContent = `Tip: en el iframe src agrega parámetros (img1/text1 ... img3/text3). Ejemplo: ?${exampleParams.toString()}`;
+        }
+
+        window.addEventListener("message", (event) => {
+          const data = event?.data;
+          if (!data || typeof data !== "object") return;
+          if (data.type !== "clickable-cards:set") return;
+          if (!Array.isArray(data.cards)) return;
+          hintEl.textContent = "";
+          renderCards(data.cards);
+        });
+      })();
+    </script>
+  </body>
+</html>
