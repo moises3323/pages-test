@@ -120,7 +120,7 @@
     </div>
 
     <script>
-      (function () {
+      (async function () {
         const DEFAULT_CARDS = [
           {
             image:
@@ -139,11 +139,19 @@
           },
         ];
 
-        const normalizedSearch = window.location.search
-          .replace(/^\?/, "")
-          .replace(/&amp;/gi, "&")
-          .replace(/;/g, "&");
-        const rawParams = new URLSearchParams(normalizedSearch);
+        function normalizeParamString(raw) {
+          return String(raw || "")
+            .replace(/^\?/, "")
+            .replace(/^#/, "")
+            .replace(/&amp;/gi, "&")
+            .replace(/;/g, "&");
+        }
+
+        const normalizedSearch = normalizeParamString(window.location.search);
+        const normalizedHash = normalizeParamString(window.location.hash);
+
+        const combinedParams = [normalizedSearch, normalizedHash].filter(Boolean).join("&");
+        const rawParams = new URLSearchParams(combinedParams);
         const params = new URLSearchParams();
 
         for (const [key, value] of rawParams.entries()) {
@@ -177,6 +185,14 @@
           }
         }
 
+        function splitList(raw) {
+          if (!raw) return [];
+          return String(raw)
+            .split(/[|,]/)
+            .map((item) => item.trim())
+            .filter(Boolean);
+        }
+
         const CANVAS_BASE = "https://canvas.instructure.com";
 
         function extractFirstUrlLikeValue(input) {
@@ -196,6 +212,36 @@
           if (value.startsWith("canvas.instructure.com/"))
             return `https://${value}`;
           return value;
+        }
+
+        function base64UrlToString(raw) {
+          if (!raw) return "";
+          let input = String(raw).replace(/-/g, "+").replace(/_/g, "/");
+          while (input.length % 4) input += "=";
+          try {
+            return atob(input);
+          } catch {
+            return "";
+          }
+        }
+
+        function parseBundle(raw) {
+          if (!raw) return null;
+          const decoded = base64UrlToString(decodeURIComponent(raw));
+          if (!decoded) return null;
+          try {
+            const parsed = JSON.parse(decoded);
+            const images = Array.isArray(parsed?.images)
+              ? parsed.images.map((x) => (typeof x === "string" ? x : "")).filter(Boolean)
+              : [];
+            const texts = Array.isArray(parsed?.texts)
+              ? parsed.texts.map((x) => (typeof x === "string" ? x : "")).filter(Boolean)
+              : [];
+            if (!images.length && !texts.length) return null;
+            return { images, texts };
+          } catch {
+            return null;
+          }
         }
 
         function getSafeImageUrl(rawUrl) {
@@ -218,6 +264,7 @@
         }
 
         function buildCardsFromParams() {
+          const bundle = parseBundle(params.get("bundle") || params.get("b"));
           const cardsFromJson = safeParseCardsParam(params.get("cards"));
           if (cardsFromJson && cardsFromJson.length) {
             return DEFAULT_CARDS.map((fallback, idx) => {
@@ -229,14 +276,21 @@
             });
           }
 
+          const listImages = splitList(params.get("img") || params.get("images"));
+          const listTexts = splitList(params.get("text") || params.get("texts"));
+
           const cards = [];
           for (let i = 1; i <= 3; i++) {
             const image = coalesce(
+              getSafeImageUrl(bundle?.images?.[i - 1]),
+              getSafeImageUrl(listImages[i - 1]),
               getSafeImageUrl(params.get(`img${i}`)),
               getSafeImageUrl(params.get(`image${i}`)),
               DEFAULT_CARDS[i - 1].image,
             );
             const text = coalesce(
+              bundle?.texts?.[i - 1],
+              listTexts[i - 1],
               params.get(`text${i}`),
               params.get(`back${i}`),
               DEFAULT_CARDS[i - 1].text,
@@ -244,6 +298,42 @@
             cards.push({ image, text });
           }
           return cards;
+        }
+
+        async function fetchPreset(key) {
+          if (!key) return null;
+          try {
+            const response = await fetch("presets.json", { cache: "no-store" });
+            if (!response.ok) return null;
+            const presets = await response.json();
+            return presets?.[key] || null;
+          } catch {
+            return null;
+          }
+        }
+
+        function normalizePreset(preset) {
+          if (!preset) return null;
+          // Soporta formato preferido: array de objetos [{ image, text }, ...]
+          if (Array.isArray(preset)) {
+            return DEFAULT_CARDS.map((fallback, idx) => {
+              const item = preset[idx] || {};
+              return {
+                image: coalesce(getSafeImageUrl(item.image), fallback.image),
+                text: coalesce(item.text, fallback.text),
+              };
+            });
+          }
+          // Compatibilidad: objeto con arrays images/texts
+          if (typeof preset === "object") {
+            const images = Array.isArray(preset.images) ? preset.images : [];
+            const texts = Array.isArray(preset.texts) ? preset.texts : [];
+            return DEFAULT_CARDS.map((fallback, idx) => ({
+              image: coalesce(getSafeImageUrl(images[idx]), fallback.image),
+              text: coalesce(texts[idx], fallback.text),
+            }));
+          }
+          return null;
         }
 
         function normalizeCards(rawCards) {
@@ -373,6 +463,17 @@
           hintEl.textContent = "";
           renderCards(data.cards);
         });
+
+        const presetKey = params.get("preset") || params.get("key");
+        if (presetKey) {
+          const preset = await fetchPreset(presetKey);
+          if (preset) {
+            renderCards(normalizePreset(preset));
+            hintEl.textContent = `Usando preset "${presetKey}".`;
+          } else {
+            hintEl.textContent = `No se encontró el preset "${presetKey}".`;
+          }
+        }
       })();
     </script>
   </body>
