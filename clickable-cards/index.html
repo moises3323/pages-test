@@ -442,18 +442,7 @@
           params.has("back2") ||
           params.has("back3");
 
-        if (!hasCustomParams) {
-          const exampleParams = new URLSearchParams({
-            img1: "https://picsum.photos/id/237/600/400",
-            text1: "Texto atrás (card 1)",
-            img2: "https://picsum.photos/id/1025/600/400",
-            text2: "Texto atrás (card 2)",
-            img3: "https://picsum.photos/id/1069/600/400",
-            text3: "Texto atrás (card 3)",
-          });
-
-          hintEl.textContent = `Tip: en el iframe src agrega parámetros (img1/text1 ... img3/text3). Ejemplo: ?${exampleParams.toString()}`;
-        }
+        // Hint default eliminado a petición del usuario.
 
         window.addEventListener("message", (event) => {
           const data = event?.data;
