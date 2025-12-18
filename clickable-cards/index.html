@@ -39,6 +39,7 @@
       .flip-container {
         perspective: 1000px;
         height: var(--card-height);
+        flex: 0 0 auto;
         border: 0;
         padding: 0;
         background: transparent;
@@ -57,6 +58,7 @@
         transform-style: preserve-3d;
         transition: transform 0.6s;
         height: var(--card-height);
+        width: 100%;
       }
 
       .flip-container.is-flipped .flipper {
@@ -73,6 +75,7 @@
         border-radius: 10px;
         overflow: hidden;
         height: var(--card-height);
+        width: 100%;
       }
 
       .front {
@@ -136,7 +139,20 @@
           },
         ];
 
-        const params = new URLSearchParams(window.location.search);
+        const normalizedSearch = window.location.search
+          .replace(/^\?/, "")
+          .replace(/&amp;/gi, "&")
+          .replace(/;/g, "&");
+        const rawParams = new URLSearchParams(normalizedSearch);
+        const params = new URLSearchParams();
+
+        for (const [key, value] of rawParams.entries()) {
+          let normalizedKey = String(key);
+          while (normalizedKey.toLowerCase().startsWith("amp;")) {
+            normalizedKey = normalizedKey.slice(4);
+          }
+          if (!params.has(normalizedKey)) params.set(normalizedKey, value);
+        }
 
         function coalesce(...values) {
           for (const value of values) {
@@ -161,8 +177,29 @@
           }
         }
 
+        const CANVAS_BASE = "https://canvas.instructure.com";
+
+        function extractFirstUrlLikeValue(input) {
+          const value = String(input || "").trim();
+          if (!value) return "";
+          const match = value.match(/https?:\/\/[^\s"'<>]+/i);
+          if (match) return match[0];
+          return value;
+        }
+
+        function normalizeCanvasUrl(value) {
+          if (!value) return "";
+          if (value.startsWith("//canvas.instructure.com"))
+            return `https:${value}`;
+          if (value.startsWith("/courses/") || value.startsWith("/files/"))
+            return `${CANVAS_BASE}${value}`;
+          if (value.startsWith("canvas.instructure.com/"))
+            return `https://${value}`;
+          return value;
+        }
+
         function getSafeImageUrl(rawUrl) {
-          const value = String(rawUrl || "").trim();
+          const value = normalizeCanvasUrl(extractFirstUrlLikeValue(rawUrl));
           if (!value) return "";
           try {
             const url = new URL(value, window.location.href);
@@ -223,6 +260,14 @@
           });
         }
 
+        function getCardHeightPx() {
+          const raw = getComputedStyle(document.documentElement).getPropertyValue(
+            "--card-height",
+          );
+          const value = parseFloat(raw);
+          return Number.isFinite(value) && value > 0 ? value : 300;
+        }
+
         function createCardElement(card, index) {
           const button = document.createElement("button");
           button.type = "button";
@@ -244,6 +289,24 @@
           img.decoding = "async";
           img.loading = "lazy";
           img.src = card.image;
+
+          function syncWidthToImage() {
+            const heightPx = getCardHeightPx();
+            const naturalWidth = img.naturalWidth;
+            const naturalHeight = img.naturalHeight;
+            if (!naturalWidth || !naturalHeight) return;
+            const widthPx = Math.max(
+              1,
+              Math.round((heightPx * naturalWidth) / naturalHeight),
+            );
+            button.style.width = `${widthPx}px`;
+          }
+
+          img.addEventListener("load", syncWidthToImage);
+          img.addEventListener("error", () => {
+            if (!button.style.width) button.style.width = "300px";
+          });
+          if (img.complete) syncWidthToImage();
 
           front.appendChild(img);
 
