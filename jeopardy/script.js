@@ -1,26 +1,28 @@
 const baseCategories = [
   {
     id: "life",
-    title: "Redmond Life",
+    title: "Redmond Living",
     site: "https://redmond.life",
     questions: [
       {
         value: 100,
-        clue: "The flagship natural salt from Redmond Life is called...",
-        answer: "Real Salt",
-        distractors: ["Pink Stone", "Salt Creek"],
+        clue:
+          "This product is the 'real deal' when it comes to Redmond Living's culinary ancient sea salt.",
+        answer: "What is Real Salt?",
+        distractors: ["What is Pink Salt?", "What is Re-Lyte?"],
       },
       {
         value: 200,
-        clue: "Earthpaste is built on which natural mineral instead of chemical-heavy pastes?",
-        answer: "Bentonite clay",
-        distractors: ["Activated charcoal", "Fluoride"],
+        clue: "Redmond Living creates simple, clean, and real products to help people do this.",
+        answer: "What is 'Live intentionally'?",
+        distractors: ["What is 'Live genuinely'?", "What is 'Live minimally'?"],
       },
       {
         value: 300,
-        clue: "Their product mantra is...",
-        answer: "Simple ingredients with no weird additives",
-        distractors: ["Lots of sugar and color", "Preservatives and flavorings"],
+        clue:
+          "No foaming agents here, Earthpaste relies on this earthy mineral to do the cleaning.",
+        answer: "What is bentonite clay?",
+        distractors: ["What is kaolin clay?", "What is baking soda?"],
       },
     ],
   },
@@ -31,21 +33,29 @@ const baseCategories = [
     questions: [
       {
         value: 100,
-        clue: "The loose mix of 60+ minerals for cattle is called...",
-        answer: "Redmond Conditioner",
-        distractors: ["Cow Mix 2000", "Trace 15"],
+        clue: "This group of customers are the heart of Redmond Agriculture.",
+        answer: "Who are farmers, ranchers, and gardeners?",
+        distractors: [
+          "Who are chefs, herbalists, and florists?",
+          "Who are nutritionists, coaches, and athletes?",
+        ],
       },
       {
         value: 200,
-        clue: "The red blocks are different because...",
-        answer: "They are natural salt with trace minerals, no additives",
-        distractors: ["They have artificial flavor", "They are refined white salt"],
+        clue:
+          "This Redmond Agriculture slogan reflects the belief that working with the Earth leads to healthier soil, plants, and animals.",
+        answer: "What is 'Nature has it right'?",
+        distractors: [
+          "What is 'Grow big or go home'?",
+          "What is 'Farming, the Redmond way'?",
+        ],
       },
       {
         value: 300,
-        clue: "To replace white salt in daily rations they recommend...",
-        answer: "Use Redmond 10 Fine or another mineral fine salt",
-        distractors: ["Brown sugar", "Iodized table salt"],
+        clue:
+          "If your garden needs a little 'soil-searching,' this amendment, rich in sulfur, potassium, and calcium, can help it bounce back naturally.",
+        answer: "What is Mineralyte?",
+        distractors: ["What is Real Salt?", "What is Re-Lyte?"],
       },
     ],
   },
@@ -56,21 +66,29 @@ const baseCategories = [
     questions: [
       {
         value: 100,
-        clue: "Their clay supplement to calm a horse's stomach is called...",
-        answer: "Daily Gold",
-        distractors: ["Night Silver", "Calm Clay"],
+        clue:
+          "Redmond Equine products are made with these three natural ingredients to support hydration and gut health.",
+        answer: "What are 'salt, minerals, and bentonite clay'?",
+        distractors: [
+          "What are oats, flax, and alfalfa?",
+          "What are vitamins, herbs, and charcoal?",
+        ],
       },
       {
         value: 200,
-        clue: "The ready-to-hang block with rope included is...",
-        answer: "Rock on a Rope",
-        distractors: ["HangSalt", "Rope Lick"],
+        clue:
+          "This phrase captures the Redmond Equine promise to help horses achieve optimal horse health.",
+        answer: "What is 'health from the inside out'?",
+        distractors: [
+          "What is 'more of what matters'?",
+          "What is 'naturally better for horses'?",
+        ],
       },
       {
         value: 300,
-        clue: "Why are their natural electrolytes good for sensitive horses?",
-        answer: "They hydrate without molasses or added sugars",
-        distractors: ["They have dyes", "They're just white salt"],
+        clue: "This Redmond Equine product really 'rocks.' It's a natural mineral salt lick.",
+        answer: "What is 'Rock on a Rope'?",
+        distractors: ["What is 'Daily Red'?", "What is 'Equine Clay Boost'?"],
       },
     ],
   },
@@ -81,21 +99,26 @@ const baseCategories = [
     questions: [
       {
         value: 100,
-        clue: "The mineral block hunters use all year is...",
-        answer: "Trophy Rock",
-        distractors: ["Hunter Salt", "Deer Block Plus"],
+        clue: "This natural Redmond Hunt product is the #1 selling deer mineral in America.",
+        answer: "What is 'Trophy Rock'?",
+        distractors: ["What is Redmond Rack Boost?", "What is Whitetail Wonder Salt?"],
       },
       {
         value: 200,
-        clue: "The granular version to spread is called...",
-        answer: "Four65",
-        distractors: ["Trail Mix Salt", "Granule 360"],
+        clue:
+          "Trophy Rock isn't just a deer magnet; it's a natural shortcut to this hunting goal.",
+        answer: "What is a chance at bigger bucks?",
+        distractors: [
+          "What is a quieter hunting season?",
+          "What is an easier trail to track?",
+        ],
       },
       {
         value: 300,
-        clue: "Where should you place the supplement so deer find it quickly?",
-        answer: "Near usual trails and water spots",
-        distractors: ["Inside a barn", "On a city rooftop"],
+        clue:
+          "Providing minerals for deer isn't just about the harvest. It's about honoring this.",
+        answer: "What is family hunting heritage?",
+        distractors: ["What is antler growth?", "What is better trail cam footage?"],
       },
     ],
   },
@@ -106,21 +129,29 @@ const baseCategories = [
     questions: [
       {
         value: 100,
-        clue: "At the Farm Stores you'll find...",
-        answer: "Pasture-raised meats, whole milk, and on-farm goods",
-        distractors: ["Only electronics", "Only canned food"],
+        clue:
+          "Mooove over grocery store milk! This fresh, nutrient-dense beverage skips pasteurization and goes straight from pasture to fridge.",
+        answer: "What is Real Raw Milk?",
+        distractors: ["What is vitamin D milk?", "What is organic almond milk?"],
       },
       {
         value: 200,
-        clue: "Their raising philosophy is...",
-        answer: "Regenerative pasture with no routine hormones",
-        distractors: ["Feedlot with antibiotics", "Only imported grains"],
+        clue: "This Redmond spot serves farm-to-table meals with fresh ingredients.",
+        answer: "What is the Redmond Farm Kitchen?",
+        distractors: [
+          "What is the Farm-to-Fork Festival?",
+          "What is the Redmond Homestead?",
+        ],
       },
       {
         value: 300,
-        clue: "The milk they showcase is...",
-        answer: "Non-homogenized whole milk from pastured cows",
-        distractors: ["Skim milk powder", "Ultra-processed oat milk"],
+        clue:
+          "According to founder Rhett Roberts, Redmond Heritage Farms was born out of a desire to serve customers like this.",
+        answer: "What is people seeking optimal health?",
+        distractors: [
+          "What is people looking for good hydration?",
+          "What is people following food trends?",
+        ],
       },
     ],
   },
