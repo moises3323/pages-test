@@ -321,11 +321,12 @@
           if (!preset) return null;
           // Soporta formato preferido: array de objetos [{ image, text }, ...]
           if (Array.isArray(preset)) {
-            return DEFAULT_CARDS.map((fallback, idx) => {
+            const targetLength = Math.max(DEFAULT_CARDS.length, preset.length);
+            return Array.from({ length: targetLength }, (_, idx) => {
               const item = preset[idx] || {};
               return {
-                image: coalesce(getSafeImageUrl(item.image), fallback.image),
-                text: coalesce(item.text, fallback.text),
+                image: typeof item?.image === "string" ? item.image : "",
+                text: typeof item?.text === "string" ? item.text : "",
               };
             });
           }
@@ -333,9 +334,14 @@
           if (typeof preset === "object") {
             const images = Array.isArray(preset.images) ? preset.images : [];
             const texts = Array.isArray(preset.texts) ? preset.texts : [];
-            return DEFAULT_CARDS.map((fallback, idx) => ({
-              image: coalesce(getSafeImageUrl(images[idx]), fallback.image),
-              text: coalesce(texts[idx], fallback.text),
+            const targetLength = Math.max(
+              DEFAULT_CARDS.length,
+              images.length,
+              texts.length,
+            );
+            return Array.from({ length: targetLength }, (_, idx) => ({
+              image: typeof images[idx] === "string" ? images[idx] : "",
+              text: typeof texts[idx] === "string" ? texts[idx] : "",
             }));
           }
           return null;
@@ -343,7 +349,9 @@
 
         function normalizeCards(rawCards) {
           const cards = Array.isArray(rawCards) ? rawCards : [];
-          return DEFAULT_CARDS.map((fallback, idx) => {
+          const targetLength = Math.max(DEFAULT_CARDS.length, cards.length);
+          return Array.from({ length: targetLength }, (_, idx) => {
+            const fallback = DEFAULT_CARDS[idx] || {};
             const candidate = cards[idx] || {};
             const candidateImage =
               typeof candidate?.image === "string" ? candidate.image : "";
