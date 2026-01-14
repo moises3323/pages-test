@@ -2,23 +2,28 @@
   "canvas-set-1": [
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321895824/preview",
-      "text": "Lorem ipsum 1"
+      "title": "Silas - Steward of the Land",
+      "description": "Re-Lyte keeps me hydrated as I work in the field, and I love Real Salt and seasonings on the eggs, meat, and vegetables I raise!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321895982/preview",
-      "text": "Lorem ipsum 2"
+      "title": "Cedar - Peak Performer",
+      "description": "Re-Lyte products help me perform at my best! I also love Redmond's natural seasonings and care products, so I know what I'm putting on or in my body."
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321896079/preview",
-      "text": "Lorem ipsum 3"
+      "title": "Maya - Optimized Living Enthusiast",
+      "description": "I love Redmond Living products because I know they're made with nourishing, responsibly sourced ingredients that feel good on and in my body, helping me live my best life."
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/325594429/preview",
-      "text": "Lorem ipsum 4"
+      "title": "Chef Shawna - Master of the Meal",
+      "description": "Redmond's Real Salt and seasonings are unparalleled! I love these products, whether I'm preparing a quick meal for myself or an elaborate twelve-course meal for a dinner party."
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/325594601/preview",
-      "text": "Lorem ipsum 5"
+      "title": "Caleb - Conscious Caretaker",
+      "description": "My kids love Relyte, and so do I! Redmond products help us stay hydrated and healthy, allowing us to feel our best and spend quality time together."
     }
   ]
 }

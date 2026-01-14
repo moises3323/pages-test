@@ -117,9 +117,16 @@
         padding: 14px;
         box-sizing: border-box;
         text-align: center;
-        line-height: 1.3;
-        font-size: 16px;
+        line-height: 1.35;
+        font-size: 12px;
         overflow-wrap: anywhere;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .back-title {
+        font-size: 13px;
+        font-weight: 600;
       }
 
       .hint {
@@ -200,6 +207,8 @@
             if (!Array.isArray(parsed)) return null;
             return parsed.slice(0, 3).map((card) => ({
               image: typeof card?.image === "string" ? card.image : "",
+              title: typeof card?.title === "string" ? card.title : "",
+              description: typeof card?.description === "string" ? card.description : "",
               text: typeof card?.text === "string" ? card.text : "",
             }));
           } catch {
@@ -293,7 +302,9 @@
               const fromParam = cardsFromJson[idx] || {};
               return {
                 image: coalesce(getSafeImageUrl(fromParam.image), fallback.image),
-                text: coalesce(fromParam.text, fallback.text),
+                title: typeof fromParam?.title === "string" ? fromParam.title : "",
+                description: coalesce(fromParam.description, fromParam.text, fallback.text),
+                text: coalesce(fromParam.text, fromParam.description, fallback.text),
               };
             });
           }
@@ -336,14 +347,20 @@
 
         function normalizePreset(preset) {
           if (!preset) return null;
-          // Soporta formato preferido: array de objetos [{ image, text }, ...]
+          // Soporta formato preferido: array de objetos [{ image, title, description, text }, ...]
           if (Array.isArray(preset)) {
             const targetLength = Math.max(DEFAULT_CARDS.length, preset.length);
             return Array.from({ length: targetLength }, (_, idx) => {
               const item = preset[idx] || {};
+              const title = typeof item?.title === "string" ? item.title : "";
+              const description =
+                typeof item?.description === "string" ? item.description : "";
+              const text = typeof item?.text === "string" ? item.text : "";
               return {
                 image: typeof item?.image === "string" ? item.image : "",
-                text: typeof item?.text === "string" ? item.text : "",
+                title,
+                description: coalesce(description, text),
+                text: coalesce(text, description),
               };
             });
           }
@@ -358,6 +375,8 @@
             );
             return Array.from({ length: targetLength }, (_, idx) => ({
               image: typeof images[idx] === "string" ? images[idx] : "",
+              title: "",
+              description: typeof texts[idx] === "string" ? texts[idx] : "",
               text: typeof texts[idx] === "string" ? texts[idx] : "",
             }));
           }
@@ -372,10 +391,28 @@
             const candidate = cards[idx] || {};
             const candidateImage =
               typeof candidate?.image === "string" ? candidate.image : "";
-            const candidateText = typeof candidate?.text === "string" ? candidate.text : "";
+            const candidateTitle =
+              typeof candidate?.title === "string" ? candidate.title : "";
+            const candidateDescription =
+              typeof candidate?.description === "string" ? candidate.description : "";
+            const candidateText =
+              typeof candidate?.text === "string" ? candidate.text : "";
+            const fallbackTitle =
+              typeof fallback?.title === "string" ? fallback.title : "";
+            const fallbackDescription =
+              typeof fallback?.description === "string" ? fallback.description : "";
+            const fallbackText =
+              typeof fallback?.text === "string" ? fallback.text : "";
             return {
               image: coalesce(getSafeImageUrl(candidateImage), fallback.image),
-              text: coalesce(candidateText, fallback.text),
+              title: coalesce(candidateTitle, fallbackTitle),
+              description: coalesce(
+                candidateDescription,
+                candidateText,
+                fallbackDescription,
+                fallbackText,
+              ),
+              text: coalesce(candidateText, candidateDescription, fallbackText, fallbackDescription),
             };
           });
         }
@@ -414,7 +451,22 @@
 
           const back = document.createElement("div");
           back.className = "back";
-          back.textContent = card.text;
+          const titleText = coalesce(card?.title);
+          const descriptionText = coalesce(card?.description, card?.text);
+
+          if (titleText) {
+            const title = document.createElement("div");
+            title.className = "back-title";
+            title.textContent = titleText;
+            back.appendChild(title);
+          }
+
+          if (descriptionText) {
+            const description = document.createElement("div");
+            description.className = "back-description";
+            description.textContent = descriptionText;
+            back.appendChild(description);
+          }
 
           flipper.appendChild(front);
           flipper.appendChild(back);
