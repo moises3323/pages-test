@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ellipse Why Cards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Oswald:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f2ede4;
+        --ink: #1f2933;
+        --card-shadow: 0 18px 38px rgba(15, 23, 42, 0.2);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px 60px;
+        background: radial-gradient(circle at 15% 20%, #f9f5ec, #f2ede4 55%, #e6dfd3 100%),
+          repeating-linear-gradient(120deg, rgba(0, 0, 0, 0.045) 0 1px, transparent 1px 9px);
+        color: var(--ink);
+        font-family: "Libre Baskerville", "Georgia", serif;
+      }
+
+      .stage {
+        width: min(1000px, 100%);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 22px;
+        align-items: center;
+      }
+
+      .ellipse-card {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 4 / 3.6;
+        border: 0;
+        padding: 0;
+        border-radius: 999px;
+        background: transparent;
+        cursor: pointer;
+        box-shadow: var(--card-shadow);
+        outline: none;
+        transform-style: preserve-3d;
+        transition: transform 0.35s ease, box-shadow 0.35s ease;
+      }
+
+      .ellipse-card:hover,
+      .ellipse-card:focus-visible {
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 22px 44px rgba(15, 23, 42, 0.25);
+      }
+
+      .ellipse-card:focus-visible {
+        outline: 3px solid rgba(31, 41, 51, 0.5);
+        outline-offset: 4px;
+      }
+
+      .ellipse-shell {
+        position: absolute;
+        inset: 0;
+        border-radius: 999px;
+        background: var(--card-fill, #c06b45);
+        overflow: hidden;
+        display: grid;
+        place-items: center;
+      }
+
+      .ellipse-shell::after {
+        content: "";
+        position: absolute;
+        inset: 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.45);
+        opacity: 0.65;
+        pointer-events: none;
+      }
+
+      .ellipse-shell::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          130deg,
+          rgba(255, 255, 255, 0.08) 0 1px,
+          transparent 1px 8px
+        );
+        opacity: 0.5;
+        mix-blend-mode: screen;
+      }
+
+      .ellipse-face {
+        position: absolute;
+        inset: 0;
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 26px 22px;
+        transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+          transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+          filter 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .ellipse-front {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .ellipse-back {
+        opacity: 0;
+        transform: scale(0.92) rotateX(10deg);
+        filter: blur(6px);
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .ellipse-card.is-open .ellipse-front {
+        opacity: 0;
+        transform: scale(1.08) rotateX(-8deg);
+        filter: blur(6px);
+      }
+
+      .ellipse-card.is-open .ellipse-back {
+        opacity: 1;
+        transform: scale(1) rotateX(0deg);
+        filter: blur(0);
+      }
+
+      .front-word {
+        font-family: "Oswald", "Arial", sans-serif;
+        font-size: clamp(1.7rem, 4vw, 2.6rem);
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #fdf8f0;
+        text-shadow: 0 10px 20px rgba(15, 23, 42, 0.35);
+      }
+
+      .back-title {
+        font-family: "Oswald", "Arial", sans-serif;
+        font-size: clamp(1rem, 2.2vw, 1.35rem);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin: 0 0 8px;
+        color: #fdf8f0;
+      }
+
+      .back-text {
+        font-size: clamp(0.78rem, 1.45vw, 0.95rem);
+        line-height: 1.5;
+        color: rgba(253, 248, 240, 0.8);
+      }
+
+      .back-stack {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        width: min(88%, 320px);
+        padding: 6px 0;
+      }
+
+      @media (max-width: 700px) {
+        .ellipse-card {
+          aspect-ratio: 4 / 3.8;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .ellipse-face,
+        .ellipse-card {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage" aria-label="Why who what cards">
+      <button class="ellipse-card" type="button" data-word="Why">
+        <span class="ellipse-shell" style="--card-fill: #c75d4f">
+          <span class="ellipse-face ellipse-front">
+            <span class="front-word">Why</span>
+          </span>
+          <span class="ellipse-face ellipse-back">
+            <span class="back-stack">
+              <span class="back-title">Why</span>
+              <span class="back-text">
+                We exist to deliver nutrient-rich food and preserve the land
+                through practices that honor people, animals, and place.
+              </span>
+            </span>
+          </span>
+        </span>
+      </button>
+      <button class="ellipse-card" type="button" data-word="Who">
+        <span class="ellipse-shell" style="--card-fill: #4a4f4b">
+          <span class="ellipse-face ellipse-front">
+            <span class="front-word">Who</span>
+          </span>
+          <span class="ellipse-face ellipse-back">
+            <span class="back-stack">
+              <span class="back-title">Who</span>
+              <span class="back-text">
+                A community of farmers, families, and caretakers committed to
+                thoughtful stewardship and honest, transparent food.
+              </span>
+            </span>
+          </span>
+        </span>
+      </button>
+      <button class="ellipse-card" type="button" data-word="What">
+        <span class="ellipse-shell" style="--card-fill: #97a866">
+          <span class="ellipse-face ellipse-front">
+            <span class="front-word">What</span>
+          </span>
+          <span class="ellipse-face ellipse-back">
+            <span class="back-stack">
+              <span class="back-title">What</span>
+              <span class="back-text">
+                Raw dairy, eggs, and meat made with care, shaped by regenerative
+                methods that keep nourishment at the center.
+              </span>
+            </span>
+          </span>
+        </span>
+      </button>
+    </div>
+
+    <script>
+      (function () {
+        const cards = document.querySelectorAll(".ellipse-card");
+
+        cards.forEach((card) => {
+          card.addEventListener("click", () => {
+            const isOpen = card.classList.toggle("is-open");
+            card.setAttribute("aria-pressed", String(isOpen));
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

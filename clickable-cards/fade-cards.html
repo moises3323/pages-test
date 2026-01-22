@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fade Cards</title>
+    <style>
+      :root {
+        --card-width: 240px;
+        --card-height: 360px;
+        --card-gap: 18px;
+        --card-radius: 8px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        font-family: "Oswald", "Franklin Gothic Medium", "Trebuchet MS", sans-serif;
+        background: radial-gradient(circle at 10% 20%, #f7f2ee, #f1eee8 55%, #e8e5de 100%),
+          repeating-linear-gradient(120deg, rgba(0, 0, 0, 0.04) 0 1px, transparent 1px 9px);
+        color: #0f172a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px 20px;
+      }
+
+      .cards-grid {
+        width: min(1000px, 100%);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: var(--card-gap);
+      }
+
+      .card {
+        position: relative;
+        width: 100%;
+        height: var(--card-height);
+        padding: 0;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        border-radius: var(--card-radius);
+        color: #f8fafc;
+        text-align: left;
+        box-shadow: 0 18px 32px rgba(15, 23, 42, 0.25),
+          0 6px 16px rgba(15, 23, 42, 0.18);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        outline: none;
+      }
+
+      .card:hover,
+      .card:focus-visible {
+        transform: translateY(-4px);
+        box-shadow: 0 22px 36px rgba(15, 23, 42, 0.3),
+          0 12px 22px rgba(15, 23, 42, 0.2);
+      }
+
+      .card:focus-visible {
+        outline: 3px solid rgba(15, 23, 42, 0.6);
+        outline-offset: 4px;
+      }
+
+      .card-face {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--card-radius);
+        background: linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.15)),
+          var(--card-bg, #334155);
+        overflow: hidden;
+        transition: opacity 0.6s ease, transform 0.6s ease;
+        pointer-events: none;
+      }
+
+      .card-face::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          120deg,
+          rgba(255, 255, 255, 0.05) 0 1px,
+          transparent 1px 6px
+        );
+        opacity: 0.5;
+        pointer-events: none;
+      }
+
+      .card-front {
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        opacity: 1;
+      }
+
+      .card-back {
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 12px;
+        padding: 24px 20px;
+        opacity: 0;
+        transform: scale(0.98);
+      }
+
+      .card.is-open .card-front {
+        opacity: 0;
+        transform: scale(0.98);
+      }
+
+      .card.is-open .card-back {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .card-front-title {
+        position: relative;
+        z-index: 1;
+        font-family: "Bebas Neue", "Oswald", "Franklin Gothic Medium", sans-serif;
+        font-size: clamp(1.1rem, 2.6vw, 1.8rem);
+        letter-spacing: 0.08em;
+        line-height: 1.15;
+        text-transform: uppercase;
+        color: #f8fafc;
+        text-shadow: 0 8px 16px rgba(15, 23, 42, 0.35);
+        padding: 22px 18px;
+        text-align: center;
+      }
+
+      .card-back-text {
+        position: relative;
+        z-index: 1;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        max-width: 92%;
+        font-family: "Bebas Neue", "Oswald", "Franklin Gothic Medium", sans-serif;
+        font-size: clamp(0.95rem, 2.2vw, 1.45rem);
+        letter-spacing: 0.05em;
+        line-height: 1.2;
+        text-transform: uppercase;
+        text-align: center;
+        color: #f8fafc;
+      }
+
+      .card-back-sub {
+        position: relative;
+        z-index: 1;
+        font-size: clamp(0.65rem, 0.95vw, 0.85rem);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        text-align: center;
+        color: rgba(248, 250, 252, 0.72);
+      }
+
+      @media (max-width: 700px) {
+        :root {
+          --card-height: 320px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .card,
+        .card-face {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="cards" class="cards-grid" aria-label="Fade cards"></div>
+
+    <script>
+      (function () {
+        const DEFAULT_CARDS = [
+          {
+            front: "PASSION FOR CONTRIBUTION",
+            back: "THE JOY OF MAKING THE WORLD BETTER IN YOUR OWN UNIQUE WAY",
+            color: "#e14b3f",
+          },
+          {
+            front: "UBUNTU",
+            back: "I SEE ME. I SEE YOU. I AM BECAUSE WE ARE",
+            color: "#3b3736",
+          },
+          {
+            front: "OCCHIOLISM",
+            back:
+              "THE AWARENESS OF THE SMALLNESS OF YOUR PERSPECTIVE WHICH LEADS TO A THIRST FOR UNDERSTANDING",
+            color: "#9fb764",
+          },
+        ];
+
+        function normalizeParamString(raw) {
+          return String(raw || "")
+            .replace(/^\?/, "")
+            .replace(/^#/, "")
+            .replace(/&amp;/gi, "&")
+            .replace(/;/g, "&");
+        }
+
+        const normalizedSearch = normalizeParamString(window.location.search);
+        const normalizedHash = normalizeParamString(window.location.hash);
+        const combinedParams = [normalizedSearch, normalizedHash].filter(Boolean).join("&");
+        const rawParams = new URLSearchParams(combinedParams);
+        const params = new URLSearchParams();
+
+        for (const [key, value] of rawParams.entries()) {
+          let normalizedKey = String(key);
+          while (normalizedKey.toLowerCase().startsWith("amp;")) {
+            normalizedKey = normalizedKey.slice(4);
+          }
+          if (!params.has(normalizedKey)) params.set(normalizedKey, value);
+        }
+
+        function coalesce(...values) {
+          for (const value of values) {
+            if (value === null || value === undefined) continue;
+            const trimmed = String(value).trim();
+            if (trimmed) return trimmed;
+          }
+          return "";
+        }
+
+        function splitList(raw) {
+          if (!raw) return [];
+          return String(raw)
+            .split(/[|,]/)
+            .map((item) => item.trim())
+            .filter(Boolean);
+        }
+
+        function safeParseCardsParam(value) {
+          if (!value) return null;
+          try {
+            const parsed = JSON.parse(value);
+            if (!Array.isArray(parsed)) return null;
+            return parsed.map((card) => ({
+              front: typeof card?.front === "string" ? card.front : "",
+              back: typeof card?.back === "string" ? card.back : "",
+              label: typeof card?.label === "string" ? card.label : "",
+              title: typeof card?.title === "string" ? card.title : "",
+              description: typeof card?.description === "string" ? card.description : "",
+              text: typeof card?.text === "string" ? card.text : "",
+              color: typeof card?.color === "string" ? card.color : "",
+              bg: typeof card?.bg === "string" ? card.bg : "",
+            }));
+          } catch {
+            return null;
+          }
+        }
+
+        function buildCardsFromParams() {
+          const cardsFromJson = safeParseCardsParam(params.get("cards"));
+          if (cardsFromJson && cardsFromJson.length) {
+            return DEFAULT_CARDS.map((fallback, idx) => {
+              const fromParam = cardsFromJson[idx] || {};
+              return {
+                front: coalesce(
+                  fromParam.front,
+                  fromParam.label,
+                  fromParam.title,
+                  fallback.front,
+                ),
+                back: coalesce(
+                  fromParam.back,
+                  fromParam.text,
+                  fromParam.description,
+                  fallback.back,
+                ),
+                color: coalesce(fromParam.color, fromParam.bg, fallback.color),
+              };
+            });
+          }
+
+          const frontList = splitList(params.get("fronts") || params.get("labels"));
+          const backList = splitList(params.get("backs") || params.get("texts"));
+
+          return DEFAULT_CARDS.map((fallback, idx) => {
+            const index = idx + 1;
+            return {
+              front: coalesce(
+                frontList[idx],
+                params.get(`front${index}`),
+                params.get(`label${index}`),
+                params.get(`title${index}`),
+                fallback.front,
+              ),
+              back: coalesce(
+                backList[idx],
+                params.get(`back${index}`),
+                params.get(`text${index}`),
+                params.get(`desc${index}`),
+                fallback.back,
+              ),
+              color: coalesce(
+                params.get(`color${index}`),
+                params.get(`bg${index}`),
+                fallback.color,
+              ),
+            };
+          });
+        }
+
+        function createCardElement(card, index) {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "card";
+          button.style.setProperty("--card-bg", card.color);
+          button.setAttribute("aria-pressed", "false");
+          button.setAttribute("aria-label", `Card ${index + 1}. Click to reveal.`);
+
+          const front = document.createElement("span");
+          front.className = "card-face card-front";
+
+          const frontTitle = document.createElement("span");
+          frontTitle.className = "card-front-title";
+          frontTitle.textContent = card.front;
+
+          front.appendChild(frontTitle);
+
+          const back = document.createElement("span");
+          back.className = "card-face card-back";
+
+          const backText = document.createElement("span");
+          backText.className = "card-back-text";
+          backText.textContent = card.back;
+
+          const backSub = document.createElement("span");
+          backSub.className = "card-back-sub";
+          backSub.textContent = card.front;
+
+          back.appendChild(backText);
+          back.appendChild(backSub);
+
+          button.appendChild(front);
+          button.appendChild(back);
+
+          button.addEventListener("click", () => {
+            const isOpen = button.classList.toggle("is-open");
+            button.setAttribute("aria-pressed", String(isOpen));
+          });
+
+          return button;
+        }
+
+        const container = document.getElementById("cards");
+        const cards = buildCardsFromParams();
+        container.replaceChildren(...cards.map(createCardElement));
+      })();
+    </script>
+  </body>
+</html>

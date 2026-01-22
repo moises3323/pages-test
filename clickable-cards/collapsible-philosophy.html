@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Collapsible Philosophy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Oswald:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --panel-bg: #3f4d40;
+        --panel-border: rgba(242, 237, 226, 0.65);
+        --panel-ink: #f5f1e8;
+        --panel-muted: rgba(245, 241, 232, 0.72);
+        --panel-shadow: 0 18px 40px rgba(15, 23, 42, 0.25);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        background: radial-gradient(circle at 20% 20%, #f9f5ed, #f1ece4 60%, #e7e1d7 100%),
+          repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.04) 0 1px, transparent 1px 10px);
+        color: #1f2937;
+        font-family: "Libre Baskerville", "Georgia", serif;
+      }
+
+      .panel {
+        width: min(760px, 100%);
+        background: var(--panel-bg);
+        color: var(--panel-ink);
+        border: 1px solid var(--panel-border);
+        box-shadow: var(--panel-shadow);
+        padding: 28px clamp(18px, 4vw, 40px) 32px;
+        position: relative;
+      }
+
+      .panel::before {
+        content: "";
+        position: absolute;
+        inset: 14px;
+        border: 1px solid rgba(242, 237, 226, 0.35);
+        pointer-events: none;
+      }
+
+      .panel-title {
+        text-align: center;
+        font-family: "Oswald", "Arial", sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: clamp(0.9rem, 2vw, 1.15rem);
+        margin: 8px 0 22px;
+      }
+
+      .philosophy-list {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+      }
+
+      .collapse-item {
+        border-bottom: 1px solid rgba(242, 237, 226, 0.25);
+        padding-bottom: 16px;
+      }
+
+      .collapse-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      .collapse-trigger {
+        width: 100%;
+        background: transparent;
+        border: none;
+        padding: 0;
+        color: inherit;
+        cursor: pointer;
+        font-family: "Oswald", "Arial", sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: clamp(1rem, 2.1vw, 1.35rem);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        text-align: left;
+      }
+
+      .collapse-trigger:focus-visible {
+        outline: 2px solid rgba(245, 241, 232, 0.7);
+        outline-offset: 4px;
+        border-radius: 6px;
+      }
+
+      .summary-icon {
+        font-size: 1rem;
+        transition: transform 0.35s ease;
+      }
+
+      .collapse-item.is-open .summary-icon {
+        transform: rotate(90deg);
+      }
+
+      .collapse-panel {
+        height: 0;
+        overflow: hidden;
+        transform: translateY(-6px);
+        transition: height 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+          opacity 0.45s ease, transform 0.45s ease;
+        opacity: 0;
+      }
+
+      .collapse-item.is-open .collapse-panel {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .collapse-inner {
+        overflow: hidden;
+      }
+
+      .details-text {
+        margin: 12px 0 0;
+        color: var(--panel-muted);
+        font-size: clamp(0.9rem, 1.5vw, 1rem);
+        line-height: 1.6;
+        opacity: 0;
+        transition: opacity 0.4s ease 0.05s;
+      }
+
+      .collapse-item.is-open .details-text {
+        opacity: 1;
+      }
+
+      .panel-footer {
+        margin-top: 28px;
+        text-align: center;
+        font-family: "Oswald", "Arial", sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        font-size: 0.7rem;
+        color: rgba(245, 241, 232, 0.7);
+      }
+
+      @media (max-width: 640px) {
+        .panel::before {
+          inset: 10px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .collapse-panel,
+        .details-text,
+        .summary-icon {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="panel" aria-label="Food philosophy">
+      <div class="panel-title">Food Philosophy</div>
+      <ul class="philosophy-list">
+        <li class="collapse-item">
+          <button
+            class="collapse-trigger"
+            type="button"
+            aria-expanded="false"
+            aria-controls="philosophy-1"
+          >
+            Our Commitment
+            <span class="summary-icon">›</span>
+          </button>
+          <div class="collapse-panel" id="philosophy-1">
+            <div class="collapse-inner">
+              <p class="details-text">
+                We honor our role in the food supply chain by maintaining high
+                standards for the products on our shelves, the ingredients in
+                our kitchens, and the practices on our farms.
+              </p>
+            </div>
+          </div>
+        </li>
+        <li class="collapse-item">
+          <button
+            class="collapse-trigger"
+            type="button"
+            aria-expanded="false"
+            aria-controls="philosophy-2"
+          >
+            Nutrient Rich
+            <span class="summary-icon">›</span>
+          </button>
+          <div class="collapse-panel" id="philosophy-2">
+            <div class="collapse-inner">
+              <p class="details-text">
+                We focus on practices that protect nutritional density and
+                maximize bioavailability, so you get the most out of every
+                bite.
+              </p>
+            </div>
+          </div>
+        </li>
+        <li class="collapse-item">
+          <button
+            class="collapse-trigger"
+            type="button"
+            aria-expanded="false"
+            aria-controls="philosophy-3"
+          >
+            Always Real
+            <span class="summary-icon">›</span>
+          </button>
+          <div class="collapse-panel" id="philosophy-3">
+            <div class="collapse-inner">
+              <p class="details-text">
+                We vet every product and ingredient before bringing it into our
+                stores or kitchens, because food should be made of food.
+              </p>
+            </div>
+          </div>
+        </li>
+        <li class="collapse-item">
+          <button
+            class="collapse-trigger"
+            type="button"
+            aria-expanded="false"
+            aria-controls="philosophy-4"
+          >
+            Intentionally Sourced
+            <span class="summary-icon">›</span>
+          </button>
+          <div class="collapse-panel" id="philosophy-4">
+            <div class="collapse-inner">
+              <p class="details-text">
+                We prioritize sourcing from farmers and producers who honor
+                heritage practices and uphold high ethical standards for people,
+                animals, and the environment.
+              </p>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <div class="panel-footer">Redmond</div>
+    </section>
+    <script>
+      (function () {
+        const reduceMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
+        const items = document.querySelectorAll(".collapse-item");
+
+        items.forEach((item) => {
+          const trigger = item.querySelector(".collapse-trigger");
+          const panel = item.querySelector(".collapse-panel");
+
+          trigger.addEventListener("click", () => {
+            const isOpen = item.classList.contains("is-open");
+
+            if (reduceMotion) {
+              item.classList.toggle("is-open", !isOpen);
+              trigger.setAttribute("aria-expanded", String(!isOpen));
+              panel.style.height = !isOpen ? "auto" : "0px";
+              return;
+            }
+
+            if (isOpen) {
+              panel.style.height = `${panel.scrollHeight}px`;
+              requestAnimationFrame(() => {
+                item.classList.remove("is-open");
+                trigger.setAttribute("aria-expanded", "false");
+                panel.style.height = "0px";
+              });
+            } else {
+              item.classList.add("is-open");
+              trigger.setAttribute("aria-expanded", "true");
+              panel.style.height = "0px";
+              requestAnimationFrame(() => {
+                panel.style.height = `${panel.scrollHeight}px`;
+              });
+            }
+          });
+
+          panel.addEventListener("transitionend", (event) => {
+            if (event.propertyName !== "height") return;
+            if (item.classList.contains("is-open")) {
+              panel.style.height = "auto";
+            }
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>
