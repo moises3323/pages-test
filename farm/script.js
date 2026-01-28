@@ -447,10 +447,58 @@ function applyTranslations() {
 
 function buildBoard() {
   boardElement.innerHTML = "";
+  const pathOrder = Array.from({ length: 25 }, (_, idx) => idx + 1);
+  const pathMeta = new Map();
+
+  function dirBetween(from, to) {
+    if (!from || !to) return null;
+    if (to.row < from.row) return "N";
+    if (to.row > from.row) return "S";
+    if (to.col > from.col) return "E";
+    if (to.col < from.col) return "W";
+    return null;
+  }
+
+  pathOrder.forEach((number, index) => {
+    const current = positionMap.get(number);
+    const prev = positionMap.get(pathOrder[index - 1]);
+    const next = positionMap.get(pathOrder[index + 1]);
+    const prevDir = dirBetween(current, prev);
+    const nextDir = dirBetween(current, next);
+    const dirs = [prevDir, nextDir].filter(Boolean);
+    let shape = "path-h";
+    if (dirs.length === 1) {
+      shape = dirs[0] === "N" || dirs[0] === "S" ? "path-v" : "path-h";
+    } else if (dirs.length === 2) {
+      const hasN = dirs.includes("N");
+      const hasS = dirs.includes("S");
+      const hasE = dirs.includes("E");
+      const hasW = dirs.includes("W");
+      if ((hasE || hasW) && (hasN || hasS)) {
+        if (hasN && hasE) shape = "corner-ne";
+        else if (hasN && hasW) shape = "corner-nw";
+        else if (hasS && hasE) shape = "corner-se";
+        else if (hasS && hasW) shape = "corner-sw";
+      } else if (hasN || hasS) {
+        shape = "path-v";
+      } else {
+        shape = "path-h";
+      }
+    }
+    pathMeta.set(number, { shape, dirs });
+  });
+
   boardRows.flat().forEach((number) => {
     const space = getSpace(number);
     const tile = document.createElement("div");
-    tile.className = `tile ${space.type}`;
+    const meta = pathMeta.get(number) || { shape: "path-h", dirs: [] };
+    tile.className = `tile ${space.type} ${meta.shape}`;
+    meta.dirs.forEach((dir) => {
+      if (dir === "N") tile.classList.add("join-top");
+      if (dir === "S") tile.classList.add("join-bottom");
+      if (dir === "E") tile.classList.add("join-right");
+      if (dir === "W") tile.classList.add("join-left");
+    });
     tile.dataset.number = number;
 
     const numberEl = document.createElement("div");
