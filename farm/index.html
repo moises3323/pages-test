@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Farm Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Space+Grotesk:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="page">
+      <header class="hero">
+        <div class="logo-row">
+          <img
+            class="logo"
+            src="../imgs/png/Full-logo-original.png"
+            alt="Logo Redmond"
+          />
+        </div>
+        <div class="hero-main">
+          <div class="hero-brand">
+            <h1 data-i18n="heroTitle">Farm Game</h1>
+            <p class="subhead" data-i18n="heroSubhead">
+              Spin or roll to move the freight truck through the farm system.
+              Answer questions at each stop to reach the customer.
+            </p>
+          </div>
+          <div class="hero-side">
+            <div class="status-card" aria-live="polite">
+              <div>
+                <p class="label" data-i18n="statusStop">Current stop</p>
+                <p class="value" id="current-stop">Heritage Farm</p>
+              </div>
+              <div>
+                <p class="label" data-i18n="statusPosition">Position</p>
+                <p class="value"><span id="current-position">1</span> / 25</p>
+              </div>
+              <div>
+                <p class="label" data-i18n="statusMoves">Moves</p>
+                <p class="value" id="move-count">0</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="board-panel" aria-label="Farm board">
+          <div class="board-header">
+            <div>
+              <div class="legend-actions">
+                <button
+                  class="btn primary spin-btn compact"
+                  id="spin-btn"
+                  type="button"
+                  data-i18n="spinButton"
+                >
+                  Spin
+                </button>
+                <button
+                  class="btn ghost compact"
+                  id="reset-btn"
+                  type="button"
+                  data-i18n="resetButton"
+                >
+                  Restart game
+                </button>
+              </div>
+            </div>
+            <div class="board-actions">
+              <div class="legend">
+              <span class="legend-item bonus" data-i18n="legendBonus">Bonus</span>
+              <span class="legend-item hazard" data-i18n="legendHazard">Flat tire</span>
+              <span class="legend-item finish" data-i18n="legendFinish">Finish</span>
+              </div>
+            </div>
+          </div>
+          <details class="rules-collapsible">
+            <summary data-i18n="rulesTitle">Quick rules</summary>
+            <ul>
+              <li data-i18n="rule1">Every labeled stop unlocks a question.</li>
+              <li data-i18n="rule2">Wrong answer: go back 3 spaces (flat tire).</li>
+              <li data-i18n="rule3">Bonus spaces: answer correctly to jump ahead 2.</li>
+              <li data-i18n="rule4">Reach The Customer to finish the route.</li>
+            </ul>
+            <div class="lang-toggle rules-lang" role="group" aria-label="Language toggle">
+              <span class="lang-title" data-i18n="languageLabel">Language</span>
+              <div class="switch-row">
+                <span class="lang-code">EN</span>
+                <label class="switch">
+                  <input id="lang-switch" type="checkbox" />
+                  <span class="slider"></span>
+                </label>
+                <span class="lang-code">ES</span>
+              </div>
+            </div>
+          </details>
+          <div id="board" class="board"></div>
+        </section>
+      </main>
+    </div>
+
+    <div class="floating-result" aria-live="polite">
+      <span id="result-label" data-i18n="resultLabel">Result:</span>
+      <span id="roll-result">-</span>
+      <span id="roll-mode" class="mode-tag">waiting</span>
+    </div>
+
+    <div class="backdrop hidden" id="backdrop"></div>
+
+    <div class="modal hidden" id="question-modal" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow" id="question-stop"></p>
+          <h3 id="question-title"></h3>
+        </div>
+        <span class="badge" id="question-badge">Stop</span>
+      </div>
+      <p class="question-text" id="question-text"></p>
+      <div class="options" id="question-options"></div>
+      <p class="feedback" id="question-feedback"></p>
+      <div class="modal-actions">
+        <button
+          class="btn primary"
+          id="continue-btn"
+          type="button"
+          disabled
+          data-i18n="continueButton"
+        >
+          Continue
+        </button>
+      </div>
+    </div>
+
+    <div class="modal hidden" id="finish-modal" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow" data-i18n="finishEyebrow">Delivery complete</p>
+          <h3 data-i18n="finishTitle">You reached The Customer!</h3>
+        </div>
+      </div>
+      <p class="question-text" data-i18n="finishBody">
+        Nice work. Restart to play again or adjust the questions when you are
+        ready.
+      </p>
+      <div class="modal-actions">
+        <button
+          class="btn primary"
+          id="finish-reset"
+          type="button"
+          data-i18n="finishReset"
+        >
+          Restart
+        </button>
+      </div>
+    </div>
+
+    <div class="modal spin-modal hidden" id="spin-modal" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow" data-i18n="spinModalEyebrow">Spin the wheel</p>
+          <h3 data-i18n="spinModalTitle">Ready to move?</h3>
+        </div>
+        <span class="badge" data-i18n="spinModalBadge">Spinner</span>
+      </div>
+      <div class="spinner-wrap">
+        <div class="spinner" aria-hidden="true">
+          <div id="spinner-wheel" class="spinner-wheel">
+            <span>1</span>
+            <span>2</span>
+            <span>3</span>
+            <span>4</span>
+            <span>5</span>
+            <span>6</span>
+          </div>
+          <div class="spinner-center"></div>
+        </div>
+        <div class="spinner-pointer" aria-hidden="true"></div>
+      </div>
+      <p class="spin-result">
+        <span data-i18n="spinResultLabel">Result</span>:
+        <strong id="spin-result">-</strong>
+      </p>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
