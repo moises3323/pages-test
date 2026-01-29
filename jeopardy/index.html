@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jeopardy Redmond</title>
+  <title>Redmond Jeopardy</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -13,43 +13,50 @@
       <div class="brand-block">
         <img class="logo" src="../imgs/png/Full-logo-original.png" alt="Logo Redmond" />
         <div class="hero-copy">
-        <p class="eyebrow">Questions pulled from the 5 Redmond sites</p>
-        <h1>Jeopardy Redmond</h1>
-          <p class="subhead">15 clues (3 per site), hidden Daily Double, and Final Jeopardy. Practice mode is always on with multiple choice for solo play.</p>
-          <div class="meta-row">
-            <span>12s per clue</span>
-            <span>Random Daily Double</span>
-            <span>Final Jeopardy after clearing the board</span>
-          </div>
+        <h1 id="page-title">Redmond Jeopardy</h1>
+          <p class="subhead" id="page-subhead">It’s jeopardy time!</p>
         </div>
       </div>
       <div class="score-widget">
-        <p class="label">Score</p>
+        <p class="label" id="score-label">Score</p>
         <div class="score" id="score">0</div>
         <div class="stat-row">
-          <span>Remaining: <strong id="remaining">15</strong></span>
+          <span><span id="remaining-label">Remaining:</span> <strong id="remaining">15</strong></span>
           <span id="final-status">Final locked</span>
         </div>
       </div>
+      <div class="lang-switch hidden" aria-label="Language toggle">
+        <span class="lang-label active" id="lang-en">EN</span>
+        <label class="switch">
+          <input type="checkbox" id="lang-toggle" aria-label="Toggle language" />
+          <span class="slider"></span>
+        </label>
+        <span class="lang-label" id="lang-es">ES</span>
+      </div>
     </header>
 
-    <section class="board" id="board" aria-label="Tablero de Jeopardy"></section>
+    <details class="instructions" aria-label="How to play">
+      <summary class="instructions-summary">
+        <span id="instructions-title">How to play</span>
+        <span class="instructions-icon" aria-hidden="true">›</span>
+      </summary>
+      <div class="instructions-body">
+        <p class="instructions-text" id="instructions-line1">When you click a square, you will be given the answer to a question. Your job is to guess the correct question. You have 25 seconds to answer!</p>
+        <div class="instructions-example">
+          <p id="instructions-example-label">Example:</p>
+          <p id="instructions-answer"><strong>Answer -</strong> Redmond’s amazing electrolyte mix.</p>
+          <p id="instructions-question"><strong>Question -</strong> What is Re-Lyte?</p>
+        </div>
+        <p class="instructions-text" id="instructions-line2">If you select the correct question, you win the dollar value on the card! See how high you can score.</p>
+      </div>
+    </details>
 
-    <section class="controls">
-      <div class="rules">
-        <p class="eyebrow">Quick rules</p>
-        <ul>
-          <li>Each square is $100, $200, or $300 depending on its row.</li>
-          <li>Tap to see the clue. If it is a Daily Double, wager first.</li>
-          <li>You always see 3 options (1 correct, 2 distractors); pick one to auto-score.</li>
-          <li>Use each square once; when all 15 are done, Final Jeopardy unlocks.</li>
-        </ul>
-      </div>
-      <div class="actions">
-        <button id="final-btn" class="btn" disabled>Play Final Jeopardy</button>
-        <button id="reset-btn" class="btn ghost">Restart game</button>
-      </div>
-    </section>
+    <section class="board" id="board" aria-label="Jeopardy board"></section>
+
+    <div class="actions">
+      <button id="final-btn" class="btn" disabled>Play Final Jeopardy</button>
+      <button id="reset-btn" class="btn ghost">Restart game</button>
+    </div>
   </div>
 
   <div class="backdrop hidden" id="backdrop"></div>
@@ -66,8 +73,8 @@
     <div class="banner hidden" id="daily-double-banner">Daily Double</div>
 
     <div class="wager-block hidden" id="wager-block">
-      <p class="eyebrow">Place your wager</p>
-      <p>Choose your wager (max is your current score if it exceeds the clue value).</p>
+      <p class="eyebrow" id="wager-title">Place your wager</p>
+      <p id="wager-subtitle">Choose your wager (max is your current score if it exceeds the clue value).</p>
       <div class="wager-input">
         <span>$</span>
         <input type="number" id="wager-input" min="0" value="200" />
@@ -78,7 +85,7 @@
     <p class="clue" id="clue-text"></p>
 
     <div class="choices-wrap hidden" id="choices-wrap">
-      <p class="eyebrow">Choose your answer</p>
+      <p class="eyebrow" id="choices-title">Choose your answer</p>
       <div class="choices" id="choices"></div>
     </div>
 
@@ -90,7 +97,7 @@
     <button class="btn primary" id="reveal-btn">Show answer</button>
 
     <div class="answer hidden" id="answer-wrap">
-      <p class="eyebrow">Answer</p>
+      <p class="eyebrow" id="answer-label">Answer</p>
       <p id="answer-text"></p>
     </div>
 
@@ -104,15 +111,15 @@
   <div class="modal hidden" id="final-modal" role="dialog" aria-modal="true" aria-labelledby="final-title">
     <div class="modal-header">
       <div>
-        <p class="eyebrow">Last chance</p>
+        <p class="eyebrow" id="final-eyebrow">Last chance</p>
         <h3 id="final-title">Final Jeopardy</h3>
       </div>
-      <div class="value-tag accent">Wager</div>
+      <div class="value-tag accent" id="final-wager-tag">Wager</div>
     </div>
 
     <div class="wager-block" id="final-wager-block">
-      <p class="eyebrow">Set your wager</p>
-      <p>Max: your current score (if negative, your wager must be 0).</p>
+      <p class="eyebrow" id="final-wager-title">Set your wager</p>
+      <p id="final-wager-subtitle">Max: your current score (if negative, your wager must be 0).</p>
       <div class="wager-input">
         <span>$</span>
         <input type="number" id="final-wager-input" min="0" value="0" />
@@ -122,6 +129,11 @@
 
     <p class="clue" id="final-clue"></p>
 
+    <div class="choices-wrap hidden" id="final-choices-wrap">
+      <p class="eyebrow" id="final-choices-title">Choose your answer</p>
+      <div class="choices" id="final-choices"></div>
+    </div>
+
     <div class="timer">
       <div class="timer-bar" id="final-timer-bar"></div>
       <span id="final-timer-label">18s</span>
@@ -130,16 +142,32 @@
     <button class="btn primary" id="final-reveal">Show answer</button>
 
     <div class="answer hidden" id="final-answer-wrap">
-      <p class="eyebrow">Answer</p>
+      <p class="eyebrow" id="final-answer-label">Answer</p>
       <p id="final-answer"></p>
     </div>
 
     <div class="modal-actions">
-      <button class="btn positive" id="final-correct">Correct (+)</button>
-      <button class="btn negative" id="final-wrong">Incorrect (-)</button>
+      <button class="btn positive hidden" id="final-correct">Correct (+)</button>
+      <button class="btn negative hidden" id="final-wrong">Incorrect (-)</button>
       <button class="btn ghost" id="final-close">Close</button>
     </div>
   </div>
+
+  <div class="backdrop hidden" id="result-backdrop"></div>
+  <div class="modal result-modal hidden" id="result-modal" role="dialog" aria-modal="true" aria-labelledby="result-title">
+    <div class="result-header">
+      <p class="eyebrow" id="result-eyebrow">Game over</p>
+      <h3 id="result-title">Final score</h3>
+    </div>
+    <div class="result-score" id="result-score">$0</div>
+    <p class="result-message" id="result-message">Nice run! Want to play again?</p>
+    <div class="modal-actions">
+      <button class="btn primary" id="result-restart">Play again</button>
+      <button class="btn ghost" id="result-close">Close</button>
+    </div>
+  </div>
+
+  <div class="confetti hidden" id="confetti"></div>
 
   <script src="script.js"></script>
 </body>
