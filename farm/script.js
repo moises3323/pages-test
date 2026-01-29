@@ -23,6 +23,8 @@ const finishModal = document.getElementById("finish-modal");
 const finishResetButton = document.getElementById("finish-reset");
 const spinModal = document.getElementById("spin-modal");
 const spinResult = document.getElementById("spin-result");
+const confettiCanvas = document.getElementById("confetti-canvas");
+const confettiCtx = confettiCanvas ? confettiCanvas.getContext("2d") : null;
 
 const STEP_DURATION = 520;
 
@@ -78,7 +80,7 @@ const translations = {
     finishEyebrow: "Delivery complete",
     finishTitle: "You reached The Customer!",
     finishBody:
-      "Nice work. Restart to play again or adjust the questions when you are ready.",
+      "Nice work. Restart to play again.",
     finishReset: "Restart",
     stopLabel: "Stop",
     badgeQuestion: "Question",
@@ -132,7 +134,7 @@ const translations = {
     finishEyebrow: "Entrega completada",
     finishTitle: "¡Llegaste al Cliente!",
     finishBody:
-      "Buen trabajo. Reinicia para jugar otra vez o ajusta las preguntas cuando estés listo.",
+      "Buen trabajo. Reinicia para jugar otra vez.",
     finishReset: "Reiniciar",
     stopLabel: "Parada",
     badgeQuestion: "Pregunta",
@@ -401,6 +403,10 @@ let currentLang = "en";
 let currentMode = "waiting";
 let pendingOutcome = null;
 let audioContext = null;
+let applauseBuffer = null;
+let confettiParticles = [];
+let confettiFrame = null;
+let confettiTimer = null;
 
 function t(key) {
   return translations[currentLang][key];
@@ -555,11 +561,13 @@ function rollNumber() {
 
 function spinWheel(result) {
   const segment = 360 / 6;
-  const target = 360 * 3 + (6 - result) * segment + segment / 2;
+  const desired = (6 - result) * segment + segment / 2;
   const current = spinnerWheel.dataset.rotation
     ? Number(spinnerWheel.dataset.rotation)
     : 0;
-  const next = current + target;
+  const currentMod = ((current % 360) + 360) % 360;
+  const spins = 3;
+  const next = current + spins * 360 + (desired - currentMod);
   spinnerWheel.dataset.rotation = String(next);
   spinnerWheel.style.transform = `rotate(${next}deg)`;
 }
@@ -661,6 +669,154 @@ function playSadEngine(durationMs) {
   engine.stop(now + duration + 0.05);
 }
 
+function emitSmoke(tile, facing) {
+  if (!tile) return;
+  const puff = document.createElement("span");
+  puff.className = `smoke ${facing === "right" ? "left" : "right"}`;
+  tile.appendChild(puff);
+  puff.addEventListener("animationend", () => {
+    puff.remove();
+  });
+  setTimeout(() => {
+    puff.remove();
+  }, 1800);
+}
+
+function resizeConfettiCanvas() {
+  if (!confettiCanvas || !confettiCtx) return;
+  const dpr = window.devicePixelRatio || 1;
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  confettiCanvas.width = Math.floor(width * dpr);
+  confettiCanvas.height = Math.floor(height * dpr);
+  confettiCanvas.style.width = `${width}px`;
+  confettiCanvas.style.height = `${height}px`;
+  confettiCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function stopConfetti() {
+  if (!confettiCtx) return;
+  if (confettiFrame) {
+    cancelAnimationFrame(confettiFrame);
+    confettiFrame = null;
+  }
+  if (confettiTimer) {
+    clearTimeout(confettiTimer);
+    confettiTimer = null;
+  }
+  confettiParticles = [];
+  confettiCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+}
+
+function animateConfetti() {
+  if (!confettiCtx) return;
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  confettiCtx.clearRect(0, 0, width, height);
+  confettiParticles = confettiParticles.filter((piece) => {
+    piece.x += piece.vx;
+    piece.y += piece.vy;
+    piece.rotation += piece.vr;
+    piece.opacity -= piece.decay;
+    if (piece.opacity <= 0 || piece.y > height + 40) {
+      return false;
+    }
+    confettiCtx.save();
+    confettiCtx.globalAlpha = Math.max(piece.opacity, 0);
+    confettiCtx.translate(piece.x, piece.y);
+    confettiCtx.rotate(piece.rotation);
+    confettiCtx.fillStyle = piece.color;
+    confettiCtx.fillRect(-piece.w / 2, -piece.h / 2, piece.w, piece.h);
+    confettiCtx.restore();
+    return true;
+  });
+
+  if (confettiParticles.length) {
+    confettiFrame = requestAnimationFrame(animateConfetti);
+  } else {
+    stopConfetti();
+  }
+}
+
+function launchConfetti() {
+  if (!confettiCtx) return;
+  stopConfetti();
+  resizeConfettiCanvas();
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  const colors = ["#f8d38f", "#f3b574", "#e79b5b", "#f1c78b", "#d9b27d", "#f7e6c6"];
+  const count = Math.min(160, Math.max(90, Math.floor(width / 8)));
+  confettiParticles = Array.from({ length: count }, () => ({
+    x: Math.random() * width,
+    y: -20 - Math.random() * height * 0.2,
+    w: 6 + Math.random() * 6,
+    h: 10 + Math.random() * 10,
+    vx: (Math.random() - 0.5) * 1.6,
+    vy: 3 + Math.random() * 4.2,
+    rotation: Math.random() * Math.PI,
+    vr: (Math.random() - 0.5) * 0.25,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    opacity: 1,
+    decay: 0.003 + Math.random() * 0.004,
+  }));
+  confettiFrame = requestAnimationFrame(animateConfetti);
+  confettiTimer = setTimeout(stopConfetti, 2800);
+}
+
+function getApplauseBuffer() {
+  if (!audioContext) return null;
+  if (applauseBuffer && applauseBuffer.sampleRate === audioContext.sampleRate) {
+    return applauseBuffer;
+  }
+  const length = Math.floor(audioContext.sampleRate * 0.4);
+  const buffer = audioContext.createBuffer(1, length, audioContext.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < length; i += 1) {
+    const fade = 1 - i / length;
+    data[i] = (Math.random() * 2 - 1) * fade;
+  }
+  applauseBuffer = buffer;
+  return buffer;
+}
+
+function playApplause() {
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return;
+  if (!audioContext) {
+    audioContext = new AudioCtx();
+  }
+  if (audioContext.state === "suspended") {
+    audioContext.resume();
+  }
+  const buffer = getApplauseBuffer();
+  if (!buffer) return;
+
+  const now = audioContext.currentTime;
+  const master = audioContext.createGain();
+  master.gain.setValueAtTime(0.0001, now);
+  master.gain.exponentialRampToValueAtTime(0.1, now + 0.03);
+  master.gain.exponentialRampToValueAtTime(0.0001, now + 1.6);
+  master.connect(audioContext.destination);
+
+  const bursts = 7;
+  for (let i = 0; i < bursts; i += 1) {
+    const start = now + i * 0.18 + Math.random() * 0.06;
+    const duration = 0.12 + Math.random() * 0.08;
+    const source = audioContext.createBufferSource();
+    source.buffer = buffer;
+    const filter = audioContext.createBiquadFilter();
+    filter.type = "bandpass";
+    filter.frequency.setValueAtTime(1100 + Math.random() * 700, start);
+    const gain = audioContext.createGain();
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.exponentialRampToValueAtTime(0.22, start + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+    source.connect(filter).connect(gain).connect(master);
+    source.start(start);
+    source.stop(start + duration);
+  }
+}
+
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -706,6 +862,10 @@ async function moveTruckAnimated(steps, options = {}) {
       }
     }
     updateBoard();
+    const activeTile = boardElement.querySelector(
+      `.tile[data-number="${state.position}"]`
+    );
+    emitSmoke(activeTile, state.facing);
     await wait(STEP_DURATION);
   }
 
@@ -871,6 +1031,8 @@ async function applyOutcome() {
 function openFinishModal() {
   setButtonsDisabled(true);
   openModal(finishModal);
+  launchConfetti();
+  playApplause();
 }
 
 function resetGame() {
@@ -889,6 +1051,7 @@ function resetGame() {
   closeModal(questionModal);
   closeModal(finishModal);
   closeModal(spinModal);
+  stopConfetti();
   updateBoard();
 }
 
@@ -927,6 +1090,9 @@ langSwitch.addEventListener("change", () => {
 backdrop.addEventListener("click", () => {
   if (!questionModal.classList.contains("hidden")) return;
   closeModal(finishModal);
+  stopConfetti();
 });
 
 setLanguage("en");
+resizeConfettiCanvas();
+window.addEventListener("resize", resizeConfettiCanvas);
