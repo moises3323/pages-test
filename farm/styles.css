@@ -246,13 +246,15 @@ h3 {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+  justify-content: flex-start;
 }
 
 .board-actions {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  align-items: flex-end;
+  align-items: flex-start;
+  order: -1;
 }
 
 .legend-actions {
@@ -597,32 +599,32 @@ h3 {
 }
 
 .spinner-wheel span:nth-child(1) {
-  --angle: 0deg;
+  --angle: 30deg;
   transform: rotate(var(--angle)) translateY(-58px) rotate(calc(-1 * var(--angle)));
 }
 
 .spinner-wheel span:nth-child(2) {
-  --angle: 60deg;
+  --angle: 90deg;
   transform: rotate(var(--angle)) translateY(-58px) rotate(calc(-1 * var(--angle)));
 }
 
 .spinner-wheel span:nth-child(3) {
-  --angle: 120deg;
+  --angle: 150deg;
   transform: rotate(var(--angle)) translateY(-58px) rotate(calc(-1 * var(--angle)));
 }
 
 .spinner-wheel span:nth-child(4) {
-  --angle: 180deg;
+  --angle: 210deg;
   transform: rotate(var(--angle)) translateY(-58px) rotate(calc(-1 * var(--angle)));
 }
 
 .spinner-wheel span:nth-child(5) {
-  --angle: 240deg;
+  --angle: 270deg;
   transform: rotate(var(--angle)) translateY(-58px) rotate(calc(-1 * var(--angle)));
 }
 
 .spinner-wheel span:nth-child(6) {
-  --angle: 300deg;
+  --angle: 330deg;
   transform: rotate(var(--angle)) translateY(-58px) rotate(calc(-1 * var(--angle)));
 }
 
@@ -661,11 +663,25 @@ h3 {
 }
 
 .spin-result {
-  margin: 0;
+  margin: 8px 0 0;
   font-weight: 600;
   color: var(--forest);
 }
 
+.spin-result span {
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.spin-result strong {
+  display: block;
+  margin-top: 6px;
+  font-size: clamp(2.2rem, 7vw, 3.6rem);
+  line-height: 1;
+  color: #1f3a2b;
+}
 .roll-actions {
   display: flex;
   gap: 12px;

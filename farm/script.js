@@ -555,7 +555,7 @@ function rollNumber() {
 
 function spinWheel(result) {
   const segment = 360 / 6;
-  const target = 360 * 3 + (6 - result + 1) * segment;
+  const target = 360 * 3 + (6 - result) * segment + segment / 2;
   const current = spinnerWheel.dataset.rotation
     ? Number(spinnerWheel.dataset.rotation)
     : 0;
@@ -671,7 +671,7 @@ async function runSpinSequence(result) {
   await wait(50);
   await animateSpinner(result);
   spinResult.textContent = result;
-  await wait(420);
+  await wait(900);
   closeModal(spinModal);
 }
 
