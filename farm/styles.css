@@ -558,6 +558,9 @@ h3 {
   cursor: pointer;
   list-style: none;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .rules-collapsible summary::marker {
@@ -566,10 +569,10 @@ h3 {
 
 .rules-collapsible summary::after {
   content: "▾";
-  float: right;
   font-size: 0.9rem;
   color: #6a3b1b;
   display: inline-block;
+  margin-left: 2px;
   transition: transform 0.2s ease;
 }
 
