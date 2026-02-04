@@ -321,7 +321,7 @@ const finalJeopardyEn = {
   category: "Redmond Origin",
   clue:
     "Real Salt, Trophy Rock, and the livestock blocks all come from an ancient inland sea deposit located in this U.S. state.",
-  answer: "Utah, in the deposits near Redmond, Utah",
+  answer: "Utah",
   distractors: ["Nevada", "Wyoming"],
 };
 
@@ -329,7 +329,7 @@ const finalJeopardyEs = {
   category: "Origen de Redmond",
   clue:
     "Real Salt, Trophy Rock y los bloques para ganado provienen de un depósito de un antiguo mar interior ubicado en este estado de EE. UU.",
-  answer: "Utah, en los depósitos cerca de Redmond, Utah",
+  answer: "Utah",
   distractors: ["Nevada", "Wyoming"],
 };
 
