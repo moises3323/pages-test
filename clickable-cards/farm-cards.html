@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Farm Cards</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&display=swap");
+
+      :root {
+        --card-width: 230px;
+        --card-height: 340px;
+        --card-gap: 18px;
+        --card-radius: 20px;
+        --shadow: 0 18px 36px rgba(33, 26, 20, 0.16);
+        --border-color: rgba(38, 33, 29, 0.28);
+        --page-bg: radial-gradient(circle at 10% 10%, #fbf7f0, #f2eadf 55%, #e8dfd1 100%);
+        --page-ink: #2b2521;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        color: var(--page-ink);
+        font-family: "Avenir", "Avenir Next", "Helvetica Neue", sans-serif;
+        padding: 28px 22px 40px;
+      }
+
+      .cards-grid {
+        width: min(1200px, 100%);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: var(--card-gap);
+      }
+
+      .farm-card {
+        position: relative;
+        width: 100%;
+        height: var(--card-height);
+        border: 0;
+        padding: 0;
+        background: transparent;
+        cursor: pointer;
+        border-radius: var(--card-radius);
+        box-shadow: var(--shadow);
+        animation: floatIn 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+        animation-delay: var(--delay, 0s);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+      }
+
+      .farm-card:hover,
+      .farm-card:focus-visible {
+        transform: translateY(-4px);
+        box-shadow: 0 22px 40px rgba(33, 26, 20, 0.22);
+      }
+
+      .farm-card:focus-visible {
+        outline: 3px solid rgba(60, 45, 34, 0.45);
+        outline-offset: 4px;
+      }
+
+      .card-face {
+        position: absolute;
+        inset: 0;
+        border-radius: var(--card-radius);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 26px 22px;
+        border: 2px solid var(--border-color);
+        background: var(--front-bg, #fefcf8);
+        color: var(--front-color, #2b2521);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+        overflow: hidden;
+        pointer-events: none;
+      }
+
+      .card-front-title {
+        position: relative;
+        z-index: 1;
+        font-family: "Montserrat", "Avenir", "Helvetica Neue", sans-serif;
+        font-size: clamp(0.82rem, 1.9vw, 1.2rem);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        line-height: 1.45;
+        padding: 0 14px;
+        max-width: 90%;
+        word-break: normal;
+        text-wrap: balance;
+        hyphens: none;
+        font-weight: 700;
+      }
+
+      .card-back {
+        opacity: 0;
+        transform: scale(0.98);
+        background: var(--back-bg, #fefcf8);
+        color: var(--back-color, #2b2521);
+        gap: 18px;
+      }
+
+      .card-back-title {
+        position: relative;
+        z-index: 1;
+        font-family: "Montserrat", "Avenir", "Helvetica Neue", sans-serif;
+        font-size: 0.72rem;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+
+      .card-back-text {
+        position: relative;
+        z-index: 1;
+        font-size: clamp(0.85rem, 2vw, 1rem);
+        line-height: 1.4;
+        padding: 0 6px;
+        word-break: break-word;
+      }
+
+      .farm-card.is-open .card-front {
+        opacity: 0;
+        transform: scale(0.98);
+      }
+
+      .farm-card.is-open .card-back {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      @keyframes floatIn {
+        0% {
+          opacity: 0;
+          transform: translateY(24px) scale(0.96);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      @media (max-width: 800px) {
+        :root {
+          --card-height: 320px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .farm-card,
+        .card-face {
+          animation: none;
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="cards" class="cards-grid" aria-label="Farm values cards"></div>
+
+    <script id="farm-cards-data" type="application/json">
+      [
+        {
+          "title": "Passion for Contribution",
+          "description": "Passion for Contribution means we come to work wanting to be helpful, to serve each other and the greater mission.",
+          "frontBg": "#fefcf8",
+          "frontColor": "#2b2521",
+          "backBg": "#fefcf8",
+          "backColor": "#2b2521"
+        },
+        {
+          "title": "Occhiolism",
+          "description": "Occhiolism helps us stay curious about what others see, so we can show up with empathy and an attitude of collaboration with coworkers and customers.",
+          "frontBg": "#d29a3a",
+          "frontColor": "#fef8ef",
+          "backBg": "#d29a3a",
+          "backColor": "#fef8ef"
+        },
+        {
+          "title": "Ubuntu",
+          "description": "Ubuntu reminds us that when one person thrives, we all benefit. There's no \"us vs. them\" here.",
+          "frontBg": "#f4f2ea",
+          "frontColor": "#b1b1a9",
+          "backBg": "#f4f2ea",
+          "backColor": "#2f2a25"
+        },
+        {
+          "title": "Reflection",
+          "description": "Reflection keeps our growth sustainable. We pause to notice what's working, what's not, and where we're being invited to grow, both individually and as a team.",
+          "frontBg": "#2f3f2f",
+          "frontColor": "#f4f1ea",
+          "backBg": "#2f3f2f",
+          "backColor": "#f4f1ea"
+        },
+        {
+          "title": "Renewal",
+          "description": "Renewal isn't just rest, it's resetting mindsets, workflows, and spaces to keep doing meaningful work in an energizing way.",
+          "frontBg": "#f4f7f5",
+          "frontColor": "#8f9da0",
+          "backBg": "#f4f7f5",
+          "backColor": "#2b2521"
+        }
+      ]
+    </script>
+
+    <script>
+      (function () {
+        const dataEl = document.getElementById("farm-cards-data");
+        let cardsData = [];
+
+        try {
+          cardsData = JSON.parse(dataEl.textContent || "[]");
+        } catch {
+          cardsData = [];
+        }
+
+        const container = document.getElementById("cards");
+
+        const cards = cardsData.map((card, index) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "farm-card";
+          button.style.setProperty("--delay", `${index * 0.08}s`);
+          button.style.setProperty("--front-bg", card.frontBg || "#fefcf8");
+          button.style.setProperty("--front-color", card.frontColor || "#2b2521");
+          button.style.setProperty("--back-bg", card.backBg || card.frontBg || "#fefcf8");
+          button.style.setProperty("--back-color", card.backColor || "#2b2521");
+          button.setAttribute("aria-pressed", "false");
+          button.setAttribute("aria-label", `${card.title}. Click para revelar.`);
+
+          const front = document.createElement("span");
+          front.className = "card-face card-front";
+
+          const frontTitle = document.createElement("span");
+          frontTitle.className = "card-front-title";
+          frontTitle.textContent = card.title;
+          front.appendChild(frontTitle);
+
+          const back = document.createElement("span");
+          back.className = "card-face card-back";
+
+          const backTitle = document.createElement("span");
+          backTitle.className = "card-back-title";
+          backTitle.textContent = card.title;
+
+          const backText = document.createElement("span");
+          backText.className = "card-back-text";
+          backText.textContent = card.description;
+
+          back.appendChild(backTitle);
+          back.appendChild(backText);
+
+          button.appendChild(front);
+          button.appendChild(back);
+
+          button.addEventListener("click", () => {
+            const isOpen = button.classList.toggle("is-open");
+            button.setAttribute("aria-pressed", String(isOpen));
+          });
+
+          return button;
+        });
+
+        container.replaceChildren(...cards);
+      })();
+    </script>
+  </body>
+</html>
