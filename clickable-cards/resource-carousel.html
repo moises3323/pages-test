@@ -60,6 +60,11 @@
         touch-action: pan-y;
       }
 
+      .carousel-wrap.is-dragging .resource-card {
+        transition: none;
+        cursor: grabbing;
+      }
+
       .carousel {
         position: relative;
         height: calc(var(--card-height) + 36px);
@@ -71,7 +76,8 @@
         top: 0;
         width: var(--card-width);
         height: var(--card-height);
-        cursor: pointer;
+        cursor: grab;
+        user-select: none;
         border-radius: 18px;
         overflow: hidden;
         box-shadow: 0 20px 45px rgba(15, 23, 42, 0.27);
@@ -89,6 +95,8 @@
         height: 100%;
         object-fit: cover;
         display: block;
+        pointer-events: none;
+        -webkit-user-drag: none;
       }
 
       .resource-card.is-active {
@@ -249,8 +257,21 @@
         const AUTOPLAY_MS = 2200;
         let suppressClickUntil = 0;
         let pointerDown = false;
+        let activePointerId = null;
         let pointerStartX = 0;
+        let dragOffsetX = 0;
         let draggedInGesture = false;
+
+        function mod(value, total) {
+          return ((value % total) + total) % total;
+        }
+
+        function getStepX() {
+          const stepX = parseFloat(
+            getComputedStyle(document.documentElement).getPropertyValue("--step-x"),
+          );
+          return Number.isFinite(stepX) ? stepX : 170;
+        }
 
         function circularOffset(index, active, total) {
           let offset = index - active;
@@ -259,15 +280,16 @@
           return offset;
         }
 
-        function render() {
+        function render(extraOffsetX = 0) {
           const total = cards.length;
+          const stepX = getStepX();
 
           cards.forEach((card, index) => {
             const offset = circularOffset(index, activeIndex, total);
             const abs = Math.abs(offset);
             const hidden = abs > 3;
 
-            const translateX = offset * parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--step-x"));
+            const translateX = offset * stepX + extraOffsetX;
             const translateY = abs * 18;
             const scale = 1 - abs * 0.12;
             const opacity = 1 - abs * 0.22;
@@ -325,10 +347,68 @@
           });
         });
 
-        carouselWrap.addEventListener("pointerdown", (event) => {
+        function beginDrag(clientX, pointerId) {
+          if (pointerDown) return;
           pointerDown = true;
-          pointerStartX = event.clientX;
+          activePointerId = pointerId;
+          pointerStartX = clientX;
+          dragOffsetX = 0;
           draggedInGesture = false;
+          carouselWrap.classList.add("is-dragging");
+          stopAutoplay();
+        }
+
+        function updateDrag(clientX, pointerId) {
+          if (!pointerDown) return;
+          if (activePointerId !== null && pointerId !== activePointerId) return;
+          const rawDeltaX = clientX - pointerStartX;
+          const maxPreview = getStepX() * 1.25;
+          dragOffsetX = Math.max(-maxPreview, Math.min(maxPreview, rawDeltaX));
+          if (Math.abs(dragOffsetX) > 4) draggedInGesture = true;
+          render(dragOffsetX);
+        }
+
+        function finishDrag(pointerId) {
+          if (!pointerDown) return;
+          if (activePointerId !== null && pointerId !== activePointerId) return;
+          pointerDown = false;
+          activePointerId = null;
+          carouselWrap.classList.remove("is-dragging");
+
+          const stepX = getStepX();
+          const movedSteps = Math.round(-dragOffsetX / stepX);
+          const minMoveThreshold = stepX * 0.18;
+
+          if (Math.abs(dragOffsetX) >= minMoveThreshold && movedSteps !== 0) {
+            activeIndex = mod(activeIndex + movedSteps, cards.length);
+          }
+          if (draggedInGesture) {
+            suppressClickUntil = Date.now() + 300;
+          }
+          dragOffsetX = 0;
+          draggedInGesture = false;
+          render();
+          restartAutoplay();
+        }
+
+        function cancelDrag() {
+          if (!pointerDown) return;
+          pointerDown = false;
+          activePointerId = null;
+          dragOffsetX = 0;
+          draggedInGesture = false;
+          carouselWrap.classList.remove("is-dragging");
+          render();
+          restartAutoplay();
+        }
+
+        carouselWrap.addEventListener("dragstart", (event) => {
+          event.preventDefault();
+        });
+
+        carouselWrap.addEventListener("pointerdown", (event) => {
+          if (event.button !== undefined && event.button !== 0) return;
+          beginDrag(event.clientX, "p-" + event.pointerId);
           if (carouselWrap.setPointerCapture) {
             try {
               carouselWrap.setPointerCapture(event.pointerId);
@@ -337,28 +417,11 @@
         });
 
         carouselWrap.addEventListener("pointermove", (event) => {
-          if (!pointerDown) return;
-          const deltaX = event.clientX - pointerStartX;
-          const dragStepThreshold = 48;
-          if (Math.abs(deltaX) < dragStepThreshold) return;
-
-          if (deltaX < 0) {
-            next();
-          } else {
-            prev();
-          }
-          pointerStartX = event.clientX;
-          draggedInGesture = true;
-          suppressClickUntil = Date.now() + 260;
-          restartAutoplay();
+          updateDrag(event.clientX, "p-" + event.pointerId);
         });
 
         carouselWrap.addEventListener("pointerup", (event) => {
-          if (!pointerDown) return;
-          pointerDown = false;
-          if (draggedInGesture) {
-            suppressClickUntil = Date.now() + 260;
-          }
+          finishDrag("p-" + event.pointerId);
 
           if (carouselWrap.releasePointerCapture) {
             try {
@@ -368,8 +431,50 @@
         });
 
         carouselWrap.addEventListener("pointercancel", () => {
-          pointerDown = false;
-          draggedInGesture = false;
+          cancelDrag();
+        });
+
+        carouselWrap.addEventListener("mousedown", (event) => {
+          if (event.button !== 0) return;
+          beginDrag(event.clientX, "mouse");
+        });
+
+        window.addEventListener("mousemove", (event) => {
+          updateDrag(event.clientX, "mouse");
+        });
+
+        window.addEventListener("mouseup", () => {
+          finishDrag("mouse");
+        });
+
+        carouselWrap.addEventListener(
+          "touchstart",
+          (event) => {
+            const touch = event.touches[0];
+            if (!touch) return;
+            beginDrag(touch.clientX, "touch");
+            event.preventDefault();
+          },
+          { passive: false },
+        );
+
+        carouselWrap.addEventListener(
+          "touchmove",
+          (event) => {
+            const touch = event.touches[0];
+            if (!touch) return;
+            updateDrag(touch.clientX, "touch");
+            event.preventDefault();
+          },
+          { passive: false },
+        );
+
+        window.addEventListener("touchend", () => {
+          finishDrag("touch");
+        });
+
+        window.addEventListener("touchcancel", () => {
+          cancelDrag();
         });
 
         window.addEventListener("keydown", (event) => {
