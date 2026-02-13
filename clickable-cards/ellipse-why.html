@@ -40,6 +40,9 @@
         grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
         gap: 22px;
         align-items: center;
+        position: relative;
+        z-index: 1;
+        transition: filter 0.35s ease, transform 0.35s ease;
       }
 
       .ellipse-card {
@@ -53,7 +56,6 @@
         cursor: pointer;
         box-shadow: var(--card-shadow);
         outline: none;
-        transform-style: preserve-3d;
         transition: transform 0.35s ease, box-shadow 0.35s ease;
       }
 
@@ -61,6 +63,10 @@
       .ellipse-card:focus-visible {
         transform: translateY(-4px) scale(1.01);
         box-shadow: 0 22px 44px rgba(15, 23, 42, 0.25);
+      }
+
+      .ellipse-card.is-open {
+        transform: scale(0.97);
       }
 
       .ellipse-card:focus-visible {
@@ -120,25 +126,82 @@
         transform: scale(1);
       }
 
-      .ellipse-back {
-        opacity: 0;
-        transform: scale(0.92) rotateX(10deg);
-        filter: blur(6px);
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-      }
-
       .ellipse-card.is-open .ellipse-front {
-        opacity: 0;
-        transform: scale(1.08) rotateX(-8deg);
-        filter: blur(6px);
+        opacity: 0.35;
+        transform: scale(0.95);
       }
 
-      .ellipse-card.is-open .ellipse-back {
+      body.modal-open .stage {
+        filter: blur(6px) saturate(0.85);
+        transform: scale(0.985);
+      }
+
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background: rgba(27, 32, 38, 0.35);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
         opacity: 1;
-        transform: scale(1) rotateX(0deg);
-        filter: blur(0);
+        transition: opacity 0.28s ease;
+      }
+
+      .modal-backdrop[hidden] {
+        display: none;
+      }
+
+      .modal-panel {
+        width: min(92vw, 680px);
+        max-height: min(70vh, 560px);
+        overflow: auto;
+        border-radius: 26px;
+        border: 1px solid rgba(255, 255, 255, 0.38);
+        background: linear-gradient(150deg, rgba(18, 20, 24, 0.08), rgba(18, 20, 24, 0.42)),
+          var(--modal-fill, #4a4f4b);
+        color: #fdf8f0;
+        box-shadow: 0 34px 80px rgba(8, 12, 18, 0.42);
+        padding: 26px 28px 24px;
+        position: relative;
+      }
+
+      .modal-title {
+        font-family: "Oswald", "Arial", sans-serif;
+        font-size: clamp(1.3rem, 2.5vw, 1.9rem);
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        margin: 0 36px 12px 0;
+        color: #fdf8f0;
+      }
+
+      .modal-text {
+        margin: 0;
+        font-size: clamp(1rem, 1.75vw, 1.45rem);
+        line-height: 1.55;
+        color: rgba(253, 248, 240, 0.9);
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 34px;
+        height: 34px;
+        border-radius: 999px;
+        border: 1px solid rgba(253, 248, 240, 0.4);
+        background: rgba(18, 20, 24, 0.28);
+        color: #fdf8f0;
+        font-size: 20px;
+        line-height: 1;
+        cursor: pointer;
+      }
+
+      .modal-close:focus-visible {
+        outline: 2px solid rgba(253, 248, 240, 0.8);
+        outline-offset: 2px;
       }
 
       .front-word {
@@ -150,39 +213,23 @@
         text-shadow: 0 10px 20px rgba(15, 23, 42, 0.35);
       }
 
-      .back-title {
-        font-family: "Oswald", "Arial", sans-serif;
-        font-size: clamp(1rem, 2.2vw, 1.35rem);
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        margin: 0 0 8px;
-        color: #fdf8f0;
-      }
-
-      .back-text {
-        font-size: clamp(0.78rem, 1.45vw, 0.95rem);
-        line-height: 1.5;
-        color: rgba(253, 248, 240, 0.8);
-      }
-
-      .back-stack {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
-        width: min(88%, 320px);
-        padding: 6px 0;
-      }
-
       @media (max-width: 700px) {
         .ellipse-card {
           aspect-ratio: 4 / 3.8;
+        }
+
+        .modal-panel {
+          width: min(94vw, 460px);
+          border-radius: 20px;
+          padding: 20px 20px 18px;
         }
       }
 
       @media (prefers-reduced-motion: reduce) {
         .ellipse-face,
-        .ellipse-card {
+        .ellipse-card,
+        .stage,
+        .modal-backdrop {
           transition: none;
         }
       }
@@ -190,65 +237,117 @@
   </head>
   <body>
     <div class="stage" aria-label="Why who what cards">
-      <button class="ellipse-card" type="button" data-word="Why">
-        <span class="ellipse-shell" style="--card-fill: #c75d4f">
+      <button
+        class="ellipse-card"
+        type="button"
+        data-word="Why"
+        data-title="Why"
+        data-text="We exist to deliver nutrient-rich food and preserve the land through practices that honor people, animals, and place."
+        aria-pressed="false"
+        style="--card-fill: #c75d4f"
+      >
+        <span class="ellipse-shell">
           <span class="ellipse-face ellipse-front">
             <span class="front-word">Why</span>
           </span>
-          <span class="ellipse-face ellipse-back">
-            <span class="back-stack">
-              <span class="back-title">Why</span>
-              <span class="back-text">
-                We exist to deliver nutrient-rich food and preserve the land
-                through practices that honor people, animals, and place.
-              </span>
-            </span>
-          </span>
         </span>
       </button>
-      <button class="ellipse-card" type="button" data-word="Who">
-        <span class="ellipse-shell" style="--card-fill: #4a4f4b">
+      <button
+        class="ellipse-card"
+        type="button"
+        data-word="Who"
+        data-title="Who"
+        data-text="A community of farmers, families, and caretakers committed to thoughtful stewardship and honest, transparent food."
+        aria-pressed="false"
+        style="--card-fill: #4a4f4b"
+      >
+        <span class="ellipse-shell">
           <span class="ellipse-face ellipse-front">
             <span class="front-word">Who</span>
           </span>
-          <span class="ellipse-face ellipse-back">
-            <span class="back-stack">
-              <span class="back-title">Who</span>
-              <span class="back-text">
-                A community of farmers, families, and caretakers committed to
-                thoughtful stewardship and honest, transparent food.
-              </span>
-            </span>
-          </span>
         </span>
       </button>
-      <button class="ellipse-card" type="button" data-word="What">
-        <span class="ellipse-shell" style="--card-fill: #97a866">
+      <button
+        class="ellipse-card"
+        type="button"
+        data-word="What"
+        data-title="What"
+        data-text="Raw dairy, eggs, and meat made with care, shaped by regenerative methods that keep nourishment at the center."
+        aria-pressed="false"
+        style="--card-fill: #97a866"
+      >
+        <span class="ellipse-shell">
           <span class="ellipse-face ellipse-front">
             <span class="front-word">What</span>
-          </span>
-          <span class="ellipse-face ellipse-back">
-            <span class="back-stack">
-              <span class="back-title">What</span>
-              <span class="back-text">
-                Raw dairy, eggs, and meat made with care, shaped by regenerative
-                methods that keep nourishment at the center.
-              </span>
-            </span>
           </span>
         </span>
       </button>
     </div>
+    <div class="modal-backdrop" id="modal-backdrop" hidden>
+      <article class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <button class="modal-close" id="modal-close" type="button" aria-label="Cerrar">×</button>
+        <h2 class="modal-title" id="modal-title"></h2>
+        <p class="modal-text" id="modal-text"></p>
+      </article>
+    </div>
 
     <script>
       (function () {
-        const cards = document.querySelectorAll(".ellipse-card");
+        const cards = Array.from(document.querySelectorAll(".ellipse-card"));
+        const backdrop = document.getElementById("modal-backdrop");
+        const closeButton = document.getElementById("modal-close");
+        const modalTitle = document.getElementById("modal-title");
+        const modalText = document.getElementById("modal-text");
+        const modalPanel = backdrop ? backdrop.querySelector(".modal-panel") : null;
+        let activeCard = null;
+
+        const closeAll = () => {
+          cards.forEach((card) => {
+            card.classList.remove("is-open");
+            card.setAttribute("aria-pressed", "false");
+          });
+          activeCard = null;
+          document.body.classList.remove("modal-open");
+          if (backdrop) backdrop.hidden = true;
+        };
+
+        const openCard = (card) => {
+          const fill = getComputedStyle(card).getPropertyValue("--card-fill").trim();
+          const title = card.dataset.title || card.dataset.word || "";
+          const text = card.dataset.text || "";
+          closeAll();
+          card.classList.add("is-open");
+          card.setAttribute("aria-pressed", "true");
+          activeCard = card;
+          if (modalTitle) modalTitle.textContent = title;
+          if (modalText) modalText.textContent = text;
+          if (modalPanel && fill) modalPanel.style.setProperty("--modal-fill", fill);
+          document.body.classList.add("modal-open");
+          if (backdrop) backdrop.hidden = false;
+          if (closeButton) closeButton.focus();
+        };
 
         cards.forEach((card) => {
           card.addEventListener("click", () => {
-            const isOpen = card.classList.toggle("is-open");
-            card.setAttribute("aria-pressed", String(isOpen));
+            const willOpen = activeCard !== card;
+            if (!willOpen) {
+              closeAll();
+              return;
+            }
+            openCard(card);
           });
+        });
+
+        if (closeButton) closeButton.addEventListener("click", closeAll);
+
+        if (backdrop) {
+          backdrop.addEventListener("click", (event) => {
+            if (event.target === backdrop) closeAll();
+          });
+        }
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") closeAll();
         });
       })();
     </script>

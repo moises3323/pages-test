@@ -72,14 +72,48 @@
         list-style: none;
       }
 
-      .collapse-item {
+      .philosophy-list > .collapse-item {
         border-bottom: 1px solid rgba(242, 237, 226, 0.25);
         padding-bottom: 16px;
       }
 
-      .collapse-item:last-child {
+      .philosophy-list > .collapse-item:last-child {
         border-bottom: none;
         padding-bottom: 0;
+      }
+
+      .collapse-children {
+        list-style: none;
+        margin: 14px 0 0;
+        padding: 0 0 0 16px;
+        border-left: 1px solid rgba(242, 237, 226, 0.2);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .collapse-item.is-nested {
+        padding: 0;
+        border: none;
+      }
+
+      .collapse-item.is-nested .collapse-trigger {
+        font-size: clamp(0.84rem, 1.65vw, 1.02rem);
+        letter-spacing: 0.06em;
+      }
+
+      .collapse-item.is-nested .details-text {
+        margin-top: 8px;
+        font-size: clamp(0.84rem, 1.4vw, 0.95rem);
+      }
+
+      .collapse-heading {
+        width: 100%;
+        color: inherit;
+        font-family: "Oswald", "Arial", sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: clamp(1rem, 2.1vw, 1.35rem);
       }
 
       .collapse-trigger {
@@ -146,6 +180,14 @@
         opacity: 1;
       }
 
+      .collapse-item.is-static .details-text {
+        opacity: 1;
+      }
+
+      .static-content {
+        margin-top: 10px;
+      }
+
       .panel-footer {
         margin-top: 28px;
         text-align: center;
@@ -173,100 +215,218 @@
   </head>
   <body>
     <section class="panel" aria-label="Food philosophy">
-      <div class="panel-title">Food Philosophy</div>
-      <ul class="philosophy-list">
-        <li class="collapse-item">
-          <button
-            class="collapse-trigger"
-            type="button"
-            aria-expanded="false"
-            aria-controls="philosophy-1"
-          >
-            Our Commitment
-            <span class="summary-icon">›</span>
-          </button>
-          <div class="collapse-panel" id="philosophy-1">
-            <div class="collapse-inner">
-              <p class="details-text">
-                We honor our role in the food supply chain by maintaining high
-                standards for the products on our shelves, the ingredients in
-                our kitchens, and the practices on our farms.
-              </p>
-            </div>
-          </div>
-        </li>
-        <li class="collapse-item">
-          <button
-            class="collapse-trigger"
-            type="button"
-            aria-expanded="false"
-            aria-controls="philosophy-2"
-          >
-            Nutrient Rich
-            <span class="summary-icon">›</span>
-          </button>
-          <div class="collapse-panel" id="philosophy-2">
-            <div class="collapse-inner">
-              <p class="details-text">
-                We focus on practices that protect nutritional density and
-                maximize bioavailability, so you get the most out of every
-                bite.
-              </p>
-            </div>
-          </div>
-        </li>
-        <li class="collapse-item">
-          <button
-            class="collapse-trigger"
-            type="button"
-            aria-expanded="false"
-            aria-controls="philosophy-3"
-          >
-            Always Real
-            <span class="summary-icon">›</span>
-          </button>
-          <div class="collapse-panel" id="philosophy-3">
-            <div class="collapse-inner">
-              <p class="details-text">
-                We vet every product and ingredient before bringing it into our
-                stores or kitchens, because food should be made of food.
-              </p>
-            </div>
-          </div>
-        </li>
-        <li class="collapse-item">
-          <button
-            class="collapse-trigger"
-            type="button"
-            aria-expanded="false"
-            aria-controls="philosophy-4"
-          >
-            Intentionally Sourced
-            <span class="summary-icon">›</span>
-          </button>
-          <div class="collapse-panel" id="philosophy-4">
-            <div class="collapse-inner">
-              <p class="details-text">
-                We prioritize sourcing from farmers and producers who honor
-                heritage practices and uphold high ethical standards for people,
-                animals, and the environment.
-              </p>
-            </div>
-          </div>
-        </li>
-      </ul>
-      <div class="panel-footer">Redmond</div>
+      <div class="panel-title"></div>
+      <ul class="philosophy-list" id="philosophy-list"></ul>
+      <div class="panel-footer" id="panel-footer"></div>
     </section>
+
+    <script id="philosophy-data" type="application/json">
+      {
+        "title": "Food Philosophy",
+        "footer": "Redmond",
+        "items": [
+          {
+            "title": "Our Commitment",
+            "collapsible": false,
+            "text": "We honor our role in the food supply chain by maintaining high standards for the products on our shelves, the ingredients in our kitchens, and the practices on our farms."
+          },
+          {
+            "title": "Nutrient Rich",
+            "open": true,
+            "text": "We focus on practices that protect nutritional density and maximize bioavailability, so you get the most out of every bite.",
+            "children": [
+              {
+                "title": "Sourcing Standards",
+                "text": "We review sourcing inputs at every stage to maintain consistency and quality."
+              },
+              {
+                "title": "Long-Term Stewardship",
+                "text": "We prioritize long-term practices that support people, animals, and the land."
+              }
+            ]
+          },
+          {
+            "title": "Always Real",
+            "text": "We vet every product and ingredient before bringing it into our stores or kitchens, because food should be made of food."
+          },
+          {
+            "title": "Intentionally Sourced",
+            "text": "We prioritize sourcing from farmers and producers who honor heritage practices and uphold high ethical standards for people, animals, and the environment."
+          }
+        ]
+      }
+    </script>
+
     <script>
       (function () {
         const reduceMotion = window.matchMedia(
           "(prefers-reduced-motion: reduce)",
         ).matches;
-        const items = document.querySelectorAll(".collapse-item");
+        const panelTitle = document.querySelector(".panel-title");
+        const footer = document.getElementById("panel-footer");
+        const list = document.getElementById("philosophy-list");
+        const dataNode = document.getElementById("philosophy-data");
 
-        items.forEach((item) => {
-          const trigger = item.querySelector(".collapse-trigger");
-          const panel = item.querySelector(".collapse-panel");
+        const DEFAULT_DATA = {
+          title: "Food Philosophy",
+          footer: "Redmond",
+          items: [
+            {
+              title: "Our Commitment",
+              collapsible: false,
+              text: "We honor our role in the food supply chain by maintaining high standards for the products on our shelves, the ingredients in our kitchens, and the practices on our farms.",
+            },
+            {
+              title: "Nutrient Rich",
+              open: true,
+              text: "We focus on practices that protect nutritional density and maximize bioavailability, so you get the most out of every bite.",
+              children: [
+                {
+                  title: "Sourcing Standards",
+                  text: "We review sourcing inputs at every stage to maintain consistency and quality.",
+                },
+                {
+                  title: "Long-Term Stewardship",
+                  text: "We prioritize long-term practices that support people, animals, and the land.",
+                },
+              ],
+            },
+            {
+              title: "Always Real",
+              text: "We vet every product and ingredient before bringing it into our stores or kitchens, because food should be made of food.",
+            },
+            {
+              title: "Intentionally Sourced",
+              text: "We prioritize sourcing from farmers and producers who honor heritage practices and uphold high ethical standards for people, animals, and the environment.",
+            },
+          ],
+        };
+
+        function normalizeEntry(entry) {
+          const raw = entry && typeof entry === "object" ? entry : {};
+          const childrenRaw = Array.isArray(raw.children) ? raw.children : [];
+          const isCollapsible = raw.collapsible !== false;
+          return {
+            title: typeof raw.title === "string" ? raw.title : "",
+            text: typeof raw.text === "string" ? raw.text : "",
+            collapsible: isCollapsible,
+            open: isCollapsible ? Boolean(raw.open) : true,
+            children: childrenRaw.map(normalizeEntry),
+          };
+        }
+
+        const NORMALIZED_DEFAULT_DATA = {
+          ...DEFAULT_DATA,
+          items: DEFAULT_DATA.items.map(normalizeEntry),
+        };
+
+        function parseData() {
+          if (!dataNode) return NORMALIZED_DEFAULT_DATA;
+          try {
+            const parsed = JSON.parse(dataNode.textContent || "{}");
+            const items = Array.isArray(parsed.items)
+              ? parsed.items.map(normalizeEntry)
+              : [];
+            if (!items.length) return NORMALIZED_DEFAULT_DATA;
+            return {
+              title:
+                typeof parsed.title === "string" && parsed.title.trim()
+                  ? parsed.title
+                  : NORMALIZED_DEFAULT_DATA.title,
+              footer:
+                typeof parsed.footer === "string" && parsed.footer.trim()
+                  ? parsed.footer
+                  : NORMALIZED_DEFAULT_DATA.footer,
+              items,
+            };
+          } catch {
+            return NORMALIZED_DEFAULT_DATA;
+          }
+        }
+
+        function createCollapseItem(entry, path, depth) {
+          const item = document.createElement("li");
+          item.className = "collapse-item";
+          if (depth > 0) item.classList.add("is-nested");
+          const isOpen = entry.collapsible ? entry.open : true;
+          if (isOpen) item.classList.add("is-open");
+
+          if (!entry.collapsible) {
+            item.classList.add("is-static");
+            const heading = document.createElement("div");
+            heading.className = "collapse-heading";
+            heading.textContent = entry.title || "Untitled";
+
+            const content = document.createElement("div");
+            content.className = "static-content";
+
+            if (entry.text) {
+              const text = document.createElement("p");
+              text.className = "details-text";
+              text.textContent = entry.text;
+              content.append(text);
+            }
+
+            if (entry.children.length) {
+              const children = document.createElement("ul");
+              children.className = "collapse-children";
+              entry.children.forEach((child, index) => {
+                children.append(createCollapseItem(child, path.concat(index + 1), depth + 1));
+              });
+              content.append(children);
+            }
+
+            item.append(heading, content);
+            return item;
+          }
+
+          const panelId = `philosophy-${path.join("-")}`;
+
+          const trigger = document.createElement("button");
+          trigger.className = "collapse-trigger";
+          trigger.type = "button";
+          trigger.setAttribute("aria-expanded", String(isOpen));
+          trigger.setAttribute("aria-controls", panelId);
+          trigger.append(document.createTextNode(entry.title || "Untitled"));
+
+          const icon = document.createElement("span");
+          icon.className = "summary-icon";
+          icon.textContent = "›";
+          trigger.append(icon);
+
+          const panel = document.createElement("div");
+          panel.className = "collapse-panel";
+          panel.id = panelId;
+          panel.style.height = isOpen ? "auto" : "0px";
+
+          const inner = document.createElement("div");
+          inner.className = "collapse-inner";
+
+          if (entry.text) {
+            const text = document.createElement("p");
+            text.className = "details-text";
+            text.textContent = entry.text;
+            inner.append(text);
+          }
+
+          if (entry.children.length) {
+            const children = document.createElement("ul");
+            children.className = "collapse-children";
+            entry.children.forEach((child, index) => {
+              children.append(createCollapseItem(child, path.concat(index + 1), depth + 1));
+            });
+            inner.append(children);
+          }
+
+          panel.append(inner);
+          item.append(trigger, panel);
+          return item;
+        }
+
+        function bindCollapse(item) {
+          const trigger = item.querySelector(":scope > .collapse-trigger");
+          const panel = item.querySelector(":scope > .collapse-panel");
+          if (!trigger || !panel) return;
 
           trigger.addEventListener("click", () => {
             const isOpen = item.classList.contains("is-open");
@@ -285,14 +445,15 @@
                 trigger.setAttribute("aria-expanded", "false");
                 panel.style.height = "0px";
               });
-            } else {
-              item.classList.add("is-open");
-              trigger.setAttribute("aria-expanded", "true");
-              panel.style.height = "0px";
-              requestAnimationFrame(() => {
-                panel.style.height = `${panel.scrollHeight}px`;
-              });
+              return;
             }
+
+            item.classList.add("is-open");
+            trigger.setAttribute("aria-expanded", "true");
+            panel.style.height = "0px";
+            requestAnimationFrame(() => {
+              panel.style.height = `${panel.scrollHeight}px`;
+            });
           });
 
           panel.addEventListener("transitionend", (event) => {
@@ -301,7 +462,15 @@
               panel.style.height = "auto";
             }
           });
-        });
+        }
+
+        const data = parseData();
+        panelTitle.textContent = data.title;
+        footer.textContent = data.footer;
+        list.replaceChildren(
+          ...data.items.map((entry, index) => createCollapseItem(entry, [index + 1], 0)),
+        );
+        list.querySelectorAll(".collapse-item").forEach(bindCollapse);
       })();
     </script>
   </body>

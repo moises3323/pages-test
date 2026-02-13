@@ -57,5 +57,39 @@
       "name": "Caleb",
       "description": "My kids love Relyte, and so do I! Redmond products help us stay hydrated and healthy, allowing us to feel our best and spend quality time together."
     }
-  ]
+  ],
+  "philosophy-nested": {
+    "title": "Food Philosophy",
+    "footer": "Redmond",
+    "items": [
+      {
+        "title": "Our Commitment",
+        "collapsible": false,
+        "text": "We honor our role in the food supply chain by maintaining high standards for the products on our shelves, the ingredients in our kitchens, and the practices on our farms."
+      },
+      {
+        "title": "Nutrient Rich",
+        "open": true,
+        "text": "We focus on practices that protect nutritional density and maximize bioavailability, so you get the most out of every bite.",
+        "children": [
+          {
+            "title": "Sourcing Standards",
+            "text": "We review sourcing inputs at every stage to maintain consistency and quality."
+          },
+          {
+            "title": "Long-Term Stewardship",
+            "text": "We prioritize long-term practices that support people, animals, and the land."
+          }
+        ]
+      },
+      {
+        "title": "Always Real",
+        "text": "We vet every product and ingredient before bringing it into our stores or kitchens, because food should be made of food."
+      },
+      {
+        "title": "Intentionally Sourced",
+        "text": "We prioritize sourcing from farmers and producers who honor heritage practices and uphold high ethical standards for people, animals, and the environment."
+      }
+    ]
+  }
 }
