@@ -57,6 +57,7 @@
         margin-top: 34px;
         padding: 10px 0 18px;
         overflow: hidden;
+        touch-action: pan-y;
       }
 
       .carousel {
@@ -70,9 +71,9 @@
         top: 0;
         width: var(--card-width);
         height: var(--card-height);
+        cursor: pointer;
         border-radius: 18px;
         overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.45);
         box-shadow: 0 20px 45px rgba(15, 23, 42, 0.27);
         transition:
           transform 460ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -88,33 +89,6 @@
         height: 100%;
         object-fit: cover;
         display: block;
-      }
-
-      .resource-card::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background:
-          linear-gradient(180deg, rgba(15, 23, 42, 0.04) 36%, rgba(15, 23, 42, 0.88) 92%);
-      }
-
-      .content {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 18px;
-        z-index: 2;
-        padding: 0 18px;
-        color: #f8fafc;
-      }
-
-      .card-title {
-        margin: 0 0 12px;
-        font-size: clamp(1.2rem, 1.45vw, 1.5rem);
-        line-height: 1.2;
-        text-align: center;
-        text-wrap: balance;
-        text-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
       }
 
       .resource-card.is-active {
@@ -142,10 +116,6 @@
 
         .carousel-wrap {
           margin-top: 20px;
-        }
-
-        .card-title {
-          font-size: 1.06rem;
         }
 
       }
@@ -263,17 +233,7 @@
             const image = document.createElement("img");
             image.src = item.image;
             image.alt = item.alt || "Lorem ipsum";
-
-            const content = document.createElement("div");
-            content.className = "content";
-
-            const cardTitle = document.createElement("h2");
-            cardTitle.className = "card-title";
-            cardTitle.textContent = item.title || "Lorem ipsum";
-
-            content.appendChild(cardTitle);
             article.appendChild(image);
-            article.appendChild(content);
             carousel.appendChild(article);
           });
         }
@@ -286,6 +246,11 @@
         const cards = Array.from(document.querySelectorAll(".resource-card"));
         let activeIndex = 0;
         let autoplayTimer = null;
+        const AUTOPLAY_MS = 2200;
+        let suppressClickUntil = 0;
+        let pointerDown = false;
+        let pointerStartX = 0;
+        let draggedInGesture = false;
 
         function circularOffset(index, active, total) {
           let offset = index - active;
@@ -335,7 +300,7 @@
 
         function startAutoplay() {
           stopAutoplay();
-          autoplayTimer = setInterval(next, 3600);
+          autoplayTimer = setInterval(next, AUTOPLAY_MS);
         }
 
         function stopAutoplay() {
@@ -347,10 +312,65 @@
           startAutoplay();
         }
 
-        carouselWrap.addEventListener("mouseenter", stopAutoplay);
-        carouselWrap.addEventListener("mouseleave", startAutoplay);
-        carouselWrap.addEventListener("focusin", stopAutoplay);
-        carouselWrap.addEventListener("focusout", startAutoplay);
+        cards.forEach((card, index) => {
+          card.addEventListener("click", () => {
+            if (Date.now() < suppressClickUntil) return;
+            if (index === activeIndex) {
+              next();
+            } else {
+              activeIndex = index;
+              render();
+            }
+            restartAutoplay();
+          });
+        });
+
+        carouselWrap.addEventListener("pointerdown", (event) => {
+          pointerDown = true;
+          pointerStartX = event.clientX;
+          draggedInGesture = false;
+          if (carouselWrap.setPointerCapture) {
+            try {
+              carouselWrap.setPointerCapture(event.pointerId);
+            } catch {}
+          }
+        });
+
+        carouselWrap.addEventListener("pointermove", (event) => {
+          if (!pointerDown) return;
+          const deltaX = event.clientX - pointerStartX;
+          const dragStepThreshold = 48;
+          if (Math.abs(deltaX) < dragStepThreshold) return;
+
+          if (deltaX < 0) {
+            next();
+          } else {
+            prev();
+          }
+          pointerStartX = event.clientX;
+          draggedInGesture = true;
+          suppressClickUntil = Date.now() + 260;
+          restartAutoplay();
+        });
+
+        carouselWrap.addEventListener("pointerup", (event) => {
+          if (!pointerDown) return;
+          pointerDown = false;
+          if (draggedInGesture) {
+            suppressClickUntil = Date.now() + 260;
+          }
+
+          if (carouselWrap.releasePointerCapture) {
+            try {
+              carouselWrap.releasePointerCapture(event.pointerId);
+            } catch {}
+          }
+        });
+
+        carouselWrap.addEventListener("pointercancel", () => {
+          pointerDown = false;
+          draggedInGesture = false;
+        });
 
         window.addEventListener("keydown", (event) => {
           if (event.key === "ArrowRight") {
