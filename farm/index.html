@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Farm Game</title>
+    <title>Farm to Table Game</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -25,10 +25,10 @@
         </div>
         <div class="hero-main">
           <div class="hero-brand">
-            <h1 data-i18n="heroTitle">Farm Game</h1>
+            <h1 data-i18n="heroTitle">Farm to Table Game</h1>
             <p class="subhead" data-i18n="heroSubhead">
-              Spin or roll to move the freight truck through the farm system.
-              Answer questions at each stop to reach the customer.
+              Spin the wheel to follow the freight truck's route from the farm
+              to the customer.
             </p>
           </div>
           <div class="hero-side">
@@ -75,8 +75,7 @@
             </div>
             <div class="board-actions">
               <div class="legend">
-              <span class="legend-item bonus" data-i18n="legendBonus">Bonus</span>
-              <span class="legend-item hazard" data-i18n="legendHazard">Flat tire</span>
+              <span class="legend-item hazard" data-i18n="legendHazard">Start over</span>
               <span class="legend-item finish" data-i18n="legendFinish">Finish</span>
               </div>
             </div>
@@ -85,9 +84,9 @@
             <summary data-i18n="rulesTitle">Quick rules</summary>
             <ul>
               <li data-i18n="rule1">Every labeled stop unlocks a question.</li>
-              <li data-i18n="rule2">Wrong answer: go back 3 spaces (flat tire).</li>
-              <li data-i18n="rule3">Bonus spaces: answer correctly to jump ahead 2.</li>
-              <li data-i18n="rule4">Reach The Customer to finish the route.</li>
+              <li data-i18n="rule2">Correct answer: Keep advancing!</li>
+              <li data-i18n="rule3">Incorrect Answer: Flat Tire! Go back 3 spaces.</li>
+              <li data-i18n="rule4">Deliver raw milk from the farm to the customer to win the game!</li>
             </ul>
             <div class="lang-toggle rules-lang" role="group" aria-label="Language toggle">
               <span class="lang-title" data-i18n="languageLabel">Language</span>
@@ -142,7 +141,7 @@
       <div class="modal-header">
         <div>
           <p class="eyebrow" data-i18n="finishEyebrow">Delivery complete</p>
-          <h3 data-i18n="finishTitle">You reached The Customer!</h3>
+          <h3 data-i18n="finishTitle">You reached the customer!</h3>
         </div>
       </div>
       <p class="question-text" data-i18n="finishBody">

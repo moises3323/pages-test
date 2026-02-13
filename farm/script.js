@@ -45,11 +45,11 @@ boardRows.forEach((row, rowIndex) => {
 
 const translations = {
   en: {
-    pageTitle: "Farm Game",
+    pageTitle: "Farm to Table Game",
     heroEyebrow: "Board game concept",
-    heroTitle: "Farm Game",
+    heroTitle: "Farm to Table Game",
     heroSubhead:
-      "Spin the wheel to move the freight truck through the farm system. Answer questions at each stop to reach the customer.",
+      "Spin the wheel to follow the freight truck's route from the farm to the customer.",
     statusStop: "Current stop",
     statusPosition: "Position",
     statusMoves: "Moves",
@@ -57,8 +57,7 @@ const translations = {
     languageToggleAria: "Switch language to Spanish",
     boardTitle: "Redmond Farm Kitchen & Market Board",
     boardSubtitle: "Start at the freight truck and deliver to the customer.",
-    legendBonus: "Bonus",
-    legendHazard: "Flat tire",
+    legendHazard: "Start over",
     legendFinish: "Finish",
     startEyebrow: "Start here",
     startTitle: "Freight Truck",
@@ -72,26 +71,26 @@ const translations = {
     spinResultLabel: "Result",
     rulesTitle: "Quick rules",
     rule1: "Every labeled stop unlocks a question.",
-    rule2: "Wrong answer: go back 3 spaces (flat tire).",
-    rule3: "Bonus spaces: answer correctly to jump ahead 2.",
-    rule4: "Reach The Customer to finish the route.",
+    rule2: "Correct answer: Keep advancing!",
+    rule3: "Incorrect Answer: Flat Tire! Go back 3 spaces.",
+    rule4: "Deliver raw milk from the farm to the customer to win the game!",
     resetButton: "Restart game",
     continueButton: "Continue",
     finishEyebrow: "Delivery complete",
-    finishTitle: "You reached The Customer!",
+    finishTitle: "You reached the customer!",
     finishBody:
       "Nice work. Restart to play again.",
     finishReset: "Restart",
     stopLabel: "Stop",
     badgeQuestion: "Question",
-    badgeBonus: "Bonus",
-    badgeHazard: "Hazard",
-    flatTire: "Flat tire",
-    truckIssue: "Truck issue",
-    hazardText: "The truck has an issue. Move back 3 spaces and try again.",
-    feedbackBonusCorrect: "Correct! Bonus jump unlocked.",
+    badgeHazard: "Restart",
+    flatTire: "Forgot the milk",
+    truckIssue: "Forgot the milk!",
+    hazardText: "Go back to the farm and start the route again.",
     feedbackCorrect: "Correct! Keep moving.",
-    feedbackWrong: "Incorrect. Flat tire — move back 3 spaces.",
+    feedbackWrong: "Incorrect Answer: Flat Tire! Go back 3 spaces.",
+    startTileAlt: "Farmer at the farm",
+    finishTileAlt: "Customer team",
     farmPath: "Farm Path",
     modes: {
       waiting: "waiting",
@@ -99,11 +98,11 @@ const translations = {
     },
   },
   es: {
-    pageTitle: "Juego de la Granja",
+    pageTitle: "Juego De La Granja a la Mesa",
     heroEyebrow: "Concepto de juego de mesa",
-    heroTitle: "Juego de la Granja",
+    heroTitle: "Juego De La Granja a la Mesa",
     heroSubhead:
-      "Gira la ruleta para mover el camión de carga por el sistema de la granja. Responde preguntas en cada parada para llegar al cliente.",
+      "Gira la ruleta para seguir la ruta del camión de carga desde la granja hasta el cliente.",
     statusStop: "Parada actual",
     statusPosition: "Posición",
     statusMoves: "Movimientos",
@@ -111,8 +110,7 @@ const translations = {
     languageToggleAria: "Cambiar idioma a inglés",
     boardTitle: "Tablero Redmond Farm Kitchen & Market",
     boardSubtitle: "Empieza en el camión de carga y entrega al cliente.",
-    legendBonus: "Bono",
-    legendHazard: "Llanta pinchada",
+    legendHazard: "Empezar de nuevo",
     legendFinish: "Meta",
     startEyebrow: "Empieza aquí",
     startTitle: "Camión de carga",
@@ -126,9 +124,9 @@ const translations = {
     spinResultLabel: "Resultado",
     rulesTitle: "Reglas rápidas",
     rule1: "Cada parada con etiqueta desbloquea una pregunta.",
-    rule2: "Respuesta incorrecta: retrocede 3 espacios (llanta pinchada).",
-    rule3: "Espacios de bono: responde bien para avanzar 2.",
-    rule4: "Llega al Cliente para terminar la ruta.",
+    rule2: "Respuesta correcta: sigue avanzando.",
+    rule3: "Respuesta incorrecta: llanta pinchada. Retrocede 3 espacios.",
+    rule4: "Entrega leche cruda desde la granja hasta el cliente para ganar.",
     resetButton: "Reiniciar juego",
     continueButton: "Continuar",
     finishEyebrow: "Entrega completada",
@@ -138,14 +136,14 @@ const translations = {
     finishReset: "Reiniciar",
     stopLabel: "Parada",
     badgeQuestion: "Pregunta",
-    badgeBonus: "Bono",
-    badgeHazard: "Alerta",
-    flatTire: "Llanta pinchada",
-    truckIssue: "Problema del camión",
-    hazardText: "El camión tiene un problema. Retrocede 3 espacios y vuelve a intentarlo.",
-    feedbackBonusCorrect: "¡Correcto! Bono activado: avanzas 2.",
+    badgeHazard: "Reinicio",
+    flatTire: "Olvidaste la leche",
+    truckIssue: "Olvidaste la leche",
+    hazardText: "Regresa a la granja y vuelve a iniciar la ruta.",
     feedbackCorrect: "¡Correcto! Sigue avanzando.",
-    feedbackWrong: "Incorrecto. Llanta pinchada — retrocede 3 espacios.",
+    feedbackWrong: "Respuesta incorrecta: llanta pinchada. Retrocede 3 espacios.",
+    startTileAlt: "Granjero en la granja",
+    finishTileAlt: "Equipo de clientes",
     farmPath: "Camino de granja",
     modes: {
       waiting: "en espera",
@@ -165,9 +163,7 @@ const spaceDetails = {
   18: { label: { en: "Market Truck", es: "Camión del mercado" }, type: "stop" },
   24: { label: { en: "Market Kitchen", es: "Cocina del mercado" }, type: "stop" },
   25: { label: { en: "The Customer", es: "El Cliente" }, type: "finish" },
-  6: { label: { en: "Flat Tire", es: "Llanta pinchada" }, type: "hazard" },
-  8: { label: { en: "Bonus Question", es: "Pregunta bono" }, type: "bonus" },
-  15: { label: { en: "Bonus Question", es: "Pregunta bono" }, type: "bonus" },
+  6: { label: { en: "Forgot the milk", es: "Olvidaste la leche" }, type: "hazard" },
 };
 
 const questions = [
@@ -385,6 +381,27 @@ const questions = [
   },
 ];
 
+const topicQuestionIndexes = {
+  marketKitchen: [0, 1, 2, 6],
+  farmPath: [3, 4, 7, 8],
+  productionKitchen: [9],
+  milkProcessingFacility: [5],
+  marketTruck: [10, 11],
+  heritageFarm: [8],
+};
+
+const questionTopicBySpace = {
+  1: "heritageFarm",
+  4: "marketKitchen",
+  9: "productionKitchen",
+  14: "milkProcessingFacility",
+  18: "marketTruck",
+  24: "marketKitchen",
+};
+
+const questionRotationByTopic = new Map();
+const TRUCK_TOKEN_IMAGE = "assets/Truck 2.png";
+
 const state = {
   position: 1,
   moves: 0,
@@ -424,6 +441,27 @@ function getSpace(number) {
     label: detail?.label?.[currentLang] || t("farmPath"),
     type: detail?.type || "stop",
   };
+}
+
+function getQuestionTopicForSpace(spaceNumber) {
+  return questionTopicBySpace[spaceNumber] || "farmPath";
+}
+
+function getQuestionIndexForSpace(spaceNumber) {
+  const topic = getQuestionTopicForSpace(spaceNumber);
+  const topicPool = topicQuestionIndexes[topic] || topicQuestionIndexes.farmPath;
+  if (!topicPool || topicPool.length === 0) {
+    return (spaceNumber - 1) % questions.length;
+  }
+
+  const current = questionRotationByTopic.get(topic) || 0;
+  const questionIndex = topicPool[current % topicPool.length];
+  questionRotationByTopic.set(topic, current + 1);
+  return questionIndex;
+}
+
+function createTileIllustration(space) {
+  return null;
 }
 
 function applyTranslations() {
@@ -515,7 +553,11 @@ function buildBoard() {
     labelEl.className = "label";
     labelEl.textContent = space.label;
 
+    const illustration = createTileIllustration(space);
     tile.append(numberEl, labelEl);
+    if (illustration) {
+      tile.appendChild(illustration);
+    }
     boardElement.appendChild(tile);
   });
 }
@@ -531,7 +573,13 @@ function updateBoard() {
       if (!existingToken) {
         const token = document.createElement("div");
         token.className = "token";
-        token.textContent = "🚚";
+        token.setAttribute("aria-hidden", "true");
+        const truckImage = document.createElement("img");
+        truckImage.src = TRUCK_TOKEN_IMAGE;
+        truckImage.alt = "";
+        truckImage.className = "token-image";
+        truckImage.draggable = false;
+        token.appendChild(truckImage);
         if (state.facing === "right") {
           token.classList.add("facing-right");
         }
@@ -917,7 +965,7 @@ function renderQuestionModal() {
 
   questionStop.textContent = `${t("stopLabel")} ${space.number}`;
   questionTitle.textContent = space.label;
-  questionBadge.textContent = space.type === "bonus" ? t("badgeBonus") : t("badgeQuestion");
+  questionBadge.textContent = t("badgeQuestion");
   questionText.textContent = question.prompt[currentLang];
   questionOptions.innerHTML = "";
   questionFeedback.textContent = "";
@@ -948,7 +996,6 @@ function renderQuestionModal() {
       pendingOutcome = {
         type: space.type,
         correct,
-        bonus: space.type === "bonus",
         spaceNumber: space.number,
       };
 
@@ -960,11 +1007,7 @@ function renderQuestionModal() {
 
   if (state.answerLocked) {
     const correct = state.selectedOptionIndex === question.answer;
-    questionFeedback.textContent = correct
-      ? space.type === "bonus"
-        ? t("feedbackBonusCorrect")
-        : t("feedbackCorrect")
-      : t("feedbackWrong");
+    questionFeedback.textContent = correct ? t("feedbackCorrect") : t("feedbackWrong");
   }
 }
 
@@ -972,7 +1015,7 @@ function openQuestionModal(space) {
   setButtonsDisabled(true);
   state.activeModal = "question";
   state.activeSpaceNumber = space.number;
-  state.activeQuestionIndex = (space.number - 1) % questions.length;
+  state.activeQuestionIndex = getQuestionIndexForSpace(space.number);
   state.selectedOptionIndex = null;
   state.answerLocked = false;
   pendingOutcome = null;
@@ -1001,22 +1044,28 @@ function clearActiveModal() {
 async function applyOutcome() {
   if (!pendingOutcome) return;
 
-  const { type, correct, bonus, spaceNumber } = pendingOutcome;
+  const { type, correct, spaceNumber } = pendingOutcome;
   pendingOutcome = null;
   closeModal(questionModal);
   clearActiveModal();
   continueButton.disabled = true;
   setButtonsDisabled(true);
 
-  if (type === "hazard" || !correct) {
+  if (type === "hazard") {
+    state.completed.clear();
     state.completed.add(spaceNumber);
-    await moveTruckAnimated(-3, { triggerLanding: false });
+    await moveTruckAnimated(1 - state.position, { triggerLanding: false });
+    state.completed.add(1);
+    updateBoard();
     setButtonsDisabled(false);
     return;
   }
 
-  if (bonus && correct) {
-    state.position = Math.min(25, state.position + 2);
+  if (!correct) {
+    state.completed.add(spaceNumber);
+    await moveTruckAnimated(-3, { triggerLanding: false });
+    setButtonsDisabled(false);
+    return;
   }
 
   state.completed.add(spaceNumber);
@@ -1039,6 +1088,7 @@ function resetGame() {
   state.position = 1;
   state.moves = 0;
   state.completed.clear();
+  questionRotationByTopic.clear();
   pendingOutcome = null;
   clearActiveModal();
   rollResult.textContent = "-";

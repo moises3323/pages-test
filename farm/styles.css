@@ -336,20 +336,60 @@ h3 {
 .tile .label {
   color: rgba(63, 52, 40, 0.7);
   line-height: 1.3;
+  padding-right: 68px;
+}
+
+.tile.start .label,
+.tile.finish .label {
+  padding-right: 0;
+}
+
+.tile-illustration {
+  margin-top: auto;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+}
+
+.tile-illustration.start {
+  justify-content: flex-start;
+}
+
+.tile-illustration img {
+  max-width: 62px;
+  max-height: 44px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 5px rgba(36, 29, 21, 0.18));
+}
+
+.tile-illustration.start img {
+  max-width: 88px;
+  max-height: 56px;
 }
 
 .tile .token {
   position: absolute;
   right: 8px;
   bottom: 8px;
-  font-size: 3.7rem;
-  line-height: 1;
+  width: 96px;
+  height: 72px;
   transform-origin: center;
   z-index: 2;
+  transform: scaleX(-1);
+}
+
+.tile .token-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
 }
 
 .tile .token.facing-right {
-  transform: scaleX(-1);
+  transform: none;
 }
 
 .tile .smoke {
@@ -455,10 +495,56 @@ h3 {
   --lane-color: rgba(255, 219, 207, 0.95);
 }
 
+.tile.start,
+.tile.start.is-current {
+  background-color: #ffffff;
+  background-image: url("assets/farmer.png");
+  background-repeat: no-repeat;
+  background-size: auto 80%;
+  background-position: left 8px bottom 6px;
+  border-color: rgba(186, 141, 78, 0.65);
+}
+
+.tile.start .number,
+.tile.start .label {
+  position: relative;
+  z-index: 3;
+  color: #5a5046;
+  text-shadow:
+    -1px -1px 0 rgba(255, 255, 255, 0.96),
+    1px -1px 0 rgba(255, 255, 255, 0.96),
+    -1px 1px 0 rgba(255, 255, 255, 0.96),
+    1px 1px 0 rgba(255, 255, 255, 0.96),
+    0 2px 5px rgba(255, 255, 255, 0.75);
+  -webkit-text-stroke: 0.35px rgba(255, 255, 255, 0.9);
+}
+
+.tile.start .label {
+  font-weight: 600;
+}
+
+.tile.start::before,
+.tile.start::after {
+  display: none;
+}
+
 .tile.finish {
-  background: linear-gradient(160deg, #d7e7d4, #bed6b8);
-  border-color: rgba(104, 160, 108, 0.5);
-  --lane-color: rgba(210, 239, 214, 0.95);
+  background-image: url("assets/characters.png");
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
+  border-color: rgba(92, 97, 91, 0.4);
+}
+
+.tile.finish .number,
+.tile.finish .label {
+  color: #2f352f;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.85);
+}
+
+.tile.finish::before,
+.tile.finish::after {
+  display: none;
 }
 
 .tile::before,
@@ -957,6 +1043,21 @@ h3 {
 @media (max-width: 640px) {
   .tile {
     min-height: 90px;
+  }
+
+  .tile .token {
+    width: 72px;
+    height: 56px;
+  }
+
+  .tile-illustration img {
+    max-width: 52px;
+    max-height: 36px;
+  }
+
+  .tile-illustration.start img {
+    max-width: 70px;
+    max-height: 44px;
   }
 }
 
