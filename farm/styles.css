@@ -528,7 +528,9 @@ h3 {
   display: none;
 }
 
-.tile.finish {
+.tile.finish,
+.tile.finish.is-current {
+  background: #ffffff;
   background-image: url("assets/characters.png");
   background-size: contain;
   background-position: center center;
