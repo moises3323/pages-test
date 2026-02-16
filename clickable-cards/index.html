@@ -298,6 +298,26 @@
 
         const CANVAS_BASE = "https://canvas.instructure.com";
 
+        function canvasPreviewToDownloadUrl(value) {
+          const raw = String(value || "").trim();
+          if (!raw) return "";
+          const normalized = raw
+            .replace(/^\/\/canvas\.instructure\.com/i, "https://canvas.instructure.com")
+            .replace(/^canvas\.instructure\.com\//i, "https://canvas.instructure.com/");
+          if (!/^https?:\/\/canvas\.instructure\.com\//i.test(normalized)) return raw;
+          try {
+            const url = new URL(normalized);
+            if (!/\/preview\/?$/.test(url.pathname)) return raw;
+            url.pathname = url.pathname.replace(/\/preview\/?$/, "/download");
+            if (!url.searchParams.has("download_frd")) {
+              url.searchParams.set("download_frd", "1");
+            }
+            return url.toString();
+          } catch {
+            return raw;
+          }
+        }
+
         function extractFirstUrlLikeValue(input) {
           const value = String(input || "").trim();
           if (!value) return "";
@@ -309,12 +329,12 @@
         function normalizeCanvasUrl(value) {
           if (!value) return "";
           if (value.startsWith("//canvas.instructure.com"))
-            return `https:${value}`;
+            return canvasPreviewToDownloadUrl(`https:${value}`);
           if (value.startsWith("/courses/") || value.startsWith("/files/"))
-            return `${CANVAS_BASE}${value}`;
+            return canvasPreviewToDownloadUrl(`${CANVAS_BASE}${value}`);
           if (value.startsWith("canvas.instructure.com/"))
-            return `https://${value}`;
-          return value;
+            return canvasPreviewToDownloadUrl(`https://${value}`);
+          return canvasPreviewToDownloadUrl(value);
         }
 
         function base64UrlToString(raw) {
@@ -407,14 +427,14 @@
         }
 
         async function fetchPreset(key) {
-          if (!key) return null;
+          if (!key) return { preset: null, error: "missing-key" };
           try {
             const response = await fetch("presets.json", { cache: "no-store" });
-            if (!response.ok) return null;
+            if (!response.ok) return { preset: null, error: "http-error" };
             const presets = await response.json();
-            return presets?.[key] || null;
+            return { preset: presets?.[key] || null, error: null };
           } catch {
-            return null;
+            return { preset: null, error: "load-failed" };
           }
         }
 
@@ -553,6 +573,20 @@
           img.decoding = "async";
           img.loading = "lazy";
           img.src = card.image;
+          img.addEventListener("error", () => {
+            const fallbackSrc = "../farm/assets/customer-placeholder.svg";
+            const isCanvasImage =
+              typeof card?.image === "string" &&
+              /canvas\.instructure\.com/i.test(card.image);
+            if (isCanvasImage && hintEl && !hintEl.dataset.canvasImageWarning) {
+              hintEl.textContent =
+                "Algunas imágenes de Canvas no cargaron. Usa URLs públicas/directas o archivos locales.";
+              hintEl.dataset.canvasImageWarning = "1";
+            }
+            if (img.src !== new URL(fallbackSrc, window.location.href).href) {
+              img.src = fallbackSrc;
+            }
+          });
 
           illustration.appendChild(img);
 
@@ -642,11 +676,17 @@
 
         const presetKey = params.get("preset") || params.get("key");
         if (presetKey) {
-          const preset = await fetchPreset(presetKey);
+          const { preset, error } = await fetchPreset(presetKey);
           if (preset) {
             renderCards(normalizePreset(preset));
           } else {
-            hintEl.textContent = `No se encontró el preset "${presetKey}".`;
+            const isFileProtocol = window.location.protocol === "file:";
+            if (isFileProtocol && error === "load-failed") {
+              hintEl.textContent =
+                "No se pudo cargar presets.json desde file://. Abre esta página con un servidor local.";
+            } else {
+              hintEl.textContent = `No se encontró el preset "${presetKey}".`;
+            }
           }
         }
       })();
