@@ -149,6 +149,7 @@
         letter-spacing: 0.08em;
         text-transform: uppercase;
         font-weight: 700;
+        font-family: "Montserrat", "Avenir Next", "Avenir", "Segoe UI", sans-serif;
         color: #3a3530;
         grid-row: 3;
         width: 100%;
@@ -329,12 +330,50 @@
         function normalizeCanvasUrl(value) {
           if (!value) return "";
           if (value.startsWith("//canvas.instructure.com"))
-            return canvasPreviewToDownloadUrl(`https:${value}`);
+            return `https:${value}`;
           if (value.startsWith("/courses/") || value.startsWith("/files/"))
-            return canvasPreviewToDownloadUrl(`${CANVAS_BASE}${value}`);
+            return `${CANVAS_BASE}${value}`;
           if (value.startsWith("canvas.instructure.com/"))
-            return canvasPreviewToDownloadUrl(`https://${value}`);
-          return canvasPreviewToDownloadUrl(value);
+            return `https://${value}`;
+          return value;
+        }
+
+        function toSafeImageHref(value) {
+          if (!value) return "";
+          try {
+            const url = new URL(value, window.location.href);
+            if (url.protocol === "http:" || url.protocol === "https:") {
+              return url.href;
+            }
+            if (url.protocol === "data:") {
+              const lower = url.href.toLowerCase();
+              return lower.startsWith("data:image/") ? url.href : "";
+            }
+            if (url.protocol === "blob:") return url.href;
+            return "";
+          } catch {
+            return "";
+          }
+        }
+
+        function getSafeImageCandidates(rawUrl) {
+          const base = normalizeCanvasUrl(extractFirstUrlLikeValue(rawUrl));
+          if (!base) return [];
+          const candidates = [base];
+          const downloadCandidate = canvasPreviewToDownloadUrl(base);
+          if (downloadCandidate && downloadCandidate !== base) {
+            candidates.push(downloadCandidate);
+          }
+          const safeCandidates = [];
+          const seen = new Set();
+          for (const candidate of candidates) {
+            const safeHref = toSafeImageHref(candidate);
+            if (safeHref && !seen.has(safeHref)) {
+              seen.add(safeHref);
+              safeCandidates.push(safeHref);
+            }
+          }
+          return safeCandidates;
         }
 
         function base64UrlToString(raw) {
@@ -368,22 +407,8 @@
         }
 
         function getSafeImageUrl(rawUrl) {
-          const value = normalizeCanvasUrl(extractFirstUrlLikeValue(rawUrl));
-          if (!value) return "";
-          try {
-            const url = new URL(value, window.location.href);
-            if (url.protocol === "http:" || url.protocol === "https:")
-              return url.href;
-            if (url.protocol === "data:") {
-              const lower = url.href.toLowerCase();
-              if (lower.startsWith("data:image/")) return url.href;
-              return "";
-            }
-            if (url.protocol === "blob:") return url.href;
-            return "";
-          } catch {
-            return "";
-          }
+          const candidates = getSafeImageCandidates(rawUrl);
+          return candidates[0] || "";
         }
 
         function buildCardsFromParams() {
@@ -572,9 +597,16 @@
           img.alt = nameText ? `${nameText} illustration` : "";
           img.decoding = "async";
           img.loading = "lazy";
-          img.src = card.image;
+          const imageCandidates = getSafeImageCandidates(card.image);
+          let imageCandidateIndex = 0;
+          const fallbackSrc = "../farm/assets/customer-placeholder.svg";
+          img.src = imageCandidates[0] || fallbackSrc;
           img.addEventListener("error", () => {
-            const fallbackSrc = "../farm/assets/customer-placeholder.svg";
+            imageCandidateIndex += 1;
+            if (imageCandidateIndex < imageCandidates.length) {
+              img.src = imageCandidates[imageCandidateIndex];
+              return;
+            }
             const isCanvasImage =
               typeof card?.image === "string" &&
               /canvas\.instructure\.com/i.test(card.image);
