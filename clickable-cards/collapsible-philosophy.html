@@ -39,10 +39,12 @@
 
       html.is-embedded body {
         min-height: auto;
-        display: block;
-        padding: 0;
-        background: transparent;
-        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 28px 20px 40px;
+        background: #ffffff;
       }
 
       .panel {
@@ -56,8 +58,8 @@
       }
 
       html.is-embedded .panel {
-        width: 100%;
-        box-shadow: none;
+        width: min(760px, 100%);
+        box-shadow: var(--panel-shadow);
       }
 
       .panel::before {
@@ -324,6 +326,7 @@
           {
             "title": "Nutrient Rich",
             "open": true,
+            "text": "We focus on practices that protect nutritional density and maximize bioavailability, so you get the most out of every bite.",
             "children": [
               {
                 "title": "Example",
@@ -334,6 +337,7 @@
           },
           {
             "title": "Always Real",
+            "text": "We carefully vet every product and ingredient to truly understand what’s in it and where it comes from.",
             "children": [
               {
                 "title": "Example",
@@ -344,6 +348,7 @@
           },
           {
             "title": "Intentionally Sourced",
+            "text": "We source from farmers who honor heritage practices and uphold high ethical standards for people, animals, and the environment.",
             "children": [
               {
                 "title": "Example",
@@ -383,6 +388,7 @@
             {
               title: "Nutrient Rich",
               open: true,
+              text: "We focus on practices that protect nutritional density and maximize bioavailability, so you get the most out of every bite.",
               children: [
                 {
                   title: "Example",
@@ -393,6 +399,7 @@
             },
             {
               title: "Always Real",
+              text: "We carefully vet every product and ingredient to truly understand what’s in it and where it comes from.",
               children: [
                 {
                   title: "Example",
@@ -403,6 +410,7 @@
             },
             {
               title: "Intentionally Sourced",
+              text: "We source from farmers who honor heritage practices and uphold high ethical standards for people, animals, and the environment.",
               children: [
                 {
                   title: "Example",
@@ -536,10 +544,43 @@
           const panel = item.querySelector(":scope > .collapse-panel");
           if (!trigger || !panel) return;
 
+          function closeItem(targetItem) {
+            const targetTrigger = targetItem.querySelector(":scope > .collapse-trigger");
+            const targetPanel = targetItem.querySelector(":scope > .collapse-panel");
+            if (!targetTrigger || !targetPanel) return;
+            if (!targetItem.classList.contains("is-open")) return;
+
+            if (reduceMotion) {
+              targetItem.classList.remove("is-open");
+              targetTrigger.setAttribute("aria-expanded", "false");
+              targetPanel.style.height = "0px";
+              return;
+            }
+
+            targetPanel.style.height = `${targetPanel.scrollHeight}px`;
+            requestAnimationFrame(() => {
+              targetItem.classList.remove("is-open");
+              targetTrigger.setAttribute("aria-expanded", "false");
+              targetPanel.style.height = "0px";
+              requestHeightSync();
+            });
+          }
+
+          function closeSiblingItems() {
+            if (!item.parentElement) return;
+            Array.from(item.parentElement.children).forEach((sibling) => {
+              if (!(sibling instanceof HTMLElement)) return;
+              if (sibling === item) return;
+              if (!sibling.classList.contains("collapse-item")) return;
+              closeItem(sibling);
+            });
+          }
+
           trigger.addEventListener("click", () => {
             const isOpen = item.classList.contains("is-open");
 
             if (reduceMotion) {
+              if (!isOpen) closeSiblingItems();
               item.classList.toggle("is-open", !isOpen);
               trigger.setAttribute("aria-expanded", String(!isOpen));
               panel.style.height = !isOpen ? "auto" : "0px";
@@ -558,6 +599,7 @@
               return;
             }
 
+            closeSiblingItems();
             item.classList.add("is-open");
             trigger.setAttribute("aria-expanded", "true");
             panel.style.height = "0px";
