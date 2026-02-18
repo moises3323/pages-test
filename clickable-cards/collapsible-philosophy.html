@@ -28,13 +28,21 @@
         margin: 0;
         min-height: 100vh;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         padding: 40px 20px;
-        background: radial-gradient(circle at 20% 20%, #f9f5ed, #f1ece4 60%, #e7e1d7 100%),
-          repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.04) 0 1px, transparent 1px 10px);
+        background: #ffffff;
         color: #1f2937;
         font-family: "Avenir Next", "Avenir", "Helvetica Neue", sans-serif;
+      }
+
+      html.is-embedded body {
+        min-height: auto;
+        display: block;
+        padding: 0;
+        background: transparent;
+        overflow: hidden;
       }
 
       .panel {
@@ -45,6 +53,11 @@
         box-shadow: var(--panel-shadow);
         padding: 28px clamp(18px, 4vw, 40px) 32px;
         position: relative;
+      }
+
+      html.is-embedded .panel {
+        width: 100%;
+        box-shadow: none;
       }
 
       .panel::before {
@@ -96,6 +109,13 @@
       .collapse-item.is-nested .collapse-trigger {
         font-size: clamp(0.84rem, 1.65vw, 1.02rem);
         letter-spacing: 0.06em;
+      }
+
+      .collapse-item.is-nested .collapse-heading {
+        text-align: left;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
       }
 
       .collapse-item.is-nested .details-text {
@@ -195,6 +215,64 @@
         color: #ffffff;
       }
 
+      .buying-note {
+        margin-top: 64px;
+        width: min(1240px, 100%);
+        text-align: center;
+        color: #3f4f5c;
+      }
+
+      .buying-note-kicker {
+        margin: 0;
+        font-family: "Montserrat", "Arial", sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        font-size: clamp(1.15rem, 2.3vw, 1.6rem);
+        line-height: 1.15;
+        color: #1f3a35;
+      }
+
+      .buying-note-star {
+        width: clamp(34px, 4vw, 28px);
+        height: auto;
+        display: block;
+        margin: 0 auto 18px;
+      }
+
+      .buying-note-title {
+        margin: 8px 0 0;
+        font-family: "Montserrat", "Arial", sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        font-size: clamp(1.15rem, 2.3vw, 1.6rem);
+        line-height: 1.1;
+        color: #000000;
+      }
+
+      .buying-note-copy {
+        margin: 28px auto 0;
+        max-width: 1220px;
+        font-size: clamp(0.95rem, 1.35vw, 1.1rem);
+        line-height: 1.45;
+        color: #4a5b69;
+      }
+
+      .buying-note-highlight {
+        margin: 26px auto 0;
+        font-family: "Montserrat", "Arial", sans-serif;
+        font-size: clamp(1rem, 1.45vw, 1.25rem);
+        line-height: 1.35;
+        color: #22313d;
+        font-weight: 600;
+      }
+
+      .buying-note-highlight .chevron {
+        width: clamp(10px, 0.95vw, 15px);
+        height: auto;
+        margin-right: 10px;
+        vertical-align: middle;
+      }
+
       @media (max-width: 640px) {
         .panel::before {
           inset: 10px;
@@ -215,6 +293,24 @@
       <div class="panel-title"></div>
       <ul class="philosophy-list" id="philosophy-list"></ul>
     </section>
+    <section class="buying-note" aria-label="A note from our buying team">
+      <img class="buying-note-star" src="../imgs/png/estrella%201.png" alt="" aria-hidden="true" />
+      <h2 class="buying-note-kicker">A Note From Our Buying Team</h2>
+      <h3 class="buying-note-title">On Product Sourcing</h3>
+      <p class="buying-note-copy">
+        At Redmond, we hold our grocery and kitchen ingredients to high standards. We look for foods that
+        are nutrient-rich, minimally processed, and made with ingredients you'd recognize. We avoid
+        artificial colors, flavors, and preservatives, and we carefully vet each product's ingredient list
+        and production story. When it comes to animal-derived products, our emphasis is on pastured,
+        well-raised animals, and we partner with producers who meet our values of sustainability,
+        transparency, and care.
+      </p>
+      <p class="buying-note-highlight">
+        <img class="chevron" src="../imgs/png/flecha%201.png" alt="" aria-hidden="true" />
+        In short: if we carry it, you can trust it aligns with our mission to provide real food that
+        supports optimal health.
+      </p>
+    </section>
 
     <script id="philosophy-data" type="application/json">
       {
@@ -228,25 +324,33 @@
           {
             "title": "Nutrient Rich",
             "open": true,
-            "text": "We focus on practices that protect nutritional density and maximize bioavailability, so you get the most out of every bite.",
             "children": [
               {
-                "title": "Sourcing Standards",
-                "text": "We review sourcing inputs at every stage to maintain consistency and quality."
-              },
-              {
-                "title": "Long-Term Stewardship",
-                "text": "We prioritize long-term practices that support people, animals, and the land."
+                "title": "Example",
+                "collapsible": false,
+                "text": "Did you know that soil health and farming practices can drastically affect the nutrient content of foods? In light of this, the buying team chooses companies that prioritize regenerative farming methods and the preservation of healthy soil."
               }
             ]
           },
           {
             "title": "Always Real",
-            "text": "We vet every product and ingredient before bringing it into our stores or kitchens, because food should be made of food."
+            "children": [
+              {
+                "title": "Example",
+                "collapsible": false,
+                "text": "In our kitchens, we emphasize product transparency with our customers. If customers have questions about the ingredients of our food or the products we use to create our meals, we are able to readily provide that information at the register."
+              }
+            ]
           },
           {
             "title": "Intentionally Sourced",
-            "text": "We prioritize sourcing from farmers and producers who honor heritage practices and uphold high ethical standards for people, animals, and the environment."
+            "children": [
+              {
+                "title": "Example",
+                "collapsible": false,
+                "text": "When deciding which brands of chocolate and coffee to sell in our markets, our buying team looks for companies that prioritize fair wages and safe working conditions for their farmers."
+              }
+            ]
           }
         ]
       }
@@ -257,9 +361,16 @@
         const reduceMotion = window.matchMedia(
           "(prefers-reduced-motion: reduce)",
         ).matches;
+        const isEmbedded = window.self !== window.top;
+        const root = document.documentElement;
         const panelTitle = document.querySelector(".panel-title");
         const list = document.getElementById("philosophy-list");
         const dataNode = document.getElementById("philosophy-data");
+        let lastKnownHeight = 0;
+
+        if (isEmbedded) {
+          root.classList.add("is-embedded");
+        }
 
         const DEFAULT_DATA = {
           title: "Food Philosophy",
@@ -272,25 +383,33 @@
             {
               title: "Nutrient Rich",
               open: true,
-              text: "We focus on practices that protect nutritional density and maximize bioavailability, so you get the most out of every bite.",
               children: [
                 {
-                  title: "Sourcing Standards",
-                  text: "We review sourcing inputs at every stage to maintain consistency and quality.",
-                },
-                {
-                  title: "Long-Term Stewardship",
-                  text: "We prioritize long-term practices that support people, animals, and the land.",
+                  title: "Example",
+                  collapsible: false,
+                  text: "Did you know that soil health and farming practices can drastically affect the nutrient content of foods? In light of this, the buying team chooses companies that prioritize regenerative farming methods and the preservation of healthy soil.",
                 },
               ],
             },
             {
               title: "Always Real",
-              text: "We vet every product and ingredient before bringing it into our stores or kitchens, because food should be made of food.",
+              children: [
+                {
+                  title: "Example",
+                  collapsible: false,
+                  text: "In our kitchens, we emphasize product transparency with our customers. If customers have questions about the ingredients of our food or the products we use to create our meals, we are able to readily provide that information at the register.",
+                },
+              ],
             },
             {
               title: "Intentionally Sourced",
-              text: "We prioritize sourcing from farmers and producers who honor heritage practices and uphold high ethical standards for people, animals, and the environment.",
+              children: [
+                {
+                  title: "Example",
+                  collapsible: false,
+                  text: "When deciding which brands of chocolate and coffee to sell in our markets, our buying team looks for companies that prioritize fair wages and safe working conditions for their farmers.",
+                },
+              ],
             },
           ],
         };
@@ -424,6 +543,7 @@
               item.classList.toggle("is-open", !isOpen);
               trigger.setAttribute("aria-expanded", String(!isOpen));
               panel.style.height = !isOpen ? "auto" : "0px";
+              requestHeightSync();
               return;
             }
 
@@ -433,6 +553,7 @@
                 item.classList.remove("is-open");
                 trigger.setAttribute("aria-expanded", "false");
                 panel.style.height = "0px";
+                requestHeightSync();
               });
               return;
             }
@@ -442,6 +563,7 @@
             panel.style.height = "0px";
             requestAnimationFrame(() => {
               panel.style.height = `${panel.scrollHeight}px`;
+              requestHeightSync();
             });
           });
 
@@ -450,7 +572,62 @@
             if (item.classList.contains("is-open")) {
               panel.style.height = "auto";
             }
+            requestHeightSync();
           });
+        }
+
+        function getContentHeight() {
+          const body = document.body;
+          const html = document.documentElement;
+          return Math.ceil(
+            Math.max(
+              body ? body.scrollHeight : 0,
+              body ? body.offsetHeight : 0,
+              html ? html.scrollHeight : 0,
+              html ? html.offsetHeight : 0,
+            ),
+          );
+        }
+
+        function syncFrameHeight() {
+          if (!isEmbedded) return;
+          const nextHeight = getContentHeight();
+          if (!nextHeight || nextHeight === lastKnownHeight) return;
+          lastKnownHeight = nextHeight;
+
+          try {
+            if (window.frameElement && window.frameElement.tagName === "IFRAME") {
+              window.frameElement.style.height = `${nextHeight}px`;
+            }
+          } catch {}
+
+          window.parent.postMessage(
+            {
+              type: "collapsible-philosophy:resize",
+              height: nextHeight,
+            },
+            "*",
+          );
+        }
+
+        function requestHeightSync() {
+          if (!isEmbedded) return;
+          requestAnimationFrame(syncFrameHeight);
+        }
+
+        function setupIframeAutoResize() {
+          if (!isEmbedded) return;
+
+          requestHeightSync();
+          window.addEventListener("load", requestHeightSync);
+          window.addEventListener("resize", requestHeightSync);
+          list.addEventListener("transitionend", requestHeightSync, true);
+
+          if (typeof ResizeObserver === "function") {
+            const observer = new ResizeObserver(requestHeightSync);
+            observer.observe(document.body);
+            observer.observe(list);
+          }
         }
 
         const data = parseData();
@@ -459,6 +636,7 @@
           ...data.items.map((entry, index) => createCollapseItem(entry, [index + 1], 0)),
         );
         list.querySelectorAll(".collapse-item").forEach(bindCollapse);
+        setupIframeAutoResize();
       })();
     </script>
   </body>
