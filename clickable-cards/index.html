@@ -543,10 +543,32 @@
           });
         }
 
+        function escapeRegExp(value) {
+          return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        }
+
+        function removeLeadingNameFromTitle(title, name) {
+          const rawTitle = coalesce(title);
+          const rawName = coalesce(name);
+          if (!rawTitle || !rawName) return rawTitle;
+          const namePattern = escapeRegExp(rawName);
+          const leadingNamePattern = new RegExp(
+            `^\\s*${namePattern}\\s*(?:-|—|–|:)\\s*`,
+            "i",
+          );
+          return rawTitle.replace(leadingNamePattern, "").trim();
+        }
+
         function splitTitleAndName(card) {
           const rawTitle = coalesce(card?.title);
           const rawName = coalesce(card?.name);
-          if (rawName || !rawTitle) return { title: rawTitle, name: rawName };
+          if (!rawTitle) return { title: "", name: rawName };
+          if (rawName) {
+            return {
+              title: removeLeadingNameFromTitle(rawTitle, rawName),
+              name: rawName,
+            };
+          }
           const separators = [" - ", " — ", " – ", ": "];
           for (const separator of separators) {
             const index = rawTitle.indexOf(separator);

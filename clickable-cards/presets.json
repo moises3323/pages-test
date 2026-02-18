@@ -2,243 +2,288 @@
   "living-collection": [
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/325594601/preview",
-      "title": "Silas - Steward of the Land",
+      "title": "Steward of the Land",
+      "name": "Silas",
       "description": "Re-Lyte keeps me hydrated as I work in the field, and I love Real Salt and seasonings on the eggs, meat, and vegetables I raise!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321895982/preview",
-      "title": "Cedar - Peak Performer",
+      "title": "Peak Performer",
+      "name": "Cedar",
       "description": "Re-Lyte products help me perform at my best! I also love Redmond's natural seasonings and care products, so I know what I'm putting on or in my body."
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321895824/preview",
-      "title": "Maya - Optimized Living Enthusiast",
+      "title": "Optimized Living Enthusiast",
+      "name": "Maya",
       "description": "I love Redmond Living products because I know they're made with nourishing, responsibly sourced ingredients that feel good on and in my body, helping me live my best life."
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/325594429/preview",
-      "title": "Chef Shawna - Master of the Meal",
+      "title": "Master of the Meal",
+      "name": "Chef Shawna",
       "description": "Redmond's Real Salt and seasonings are unparalleled! I love these products, whether I'm preparing a quick meal for myself or an elaborate twelve-course meal for a dinner party."
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321896079/preview",
-      "title": "Caleb - Conscious Caretaker",
+      "title": "Conscious Caretaker",
+      "name": "Caleb",
       "description": "My kids love Relyte, and so do I! Redmond products help us stay hydrated and healthy, allowing us to feel our best and spend quality time together."
     }
   ],
   "agriculture-collection": [
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/325594601/preview",
-      "title": "Silas - Steward of the Land",
+      "title": "Steward of the Land",
+      "name": "Silas",
       "description": "Redmond Agriculture products nourish my animals and the soil on my land!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321895982/preview",
-      "title": "Cedar - Peak Performer",
+      "title": "Peak Performer",
+      "name": "Cedar",
       "description": "I'm no farmer, but I'm sure Redmond Agriculture products are great!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321895824/preview",
-      "title": "Maya - Optimized Living Enthusiast",
+      "title": "Optimized Living Enthusiast",
+      "name": "Maya",
       "description": "I love Redmond soil products in my small home vegetable garden!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/325594429/preview",
-      "title": "Chef Shawna - Master of the Meal",
+      "title": "Master of the Meal",
+      "name": "Chef Shawna",
       "description": "Redmond soil products have helped me grow incredible vegetables in my little kitchen garden!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321896079/preview",
-      "title": "Caleb - Conscious Caretaker",
+      "title": "Conscious Caretaker",
+      "name": "Caleb",
       "description": "My kids and I love Redmond soil products in the garden. Together, we're learning to grow delicious organic vegetables!"
     }
   ],
   "equine-collection": [
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/325594601/preview",
-      "title": "Silas - Steward of the Land",
+      "title": "Steward of the Land",
+      "name": "Silas",
       "description": "I use Daily Gold and Daily Red for my beloved quarter horse. They make him healthy as...well...a horse!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321895982/preview",
-      "title": "Cedar - Peak Performer",
+      "title": "Peak Performer",
+      "name": "Cedar",
       "description": "Horses and humans alike can be peak performers! Redmond Equine products have played a significant role in winning equestrian competitions."
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321895824/preview",
-      "title": "Maya - Optimized Living Enthusiast",
+      "title": "Optimized Living Enthusiast",
+      "name": "Maya",
       "description": "I'm not a horse, but if I were, I'm sure I'd love Redmond Equine products!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/325594429/preview",
-      "title": "Chef Shawna - Master of the Meal",
+      "title": "Master of the Meal",
+      "name": "Chef Shawna",
       "description": "I'm not a horse person. I'm too busy cooking!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321896079/preview",
-      "title": "Caleb - Conscious Caretaker",
+      "title": "Conscious Caretaker",
+      "name": "Caleb",
       "description": "I'd love to own horses someday, but right now I'm busy raising small kids and caring for our home!"
     }
   ],
   "hunt-collection": [
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/325594601/preview",
-      "title": "Silas - Steward of the Land",
+      "title": "Steward of the Land",
+      "name": "Silas",
       "description": "Redmond Hunt products help me have a successful hunt with my family every year!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321895982/preview",
-      "title": "Cedar - Peak Performer",
+      "title": "Peak Performer",
+      "name": "Cedar",
       "description": "I'm not much of a hunter. I'd rather go for a trail run!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321895824/preview",
-      "title": "Maya - Optimized Living Enthusiast",
+      "title": "Optimized Living Enthusiast",
+      "name": "Maya",
       "description": "No hunting for me, thanks! However, I appreciate that Redmond Hunt products support clean, natural practices that lead to better-quality meat in the stores I shop, while being respectful to the land and animals."
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/325594429/preview",
-      "title": "Chef Shawna - Master of the Meal",
+      "title": "Master of the Meal",
+      "name": "Chef Shawna",
       "description": "I'll stick to the cooking and leave the hunting to others. As a chef, I care deeply about where my ingredients come from, though. These products help bring clean, responsibly sourced meat into my kitchen and onto the plate."
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321896079/preview",
-      "title": "Caleb - Conscious Caretaker",
+      "title": "Conscious Caretaker",
+      "name": "Caleb",
       "description": "Redmond Hunt products help me have successful hunts with my kids! I love spending time together in nature."
     }
   ],
   "farm-to-table-collection": [
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/325594601/preview",
-      "title": "Silas - Steward of the Land",
+      "title": "Steward of the Land",
+      "name": "Silas",
       "description": "I prefer to raise my own natural food when possible, but these products help me enjoy some natural foods that I can't always produce myself."
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321895982/preview",
-      "title": "Cedar - Peak Performer",
+      "title": "Peak Performer",
+      "name": "Cedar",
       "description": "The food I put into my body makes all the difference in my performance! These products keep me fueled and help me perform at my best!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321895824/preview",
-      "title": "Maya - Optimized Living Enthusiast",
+      "title": "Optimized Living Enthusiast",
+      "name": "Maya",
       "description": "Natural, nutrient-dense foods are extremely important to me. I'm so glad I can find everything I need for my specific dietary needs at the Redmond stores, because those foods can be hard to track down! And I love the cafe for a good meal when I want to dine out."
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/325594429/preview",
-      "title": "Chef Shawna - Master of the Meal",
+      "title": "Master of the Meal",
+      "name": "Chef Shawna",
       "description": "Redmond Farms products and the ingredients they carry in their stores are top quality! And I love their restaurant when I want a good meal, but I'm not able to cook it myself."
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321896079/preview",
-      "title": "Caleb - Conscious Caretaker",
+      "title": "Conscious Caretaker",
+      "name": "Caleb",
       "description": "I feel confident feeding these products to my kids and dining in the cafes. I'm so glad these stores make trustworthy, nutrient-dense foods accessible to the community. I know these foods will help my kids grow up healthy and happy!"
     }
   ],
   "valleywide-collection": [
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/325594601/preview",
-      "title": "Silas - Steward of the Land",
+      "title": "Steward of the Land",
+      "name": "Silas",
       "description": "A farmer needs fences! These products keep my animals in and predators out."
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321895982/preview",
-      "title": "Cedar - Peak Performer",
+      "title": "Peak Performer",
+      "name": "Cedar",
       "description": "I don't pay much attention to fences, but if I need them, I'd call Valleywide first!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321895824/preview",
-      "title": "Maya - Optimized Living Enthusiast",
+      "title": "Optimized Living Enthusiast",
+      "name": "Maya",
       "description": "Valleywide is the first company I'd call if I need a fence for my small home!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/325594429/preview",
-      "title": "Chef Shawna - Master of the Meal",
+      "title": "Master of the Meal",
+      "name": "Chef Shawna",
       "description": "Valleywide helped turn my patio into a beautiful place for outdoor dinner parties!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321896079/preview",
-      "title": "Caleb - Conscious Caretaker",
+      "title": "Conscious Caretaker",
+      "name": "Caleb",
       "description": "I trust Valleywide's products to keep my kids and pets safe, and to make our yard a beautiful place to spend time together."
     }
   ],
   "industrial-collection": [
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/325594601/preview",
-      "title": "Silas - Steward of the Land",
+      "title": "Steward of the Land",
+      "name": "Silas",
       "description": "I use this to clear my long driveway in the winter. It works beautifully and is safe to use around my animals!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321895982/preview",
-      "title": "Cedar - Peak Performer",
+      "title": "Peak Performer",
+      "name": "Cedar",
       "description": "This salt helps keep the roads clear and my front porch safe so I can get out the door and to the gym safely!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321895824/preview",
-      "title": "Maya - Optimized Living Enthusiast",
+      "title": "Optimized Living Enthusiast",
+      "name": "Maya",
       "description": "I love that this salt is both effective and safe for animals and the environment."
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/325594429/preview",
-      "title": "Chef Shawna - Master of the Meal",
+      "title": "Master of the Meal",
+      "name": "Chef Shawna",
       "description": "This salt keeps the roads clear, allowing me to drive to the grocery store for last-minute ingredients in the winter. I love it!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321896079/preview",
-      "title": "Caleb - Conscious Caretaker",
+      "title": "Conscious Caretaker",
+      "name": "Caleb",
       "description": "I buy a few bags every year, and I honestly love seeing Redmond salt on the roads. Knowing it's a safer option around our home gives me peace of mind, especially with kids and pets. It makes winter driving feel a little less stressful and a lot more family-friendly."
     }
   ],
   "western-clay-collection": [
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/325594601/preview",
-      "title": "Silas - Steward of the Land",
+      "title": "Steward of the Land",
+      "name": "Silas",
       "description": "The contractor who helped drill my water well loves these products!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321895982/preview",
-      "title": "Cedar - Peak Performer",
+      "title": "Peak Performer",
+      "name": "Cedar",
       "description": "I don't personally use these products, but my brother, who's a contractor, might!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321895824/preview",
-      "title": "Maya - Optimized Living Enthusiast",
+      "title": "Optimized Living Enthusiast",
+      "name": "Maya",
       "description": "These products aren't for me, but I'm sure they're great!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/325594429/preview",
-      "title": "Chef Shawna - Master of the Meal",
+      "title": "Master of the Meal",
+      "name": "Chef Shawna",
       "description": "I've never used these products, but my brother, who works in oil drilling, loves them!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321896079/preview",
-      "title": "Caleb - Conscious Caretaker",
+      "title": "Conscious Caretaker",
+      "name": "Caleb",
       "description": "These products aren't for me, but I'm sure they're great!"
     }
   ],
   "pybus-point-lodge-collection": [
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/325594601/preview",
-      "title": "Silas - Steward of the Land",
+      "title": "Steward of the Land",
+      "name": "Silas",
       "description": "I visited Pybus with my wife, and I loved connecting with nature and eating the fish I caught!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321895982/preview",
-      "title": "Cedar - Peak Performer",
+      "title": "Peak Performer",
+      "name": "Cedar",
       "description": "Pybus is wonderful! I loved hiking, fishing, and exploring all Alaska has to offer!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321895824/preview",
-      "title": "Maya - Optimized Living Enthusiast",
+      "title": "Optimized Living Enthusiast",
+      "name": "Maya",
       "description": "My trip to Pybus helped me connect with myself and the natural world."
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/325594429/preview",
-      "title": "Chef Shawna - Master of the Meal",
+      "title": "Master of the Meal",
+      "name": "Chef Shawna",
       "description": "Pybus was a wonderful trip. I loved catching my own fish, and I can't wait to cook the fish I brought home!"
     },
     {
       "image": "https://canvas.instructure.com/courses/11992150/files/321896079/preview",
-      "title": "Caleb - Conscious Caretaker",
+      "title": "Conscious Caretaker",
+      "name": "Caleb",
       "description": "Pybus is a fantastic place to travel with my kids. It's family-friendly and a great place for kids to learn and explore!"
     }
   ],
