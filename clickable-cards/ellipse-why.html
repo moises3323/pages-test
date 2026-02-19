@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Oswald:wght@400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
     <style>
@@ -31,7 +31,7 @@
         background: radial-gradient(circle at 15% 20%, #f9f5ec, #f2ede4 55%, #e6dfd3 100%),
           repeating-linear-gradient(120deg, rgba(0, 0, 0, 0.045) 0 1px, transparent 1px 9px);
         color: var(--ink);
-        font-family: "Libre Baskerville", "Georgia", serif;
+        font-family: "Avenir", "Avenir Next", "Helvetica Neue", sans-serif;
       }
 
       .stage {
@@ -54,6 +54,7 @@
         border-radius: 999px;
         background: transparent;
         cursor: pointer;
+        font-family: "Montserrat", "Avenir", "Helvetica Neue", sans-serif;
         box-shadow: var(--card-shadow);
         outline: none;
         transition: transform 0.35s ease, box-shadow 0.35s ease;
@@ -92,19 +93,6 @@
         border: 1px solid rgba(255, 255, 255, 0.45);
         opacity: 0.65;
         pointer-events: none;
-      }
-
-      .ellipse-shell::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: repeating-linear-gradient(
-          130deg,
-          rgba(255, 255, 255, 0.08) 0 1px,
-          transparent 1px 8px
-        );
-        opacity: 0.5;
-        mix-blend-mode: screen;
       }
 
       .ellipse-face {
@@ -169,7 +157,7 @@
       }
 
       .modal-title {
-        font-family: "Oswald", "Arial", sans-serif;
+        font-family: "Montserrat", "Avenir", "Helvetica Neue", sans-serif;
         font-size: clamp(1.3rem, 2.5vw, 1.9rem);
         letter-spacing: 0.16em;
         text-transform: uppercase;
@@ -178,6 +166,7 @@
       }
 
       .modal-text {
+        font-family: "Avenir", "Avenir Next", "Helvetica Neue", sans-serif;
         margin: 0;
         font-size: clamp(1rem, 1.75vw, 1.45rem);
         line-height: 1.55;
@@ -205,7 +194,7 @@
       }
 
       .front-word {
-        font-family: "Oswald", "Arial", sans-serif;
+        font-family: "Montserrat", "Avenir", "Helvetica Neue", sans-serif;
         font-size: clamp(1.7rem, 4vw, 2.6rem);
         letter-spacing: 0.2em;
         text-transform: uppercase;
@@ -244,7 +233,7 @@
         data-title="Why"
         data-text="Redmond Heritage Farm exists to provide high quality raw dairy products, eggs, and meat to the surrounding community in Utah."
         aria-pressed="false"
-        style="--card-fill: #c75d4f"
+        style="--card-fill: #2e3d2c"
       >
         <span class="ellipse-shell">
           <span class="ellipse-face ellipse-front">
@@ -259,7 +248,7 @@
         data-title="Who"
         data-text="Redmond's heritage farm team is made up of people who care for the animals at our farm in in Redmond, Utah. They continually work to improve the experience of the animals and use dairy byproducts in an intentional way. This includes building more comfortable and efficient pens for the animals, researching the best feed to use, and creating new farm products to be sold in the stores. The who of our heritage farm also includes the cows, chickens, and pigs! Without these animals, we wouldn't have any farm products to offer. We are very thankful for all the farm animals that help us in our efforts of elevating the human experience."
         aria-pressed="false"
-        style="--card-fill: #4a4f4b"
+        style="--card-fill: #d29832"
       >
         <span class="ellipse-shell">
           <span class="ellipse-face ellipse-front">
@@ -274,7 +263,7 @@
         data-title="What"
         data-text="Raw dairy, eggs, and meat made with care, shaped by regenerative methods that keep nourishment at the center."
         aria-pressed="false"
-        style="--card-fill: #97a866"
+        style="--card-fill: #c7ccbd"
       >
         <span class="ellipse-shell">
           <span class="ellipse-face ellipse-front">
