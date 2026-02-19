@@ -76,7 +76,7 @@
         align-items: center;
         justify-content: center;
         text-align: center;
-        padding: 26px 22px;
+        padding: 16px 0px;
         border: 2px solid var(--border-color);
         background: var(--front-bg, #fefcf8);
         color: var(--front-color, #2b2521);
@@ -99,6 +99,10 @@
         text-wrap: balance;
         hyphens: none;
         font-weight: 700;
+      }
+
+      .farm-card.title-passion .card-front-title {
+        transform: translateX(-3px);
       }
 
       .card-back {
@@ -229,6 +233,10 @@
           const button = document.createElement("button");
           button.type = "button";
           button.className = "farm-card";
+          const normalizedTitle = String(card.title || "").trim().toLowerCase();
+          if (normalizedTitle === "passion for contribution") {
+            button.classList.add("title-passion");
+          }
           button.style.setProperty("--delay", `${index * 0.08}s`);
           button.style.setProperty("--front-bg", card.frontBg || "#fefcf8");
           button.style.setProperty("--front-color", card.frontColor || "#2b2521");
