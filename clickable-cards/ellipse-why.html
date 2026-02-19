@@ -114,13 +114,13 @@
       }
 
       .ellipse-card.is-open .ellipse-front {
-        opacity: 0.35;
-        transform: scale(0.95);
+        opacity: 1;
+        transform: scale(1);
       }
 
       body.modal-open .stage {
-        filter: blur(6px) saturate(0.85);
-        transform: scale(0.985);
+        filter: none;
+        transform: none;
       }
 
       .modal-backdrop {
@@ -130,9 +130,9 @@
         display: grid;
         place-items: center;
         padding: 24px;
-        background: rgba(27, 32, 38, 0.35);
-        backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
+        background: rgba(27, 32, 38, 0.08);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
         opacity: 1;
         transition: opacity 0.28s ease;
       }
