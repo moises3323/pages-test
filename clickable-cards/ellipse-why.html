@@ -59,6 +59,30 @@
         transition: transform 0.35s ease, box-shadow 0.35s ease;
       }
 
+      .ellipse-card::before {
+        content: "";
+        position: absolute;
+        inset: -8px;
+        border-radius: 999px;
+        border: 2px solid rgba(31, 41, 51, 0.2);
+        opacity: 0.26;
+        pointer-events: none;
+        transform: scale(0.985);
+        animation: card-pulse 2.6s ease-in-out infinite;
+      }
+
+      .ellipse-card:nth-child(2)::before {
+        animation-delay: 0.35s;
+      }
+
+      .ellipse-card:nth-child(3)::before {
+        animation-delay: 0.7s;
+      }
+
+      .ellipse-card.cursor-active {
+        cursor: none;
+      }
+
       .ellipse-card:hover,
       .ellipse-card:focus-visible {
         transform: translateY(-4px) scale(1.01);
@@ -67,6 +91,17 @@
 
       .ellipse-card.is-open {
         transform: scale(0.97);
+      }
+
+      .ellipse-card:hover::before,
+      .ellipse-card:focus-visible::before {
+        opacity: 0.5;
+      }
+
+      .ellipse-card.is-open::before {
+        animation: none;
+        opacity: 0.14;
+        transform: scale(1);
       }
 
       .ellipse-card:focus-visible {
@@ -199,6 +234,40 @@
         text-shadow: 0 10px 20px rgba(15, 23, 42, 0.35);
       }
 
+      .cursor-halo {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 64px;
+        height: 64px;
+        border-radius: 999px;
+        border: 3px solid rgba(255, 255, 255, 0.88);
+        background: rgba(46, 61, 44, 0.22);
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.24);
+        pointer-events: none;
+        z-index: 120;
+        transform: translate(-50%, -50%) scale(0.7);
+        opacity: 0;
+        transition: opacity 0.16s ease, transform 0.16s ease;
+      }
+
+      .cursor-halo.is-visible {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      @keyframes card-pulse {
+        0%,
+        100% {
+          transform: scale(0.985);
+          opacity: 0.2;
+        }
+        50% {
+          transform: scale(1.02);
+          opacity: 0.44;
+        }
+      }
+
       @media (max-width: 700px) {
         .ellipse-card {
           aspect-ratio: 4 / 3.8;
@@ -217,6 +286,10 @@
         .stage,
         .modal-backdrop {
           transition: none;
+        }
+
+        .ellipse-card::before {
+          animation: none;
         }
       }
     </style>
@@ -285,9 +358,27 @@
         const modalTitle = document.getElementById("modal-title");
         const modalText = document.getElementById("modal-text");
         const modalPanel = backdrop ? backdrop.querySelector(".modal-panel") : null;
+        const cursorHalo = document.createElement("span");
         let activeCard = null;
+        let cursorCard = null;
+
+        cursorHalo.className = "cursor-halo";
+        cursorHalo.setAttribute("aria-hidden", "true");
+        document.body.appendChild(cursorHalo);
+
+        const moveCursorHalo = (event) => {
+          cursorHalo.style.left = `${event.clientX}px`;
+          cursorHalo.style.top = `${event.clientY}px`;
+        };
+
+        const hideCursorHalo = () => {
+          if (cursorCard) cursorCard.classList.remove("cursor-active");
+          cursorCard = null;
+          cursorHalo.classList.remove("is-visible");
+        };
 
         const closeAll = () => {
+          hideCursorHalo();
           cards.forEach((card) => {
             card.classList.remove("is-open");
             card.setAttribute("aria-pressed", "false");
@@ -314,6 +405,21 @@
         };
 
         cards.forEach((card) => {
+          card.addEventListener("pointerenter", (event) => {
+            if (event.pointerType !== "mouse") return;
+            cursorCard = card;
+            card.classList.add("cursor-active");
+            moveCursorHalo(event);
+            cursorHalo.classList.add("is-visible");
+          });
+
+          card.addEventListener("pointermove", (event) => {
+            if (!cursorCard) return;
+            moveCursorHalo(event);
+          });
+
+          card.addEventListener("pointerleave", hideCursorHalo);
+
           card.addEventListener("click", () => {
             const willOpen = activeCard !== card;
             if (!willOpen) {
@@ -335,6 +441,8 @@
         document.addEventListener("keydown", (event) => {
           if (event.key === "Escape") closeAll();
         });
+
+        window.addEventListener("blur", hideCursorHalo);
       })();
     </script>
   </body>
