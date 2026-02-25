@@ -34,28 +34,13 @@
       .page {
         width: min(1160px, 100%);
         margin: 0 auto;
-        padding: 56px 16px 32px;
-      }
-
-      .title {
-        margin: 0;
-        text-align: center;
-        font-size: clamp(2rem, 3vw, 3.25rem);
-        font-weight: 800;
-        letter-spacing: -0.02em;
-      }
-
-      .subtitle {
-        margin: 10px 0 0;
-        text-align: center;
-        font-size: clamp(1rem, 1.8vw, 1.45rem);
-        color: #5a6472;
+        padding: 24px 16px 24px;
       }
 
       .carousel-wrap {
         position: relative;
-        margin-top: 34px;
-        padding: 10px 0 18px;
+        margin-top: 0;
+        padding: 10px 0 34px;
         overflow: hidden;
         touch-action: pan-y;
       }
@@ -67,7 +52,7 @@
 
       .carousel {
         position: relative;
-        height: calc(var(--card-height) + 36px);
+        height: calc(var(--card-height) + 86px);
       }
 
       .resource-card {
@@ -80,7 +65,7 @@
         user-select: none;
         border-radius: 18px;
         overflow: hidden;
-        box-shadow: 0 20px 45px rgba(15, 23, 42, 0.27);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.2);
         transition:
           transform 460ms cubic-bezier(0.22, 1, 0.36, 1),
           opacity 360ms ease,
@@ -100,7 +85,7 @@
       }
 
       .resource-card.is-active {
-        box-shadow: 0 26px 56px rgba(15, 23, 42, 0.36);
+        box-shadow: 0 16px 38px rgba(15, 23, 42, 0.26);
       }
 
       @media (max-width: 860px) {
@@ -119,11 +104,7 @@
         }
 
         .page {
-          padding-top: 34px;
-        }
-
-        .carousel-wrap {
-          margin-top: 20px;
+          padding-top: 18px;
         }
 
       }
@@ -137,9 +118,6 @@
   </head>
   <body>
     <main class="page">
-      <h1 class="title">Lorem ipsum</h1>
-      <p class="subtitle">Lorem ipsum dolor sit amet.</p>
-
       <section class="carousel-wrap" aria-label="Lorem ipsum">
         <div class="carousel" id="carousel"></div>
       </section>
@@ -183,8 +161,6 @@
       (function () {
         const carousel = document.getElementById("carousel");
         const dataNode = document.getElementById("carousel-data");
-        const titleNode = document.querySelector(".title");
-        const subtitleNode = document.querySelector(".subtitle");
         const carouselWrap = document.querySelector(".carousel-wrap");
 
         const fallbackData = {
@@ -247,8 +223,6 @@
         }
 
         const carouselData = parseCarouselData();
-        titleNode.textContent = carouselData.title || "Lorem ipsum";
-        subtitleNode.textContent = carouselData.subtitle || "Lorem ipsum dolor sit amet.";
         buildCards(carouselData.cards);
 
         const cards = Array.from(document.querySelectorAll(".resource-card"));
