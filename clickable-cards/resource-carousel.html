@@ -28,10 +28,28 @@
         color: #1f2b3a;
       }
 
+      html.is-embedded,
+      html.is-embedded body {
+        height: 100%;
+        min-height: auto;
+        overflow: hidden;
+      }
+
+      html.is-embedded body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+      }
+
       .page {
         width: min(1160px, 100%);
         margin: 0 auto;
         padding: 24px 16px 24px;
+      }
+
+      html.is-embedded .page {
+        padding: 0 12px;
       }
 
       .carousel-wrap {
@@ -42,6 +60,10 @@
         touch-action: pan-y;
       }
 
+      html.is-embedded .carousel-wrap {
+        padding: 8px 0 10px;
+      }
+
       .carousel-wrap.is-dragging .resource-card {
         transition: none;
         cursor: grabbing;
@@ -50,6 +72,10 @@
       .carousel {
         position: relative;
         height: calc(var(--card-height) + 86px);
+      }
+
+      html.is-embedded .carousel {
+        height: calc(var(--card-height) + 64px);
       }
 
       .resource-card {
@@ -156,6 +182,10 @@
 
     <script>
       (function () {
+        if (window.self !== window.top) {
+          document.documentElement.classList.add("is-embedded");
+        }
+
         const carousel = document.getElementById("carousel");
         const dataNode = document.getElementById("carousel-data");
         const carouselWrap = document.querySelector(".carousel-wrap");
