@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Ellipse Why Cards</title>
+    <title>Why Who What Flip Cards</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -12,9 +12,8 @@
     />
     <style>
       :root {
-        --bg: #f2ede4;
         --ink: #1f2933;
-        --card-shadow: 0 18px 38px rgba(15, 23, 42, 0.2);
+        --page: #f6f6f6;
       }
 
       * {
@@ -27,422 +26,269 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 40px 20px 60px;
-        background: #ffffff;
+        padding: 44px 18px;
+        background: var(--page);
         color: var(--ink);
         font-family: "Avenir", "Avenir Next", "Helvetica Neue", sans-serif;
       }
 
       .stage {
-        width: min(1000px, 100%);
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        width: min(940px, 100%);
+        display: flex;
+        flex-direction: column;
         gap: 22px;
-        align-items: center;
-        position: relative;
-        z-index: 1;
-        transition: filter 0.35s ease, transform 0.35s ease;
       }
 
-      .ellipse-card {
+      .flip-card {
         position: relative;
         width: 100%;
-        aspect-ratio: 4 / 3.6;
         border: 0;
         padding: 0;
-        border-radius: 999px;
         background: transparent;
         cursor: pointer;
         font-family: "Montserrat", "Avenir", "Helvetica Neue", sans-serif;
-        box-shadow: var(--card-shadow);
+        text-align: left;
+        perspective: 1400px;
         outline: none;
-        transition: transform 0.35s ease, box-shadow 0.35s ease;
       }
 
-      .ellipse-card::before {
-        content: "";
-        position: absolute;
-        inset: -8px;
-        border-radius: 999px;
-        border: 2px solid rgba(31, 41, 51, 0.2);
-        opacity: 0.26;
-        pointer-events: none;
-        transform: scale(0.985);
-        animation: card-pulse 2.6s ease-in-out infinite;
-      }
-
-      .ellipse-card:nth-child(2)::before {
-        animation-delay: 0.35s;
-      }
-
-      .ellipse-card:nth-child(3)::before {
-        animation-delay: 0.7s;
-      }
-
-      .ellipse-card.cursor-active {
-        cursor: none;
-      }
-
-      .ellipse-card:hover,
-      .ellipse-card:focus-visible {
-        transform: translateY(-4px) scale(1.01);
-        box-shadow: 0 22px 44px rgba(15, 23, 42, 0.25);
-      }
-
-      .ellipse-card.is-open {
-        transform: scale(0.97);
-      }
-
-      .ellipse-card:hover::before,
-      .ellipse-card:focus-visible::before {
-        opacity: 0.5;
-      }
-
-      .ellipse-card.is-open::before {
-        animation: none;
-        opacity: 0.14;
-        transform: scale(1);
-      }
-
-      .ellipse-card:focus-visible {
-        outline: 3px solid rgba(31, 41, 51, 0.5);
-        outline-offset: 4px;
-      }
-
-      .ellipse-shell {
-        position: absolute;
-        inset: 0;
-        border-radius: 999px;
-        background: var(--card-fill, #c06b45);
-        overflow: hidden;
-        display: grid;
-        place-items: center;
-      }
-
-      .ellipse-shell::after {
-        content: "";
-        position: absolute;
-        inset: 12px;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.45);
-        opacity: 0.65;
-        pointer-events: none;
-      }
-
-      .ellipse-face {
-        position: absolute;
-        inset: 0;
-        border-radius: 999px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 26px 22px;
-        transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-          transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-          filter 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-
-      .ellipse-front {
-        opacity: 1;
-        transform: scale(1);
-      }
-
-      .ellipse-card.is-open .ellipse-front {
-        opacity: 1;
-        transform: scale(1);
-      }
-
-      body.modal-open .stage {
-        filter: none;
-        transform: none;
-      }
-
-      .modal-backdrop {
-        position: fixed;
-        inset: 0;
-        z-index: 60;
-        display: grid;
-        place-items: center;
-        padding: 24px;
-        backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
-        opacity: 1;
-        transition: opacity 0.28s ease;
-      }
-
-      .modal-backdrop[hidden] {
-        display: none;
-      }
-
-      .modal-panel {
-        width: min(92vw, 680px);
-        max-height: min(70vh, 560px);
-        overflow: auto;
-        border-radius: 26px;
-        border: 1px solid rgba(255, 255, 255, 0.38);
-        background: linear-gradient(150deg, rgba(18, 20, 24, 0.08), rgba(18, 20, 24, 0.42)),
-          var(--modal-fill, #4a4f4b);
-        color: #fdf8f0;
-        padding: 26px 28px 24px;
+      .flip-inner {
         position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 7;
+        border-radius: 24px;
+        transform-style: preserve-3d;
+        transition: transform 0.72s cubic-bezier(0.22, 1, 0.36, 1);
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.2);
       }
 
-      .modal-title {
-        font-family: "Montserrat", "Avenir", "Helvetica Neue", sans-serif;
-        font-size: clamp(1.3rem, 2.5vw, 1.9rem);
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        margin: 0 36px 12px 0;
-        color: #fdf8f0;
+      .flip-card:hover .flip-inner,
+      .flip-card:focus-visible .flip-inner {
+        transform: translateY(-4px);
+        box-shadow: 0 24px 48px rgba(15, 23, 42, 0.24);
       }
 
-      .modal-text {
-        font-family: "Avenir", "Avenir Next", "Helvetica Neue", sans-serif;
-        margin: 0;
-        font-size: 16px;
-        line-height: 1.55;
-        color: rgba(253, 248, 240, 0.9);
+      .flip-card.is-open .flip-inner {
+        transform: rotateY(180deg);
       }
 
-      .modal-close {
+      .flip-card.is-open:hover .flip-inner,
+      .flip-card.is-open:focus-visible .flip-inner {
+        transform: rotateY(180deg) translateY(-2px);
+      }
+
+      .card-face {
         position: absolute;
-        top: 12px;
-        right: 12px;
-        width: 34px;
-        height: 34px;
-        border-radius: 999px;
-        border: 1px solid rgba(253, 248, 240, 0.4);
-        background: rgba(18, 20, 24, 0.28);
-        color: #fdf8f0;
-        font-size: 20px;
-        line-height: 1;
-        cursor: pointer;
+        inset: 0;
+        border-radius: 24px;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        border: 1px solid var(--card-border, rgba(255, 255, 255, 0.34));
+        overflow: hidden;
       }
 
-      .modal-close:focus-visible {
-        outline: 2px solid rgba(253, 248, 240, 0.8);
-        outline-offset: 2px;
+      .card-front {
+        display: grid;
+        place-items: center;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.12)),
+          var(--card-fill, #2e3d2c);
+      }
+
+      .card-front::after {
+        content: "";
+        position: absolute;
+        inset: 10px;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.34);
+        pointer-events: none;
       }
 
       .front-word {
-        font-family: "Montserrat", "Avenir", "Helvetica Neue", sans-serif;
-        font-size: clamp(1.7rem, 4vw, 2.6rem);
+        margin: 0;
+        font-size: clamp(1.8rem, 5vw, 3.15rem);
         letter-spacing: 0.2em;
         text-transform: uppercase;
         color: #fdf8f0;
-        text-shadow: 0 10px 20px rgba(15, 23, 42, 0.35);
+        text-shadow: 0 8px 20px rgba(15, 23, 42, 0.35);
       }
 
-      .cursor-halo {
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 64px;
-        height: 64px;
-        border-radius: 999px;
-        border: 3px solid rgba(255, 255, 255, 0.88);
-        background: rgba(46, 61, 44, 0.22);
-        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.24);
-        pointer-events: none;
-        z-index: 120;
-        transform: translate(-50%, -50%) scale(0.7);
-        opacity: 0;
-        transition: opacity 0.16s ease, transform 0.16s ease;
+      .front-hint {
+        position: absolute;
+        right: 16px;
+        bottom: 12px;
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(253, 248, 240, 0.85);
       }
 
-      .cursor-halo.is-visible {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
+      .card-back {
+        transform: rotateY(180deg);
+        padding: 20px 22px;
+        background: linear-gradient(150deg, rgba(18, 20, 24, 0.08), rgba(18, 20, 24, 0.4)),
+          var(--card-fill, #2e3d2c);
+        color: #fdf8f0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
       }
 
-      @keyframes card-pulse {
-        0%,
-        100% {
-          transform: scale(0.985);
-          opacity: 0.2;
+      .back-title {
+        margin: 0;
+        font-family: "Montserrat", "Avenir", "Helvetica Neue", sans-serif;
+        font-size: clamp(1.15rem, 2.5vw, 1.6rem);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .back-text {
+        margin: 0;
+        font-family: "Avenir", "Avenir Next", "Helvetica Neue", sans-serif;
+        font-size: 0.98rem;
+        line-height: 1.48;
+        overflow: auto;
+        padding-right: 6px;
+      }
+
+      .flip-card:focus-visible {
+        outline: 3px solid rgba(31, 41, 51, 0.45);
+        outline-offset: 5px;
+        border-radius: 24px;
+      }
+
+      @media (max-width: 760px) {
+        .stage {
+          gap: 16px;
         }
-        50% {
-          transform: scale(1.02);
-          opacity: 0.44;
-        }
-      }
 
-      @media (max-width: 700px) {
-        .ellipse-card {
-          aspect-ratio: 4 / 3.8;
-        }
-
-        .modal-panel {
-          width: min(94vw, 460px);
+        .flip-inner {
+          aspect-ratio: 4 / 3;
           border-radius: 20px;
-          padding: 20px 20px 18px;
+        }
+
+        .card-face {
+          border-radius: 20px;
+        }
+
+        .card-front::after {
+          border-radius: 15px;
+        }
+
+        .card-back {
+          padding: 16px 16px 14px;
+        }
+
+        .back-text {
+          font-size: 0.92rem;
         }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        .ellipse-face,
-        .ellipse-card,
-        .stage,
-        .modal-backdrop {
+        .flip-inner {
           transition: none;
-        }
-
-        .ellipse-card::before {
-          animation: none;
         }
       }
     </style>
   </head>
   <body>
-    <div class="stage" aria-label="Why who what cards">
+    <section class="stage" aria-label="Why who what cards">
       <button
-        class="ellipse-card"
+        class="flip-card"
         type="button"
-        data-word="Why"
-        data-title="Why"
-        data-text="Redmond Heritage Farm exists to provide high quality raw dairy products, eggs, and meat to the surrounding community in Utah."
         aria-pressed="false"
-        style="--card-fill: #2e3d2c"
+        style="--card-fill: #2e3d2c; --card-border: rgba(223, 235, 218, 0.35)"
       >
-        <span class="ellipse-shell">
-          <span class="ellipse-face ellipse-front">
+        <span class="flip-inner">
+          <span class="card-face card-front">
             <span class="front-word">Why</span>
+            <span class="front-hint">Click to flip</span>
+          </span>
+          <span class="card-face card-back">
+            <h2 class="back-title">Why</h2>
+            <p class="back-text">
+              Redmond Heritage Farm exists to provide high quality raw dairy products, eggs, and
+              meat to the surrounding community in Utah.
+            </p>
           </span>
         </span>
       </button>
+
       <button
-        class="ellipse-card"
+        class="flip-card"
         type="button"
-        data-word="Who"
-        data-title="Who"
-        data-text="Redmond's heritage farm team is made up of people who care for the animals at our farm in in Redmond, Utah. They continually work to improve the experience of the animals and use dairy byproducts in an intentional way. This includes building more comfortable and efficient pens for the animals, researching the best feed to use, and creating new farm products to be sold in the stores. The who of our heritage farm also includes the cows, chickens, and pigs! Without these animals, we wouldn't have any farm products to offer. We are very thankful for all the farm animals that help us in our efforts of elevating the human experience."
         aria-pressed="false"
-        style="--card-fill: #d29832"
+        style="--card-fill: #d29832; --card-border: rgba(255, 238, 200, 0.35)"
       >
-        <span class="ellipse-shell">
-          <span class="ellipse-face ellipse-front">
+        <span class="flip-inner">
+          <span class="card-face card-front">
             <span class="front-word">Who</span>
+            <span class="front-hint">Click to flip</span>
+          </span>
+          <span class="card-face card-back">
+            <h2 class="back-title">Who</h2>
+            <p class="back-text">
+              Redmond's heritage farm team is made up of people who care for the animals at our
+              farm in Redmond, Utah. They continually work to improve the experience of the
+              animals and use dairy byproducts in an intentional way. This includes building more
+              comfortable and efficient pens for the animals, researching the best feed to use,
+              and creating new farm products to be sold in the stores. The who of our heritage
+              farm also includes the cows, chickens, and pigs. Without these animals, we would not
+              have any farm products to offer.
+            </p>
           </span>
         </span>
       </button>
+
       <button
-        class="ellipse-card"
+        class="flip-card"
         type="button"
-        data-word="What"
-        data-title="What"
-        data-text="Raw dairy, eggs, and meat made with care, shaped by regenerative methods that keep nourishment at the center."
         aria-pressed="false"
-        style="--card-fill: #c7ccbd"
+        style="--card-fill: #b9beaf; --card-border: rgba(246, 247, 241, 0.42)"
       >
-        <span class="ellipse-shell">
-          <span class="ellipse-face ellipse-front">
+        <span class="flip-inner">
+          <span class="card-face card-front">
             <span class="front-word">What</span>
+            <span class="front-hint">Click to flip</span>
+          </span>
+          <span class="card-face card-back">
+            <h2 class="back-title">What</h2>
+            <p class="back-text">
+              Raw dairy, eggs, and meat made with care, shaped by regenerative methods that keep
+              nourishment at the center.
+            </p>
           </span>
         </span>
       </button>
-    </div>
-    <div class="modal-backdrop" id="modal-backdrop" hidden>
-      <article class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-        <button class="modal-close" id="modal-close" type="button" aria-label="Cerrar">×</button>
-        <h2 class="modal-title" id="modal-title"></h2>
-        <p class="modal-text" id="modal-text"></p>
-      </article>
-    </div>
+    </section>
 
     <script>
       (function () {
-        const cards = Array.from(document.querySelectorAll(".ellipse-card"));
-        const backdrop = document.getElementById("modal-backdrop");
-        const closeButton = document.getElementById("modal-close");
-        const modalTitle = document.getElementById("modal-title");
-        const modalText = document.getElementById("modal-text");
-        const modalPanel = backdrop ? backdrop.querySelector(".modal-panel") : null;
-        const cursorHalo = document.createElement("span");
+        const cards = Array.from(document.querySelectorAll(".flip-card"));
         let activeCard = null;
-        let cursorCard = null;
-
-        cursorHalo.className = "cursor-halo";
-        cursorHalo.setAttribute("aria-hidden", "true");
-        document.body.appendChild(cursorHalo);
-
-        const moveCursorHalo = (event) => {
-          cursorHalo.style.left = `${event.clientX}px`;
-          cursorHalo.style.top = `${event.clientY}px`;
-        };
-
-        const hideCursorHalo = () => {
-          if (cursorCard) cursorCard.classList.remove("cursor-active");
-          cursorCard = null;
-          cursorHalo.classList.remove("is-visible");
-        };
 
         const closeAll = () => {
-          hideCursorHalo();
           cards.forEach((card) => {
             card.classList.remove("is-open");
             card.setAttribute("aria-pressed", "false");
           });
           activeCard = null;
-          document.body.classList.remove("modal-open");
-          if (backdrop) backdrop.hidden = true;
-        };
-
-        const openCard = (card) => {
-          const fill = getComputedStyle(card).getPropertyValue("--card-fill").trim();
-          const title = card.dataset.title || card.dataset.word || "";
-          const text = card.dataset.text || "";
-          closeAll();
-          card.classList.add("is-open");
-          card.setAttribute("aria-pressed", "true");
-          activeCard = card;
-          if (modalTitle) modalTitle.textContent = title;
-          if (modalText) modalText.textContent = text;
-          if (modalPanel && fill) modalPanel.style.setProperty("--modal-fill", fill);
-          document.body.classList.add("modal-open");
-          if (backdrop) backdrop.hidden = false;
-          if (closeButton) closeButton.focus();
         };
 
         cards.forEach((card) => {
-          card.addEventListener("pointerenter", (event) => {
-            if (event.pointerType !== "mouse") return;
-            cursorCard = card;
-            card.classList.add("cursor-active");
-            moveCursorHalo(event);
-            cursorHalo.classList.add("is-visible");
-          });
-
-          card.addEventListener("pointermove", (event) => {
-            if (!cursorCard) return;
-            moveCursorHalo(event);
-          });
-
-          card.addEventListener("pointerleave", hideCursorHalo);
-
           card.addEventListener("click", () => {
             const willOpen = activeCard !== card;
-            if (!willOpen) {
-              closeAll();
-              return;
+            closeAll();
+            if (willOpen) {
+              card.classList.add("is-open");
+              card.setAttribute("aria-pressed", "true");
+              activeCard = card;
             }
-            openCard(card);
           });
         });
-
-        if (closeButton) closeButton.addEventListener("click", closeAll);
-
-        if (backdrop) {
-          backdrop.addEventListener("click", (event) => {
-            if (event.target === backdrop) closeAll();
-          });
-        }
 
         document.addEventListener("keydown", (event) => {
           if (event.key === "Escape") closeAll();
         });
-
-        window.addEventListener("blur", hideCursorHalo);
       })();
     </script>
   </body>
