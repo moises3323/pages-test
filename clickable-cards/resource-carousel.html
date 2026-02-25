@@ -26,9 +26,6 @@
         min-height: 100vh;
         font-family: "Manrope", "Segoe UI", sans-serif;
         color: #1f2b3a;
-        background:
-          radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.95), rgba(247, 248, 251, 0.94) 45%, rgba(240, 242, 246, 0.97) 100%),
-          repeating-linear-gradient(130deg, rgba(16, 24, 40, 0.05) 0 1px, transparent 1px 10px);
       }
 
       .page {
@@ -195,6 +192,39 @@
           ],
         };
 
+        const milkCards = [
+          {
+            title: "Milk 1",
+            image: "../imgs/jpg/1-Raw%20Milk%20Farm%20Shoot%20June%202025-11.jpg",
+            alt: "Raw milk farm photo 1",
+          },
+          {
+            title: "Milk 2",
+            image: "../imgs/jpg/2-Raw%20Milk%20Farm%20Shoot%20June%202025-24.jpg",
+            alt: "Raw milk farm photo 2",
+          },
+          {
+            title: "Milk 3",
+            image: "../imgs/jpg/3-Raw%20Milk%20Farm%20Shoot%20June%202025-26.jpg",
+            alt: "Raw milk farm photo 3",
+          },
+          {
+            title: "Milk 4",
+            image: "../imgs/jpg/4-Raw%20Milk%20Farm%20Shoot%20June%202025-21.jpg",
+            alt: "Raw milk farm photo 4",
+          },
+          {
+            title: "Milk 5",
+            image: "../imgs/jpg/5-Raw%20Milk%20Farm%20Shoot%20June%202025-42.jpg",
+            alt: "Raw milk farm photo 5",
+          },
+          {
+            title: "Milk 6",
+            image: "../imgs/jpg/6-Raw%20Milk%20Farm%20Shoot%20June%202025-29.jpg",
+            alt: "Raw milk farm photo 6",
+          },
+        ];
+
         function parseCarouselData() {
           if (!dataNode) return fallbackData;
           try {
@@ -208,6 +238,13 @@
           }
         }
 
+        function shouldUseMilkVariant() {
+          const params = new URLSearchParams(window.location.search);
+          if (!params.has("milk")) return false;
+          const value = (params.get("milk") || "").trim().toLowerCase();
+          return value === "" || value === "1" || value === "true" || value === "yes" || value === "milk";
+        }
+
         function buildCards(items) {
           carousel.innerHTML = "";
           items.forEach((item) => {
@@ -215,7 +252,7 @@
             article.className = "resource-card";
 
             const image = document.createElement("img");
-            image.src = item.image;
+            image.src = (item.image || "").trim();
             image.alt = item.alt || "Lorem ipsum";
             article.appendChild(image);
             carousel.appendChild(article);
@@ -223,7 +260,8 @@
         }
 
         const carouselData = parseCarouselData();
-        buildCards(carouselData.cards);
+        const activeCards = shouldUseMilkVariant() ? milkCards : carouselData.cards;
+        buildCards(activeCards);
 
         const cards = Array.from(document.querySelectorAll(".resource-card"));
         let activeIndex = 0;
