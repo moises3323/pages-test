@@ -33,7 +33,7 @@
       }
 
       .stage {
-        width: min(940px, 100%);
+        width: min(600px, 100%);
         display: flex;
         flex-direction: column;
         gap: 22px;
@@ -53,6 +53,7 @@
       }
 
       .flip-inner {
+        display: block;
         position: relative;
         width: 100%;
         aspect-ratio: 16 / 7;
@@ -144,8 +145,8 @@
       .back-text {
         margin: 0;
         font-family: "Avenir", "Avenir Next", "Helvetica Neue", sans-serif;
-        font-size: 0.98rem;
-        line-height: 1.48;
+        font-size: 16px;
+        line-height: 1.4;
         overflow: auto;
         padding-right: 6px;
       }
@@ -179,7 +180,7 @@
         }
 
         .back-text {
-          font-size: 0.92rem;
+          font-size: 16px;
         }
       }
 
@@ -198,19 +199,19 @@
         aria-pressed="false"
         style="--card-fill: #2e3d2c; --card-border: rgba(223, 235, 218, 0.35)"
       >
-        <span class="flip-inner">
-          <span class="card-face card-front">
+        <div class="flip-inner">
+          <div class="card-face card-front">
             <span class="front-word">Why</span>
             <span class="front-hint">Click to flip</span>
-          </span>
-          <span class="card-face card-back">
+          </div>
+          <div class="card-face card-back">
             <h2 class="back-title">Why</h2>
             <p class="back-text">
               Redmond Heritage Farm exists to provide high quality raw dairy products, eggs, and
               meat to the surrounding community in Utah.
             </p>
-          </span>
-        </span>
+          </div>
+        </div>
       </button>
 
       <button
@@ -219,12 +220,12 @@
         aria-pressed="false"
         style="--card-fill: #d29832; --card-border: rgba(255, 238, 200, 0.35)"
       >
-        <span class="flip-inner">
-          <span class="card-face card-front">
+        <div class="flip-inner">
+          <div class="card-face card-front">
             <span class="front-word">Who</span>
             <span class="front-hint">Click to flip</span>
-          </span>
-          <span class="card-face card-back">
+          </div>
+          <div class="card-face card-back">
             <h2 class="back-title">Who</h2>
             <p class="back-text">
               Redmond's heritage farm team is made up of people who care for the animals at our
@@ -235,8 +236,8 @@
               farm also includes the cows, chickens, and pigs. Without these animals, we would not
               have any farm products to offer.
             </p>
-          </span>
-        </span>
+          </div>
+        </div>
       </button>
 
       <button
@@ -245,44 +246,37 @@
         aria-pressed="false"
         style="--card-fill: #b9beaf; --card-border: rgba(246, 247, 241, 0.42)"
       >
-        <span class="flip-inner">
-          <span class="card-face card-front">
+        <div class="flip-inner">
+          <div class="card-face card-front">
             <span class="front-word">What</span>
             <span class="front-hint">Click to flip</span>
-          </span>
-          <span class="card-face card-back">
+          </div>
+          <div class="card-face card-back">
             <h2 class="back-title">What</h2>
             <p class="back-text">
               Raw dairy, eggs, and meat made with care, shaped by regenerative methods that keep
               nourishment at the center.
             </p>
-          </span>
-        </span>
+          </div>
+        </div>
       </button>
     </section>
 
     <script>
       (function () {
         const cards = Array.from(document.querySelectorAll(".flip-card"));
-        let activeCard = null;
 
         const closeAll = () => {
           cards.forEach((card) => {
             card.classList.remove("is-open");
             card.setAttribute("aria-pressed", "false");
           });
-          activeCard = null;
         };
 
         cards.forEach((card) => {
           card.addEventListener("click", () => {
-            const willOpen = activeCard !== card;
-            closeAll();
-            if (willOpen) {
-              card.classList.add("is-open");
-              card.setAttribute("aria-pressed", "true");
-              activeCard = card;
-            }
+            const isOpen = card.classList.toggle("is-open");
+            card.setAttribute("aria-pressed", isOpen ? "true" : "false");
           });
         });
 
