@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Looping Badge Video</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        background: transparent;
+      }
+
+      .video-shell {
+        position: relative;
+        width: min(100vw, 720px);
+        margin: 0 auto;
+        overflow: hidden;
+      }
+
+      video {
+        display: block;
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        background: #000;
+      }
+
+      .start-audio {
+        position: absolute;
+        inset: auto 12px 12px auto;
+        border: 0;
+        border-radius: 999px;
+        padding: 8px 12px;
+        font: 600 14px/1.2 "Avenir Next", Avenir, "Helvetica Neue", Arial, sans-serif;
+        background: rgba(0, 0, 0, 0.78);
+        color: #fff;
+        cursor: pointer;
+      }
+
+      .start-audio[hidden] {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="video-shell">
+      <video
+        id="badge-video"
+        src="./badges.mp4"
+        preload="auto"
+        autoplay
+        loop
+        muted
+        playsinline
+      ></video>
+      <button id="start-audio" class="start-audio" type="button" hidden>
+        Activar sonido
+      </button>
+    </div>
+
+    <script>
+      (function () {
+        const video = document.getElementById("badge-video");
+        const startButton = document.getElementById("start-audio");
+        const unlockEvents = ["pointerdown", "touchstart", "keydown"];
+        let audioUnlocked = false;
+
+        async function startMutedLoop() {
+          video.muted = true;
+          video.volume = 1;
+          try {
+            await video.play();
+          } catch {}
+        }
+
+        async function startWithAudio() {
+          if (audioUnlocked) {
+            return;
+          }
+          video.muted = false;
+          video.volume = 1;
+          try {
+            await video.play();
+            audioUnlocked = true;
+            startButton.hidden = true;
+            removeUnlockListeners();
+          } catch {
+            startButton.hidden = false;
+          }
+        }
+
+        function addUnlockListeners() {
+          unlockEvents.forEach((eventName) => {
+            document.addEventListener(eventName, startWithAudio, {
+              capture: true,
+              passive: true
+            });
+          });
+        }
+
+        function removeUnlockListeners() {
+          unlockEvents.forEach((eventName) => {
+            document.removeEventListener(eventName, startWithAudio, {
+              capture: true
+            });
+          });
+        }
+
+        video.addEventListener(
+          "canplay",
+          async function () {
+            await startMutedLoop();
+            addUnlockListeners();
+            startButton.hidden = false;
+          },
+          { once: true }
+        );
+
+        startButton.addEventListener("click", async function () {
+          await startWithAudio();
+        });
+      })();
+    </script>
+  </body>
+</html>
