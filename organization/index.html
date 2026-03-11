@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redmond Organization Map</title>
+    <style>
+      :root {
+        --page-bg: #ffffff;
+        --card-bg: rgba(255, 255, 255, 0.9);
+        --card-border: rgba(170, 184, 166, 0.8);
+        --text-main: #1a1719;
+        --text-muted: #5a5c59;
+        --shadow-soft: 0 18px 45px rgba(43, 39, 32, 0.08);
+        --shadow-hover: 0 20px 28px rgba(43, 39, 32, 0.14);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+
+      body {
+        font-family: "Avenir Next", "Trebuchet MS", sans-serif;
+        background: var(--page-bg);
+        color: var(--text-main);
+      }
+
+      .page {
+        width: min(100%, 1800px);
+        margin: 0 auto;
+        padding: 12px 20px 20px;
+      }
+
+      .intro {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 8px;
+      }
+
+      .intro h1 {
+        margin: 0 0 8px;
+        font-size: clamp(1.6rem, 2.5vw, 2.8rem);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .intro p {
+        margin: 0;
+        max-width: 760px;
+        color: var(--text-muted);
+        font-size: 0.98rem;
+        line-height: 1.5;
+      }
+
+      .hint {
+        flex: 0 0 auto;
+        margin-top: 6px;
+        padding: 10px 14px;
+        border: 1px solid rgba(170, 184, 166, 0.7);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.76);
+        font-size: 0.8rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #48604b;
+      }
+
+      .scene-shell {
+        overflow: visible;
+        padding-bottom: 0;
+      }
+
+      .scene-scroll {
+        overflow-x: auto;
+        overflow-y: visible;
+      }
+
+      .scene {
+        position: relative;
+        width: min(92%, 1480px);
+        min-width: 960px;
+        aspect-ratio: 16 / 9;
+        margin: 0 auto;
+        overflow: visible;
+        background: transparent;
+        box-shadow: none;
+      }
+
+      .scene__image {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .brand {
+        position: absolute;
+        left: var(--x);
+        top: var(--y);
+        width: var(--w);
+        height: var(--h);
+        transform: translate(-50%, -50%);
+        padding: 0;
+        border: 0;
+        background: transparent;
+        cursor:
+          url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44"><path fill="%231a1719" d="M13 4c1.7 0 3 1.3 3 3v11h1V3c0-1.7 1.3-3 3-3s3 1.3 3 3v15h1V5c0-1.7 1.3-3 3-3s3 1.3 3 3v13h1V8c0-1.7 1.3-3 3-3s3 1.3 3 3v15.2c0 2.8-.8 5.6-2.4 7.9L31 42H15.8l-7.4-13.3A7 7 0 0 1 7.5 25V15.5c0-1.4 1.1-2.5 2.5-2.5H13V7c0-1.7 1.3-3 3-3z"/></svg>')
+            10 6,
+          pointer;
+        z-index: 2;
+      }
+
+      .brand::before {
+        display: none;
+      }
+
+      .brand:hover,
+      .brand:focus-visible,
+      .brand.is-active {
+        z-index: 40;
+      }
+
+      .brand__bubble {
+        position: absolute;
+        z-index: 80;
+        width: clamp(240px, 24vw, 350px);
+        padding: 18px 20px;
+        border-radius: 22px;
+        border: 1px solid var(--card-border);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(250, 249, 244, 0.94));
+        box-shadow: var(--shadow-hover);
+        text-align: left;
+        opacity: 0;
+        pointer-events: none;
+        transition:
+          opacity 180ms ease,
+          transform 180ms ease;
+      }
+
+      .brand__bubble::after {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        background: #fbfaf6;
+        border-right: 1px solid var(--card-border);
+        border-bottom: 1px solid var(--card-border);
+      }
+
+      .brand__bubble strong {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 1rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .brand__bubble p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+
+      .brand:hover .brand__bubble,
+      .brand:focus-visible .brand__bubble,
+      .brand.is-active .brand__bubble {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .bubble-up .brand__bubble {
+        left: 50%;
+        bottom: calc(100% + 22px);
+        transform: translate(-50%, 12px) scale(0.97);
+      }
+
+      .bubble-up .brand__bubble::after {
+        left: calc(50% - 8px);
+        bottom: -9px;
+        transform: rotate(45deg);
+      }
+
+      .bubble-down .brand__bubble {
+        left: 50%;
+        top: calc(100% + 22px);
+        transform: translate(-50%, -12px) scale(0.97);
+      }
+
+      .bubble-down .brand__bubble::after {
+        left: calc(50% - 8px);
+        top: -9px;
+        transform: rotate(225deg);
+      }
+
+      .bubble-left .brand__bubble {
+        right: calc(100% + 22px);
+        top: 50%;
+        transform: translate(12px, -50%) scale(0.97);
+      }
+
+      .bubble-left .brand__bubble::after {
+        right: -9px;
+        top: calc(50% - 8px);
+        transform: rotate(315deg);
+      }
+
+      .bubble-right .brand__bubble {
+        left: calc(100% + 22px);
+        top: 50%;
+        transform: translate(-12px, -50%) scale(0.97);
+      }
+
+      .bubble-right .brand__bubble::after {
+        left: -9px;
+        top: calc(50% - 8px);
+        transform: rotate(135deg);
+      }
+
+      .brand:hover .brand__bubble,
+      .brand:focus-visible .brand__bubble,
+      .brand.is-active .brand__bubble {
+        transform: translate(0, 0) scale(1);
+      }
+
+      .bubble-up:hover .brand__bubble,
+      .bubble-up:focus-visible .brand__bubble,
+      .bubble-up.is-active .brand__bubble {
+        transform: translate(-50%, 0) scale(1);
+      }
+
+      .bubble-down:hover .brand__bubble,
+      .bubble-down:focus-visible .brand__bubble,
+      .bubble-down.is-active .brand__bubble {
+        transform: translate(-50%, 0) scale(1);
+      }
+
+      .bubble-left:hover .brand__bubble,
+      .bubble-left:focus-visible .brand__bubble,
+      .bubble-left.is-active .brand__bubble {
+        transform: translate(0, -50%) scale(1);
+      }
+
+      .bubble-right:hover .brand__bubble,
+      .bubble-right:focus-visible .brand__bubble,
+      .bubble-right.is-active .brand__bubble {
+        transform: translate(0, -50%) scale(1);
+      }
+
+      .scene-footer {
+        display: flex;
+        justify-content: center;
+        margin-top: 4px;
+        color: #6c6f68;
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 900px) {
+        .page {
+          padding: 10px 14px 20px;
+        }
+
+        .intro {
+          flex-direction: column;
+          gap: 14px;
+        }
+
+        .hint {
+          margin-top: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="intro">
+        <div>
+          <h1>Redmond Organization Map</h1>
+          <p>
+            Explore each company inside the Redmond ecosystem. Hover with a mouse
+            or tap on mobile to raise the information bubble for each brand.
+          </p>
+        </div>
+        <div class="hint">Hover or tap each brand</div>
+      </section>
+
+      <section class="scene-shell" aria-label="Interactive organization map">
+        <div class="scene-scroll">
+        <div class="scene">
+          <img
+            class="scene__image"
+            src="img/Redmond-Companies-Tree.gif"
+            alt="Redmond organization tree"
+          />
+
+          <button
+            class="brand bubble-right"
+            type="button"
+            aria-label="Western Clay"
+            style="--x: 15.3%; --y: 61.8%; --w: 10.4%; --h: 8.8%;"
+          >
+            <span class="brand__bubble" role="tooltip">
+              <strong>Western Clay</strong>
+              <p>
+                This collection provides agriculture and industry companies with
+                the highest quality bentonite clay.
+              </p>
+            </span>
+          </button>
+
+          <button
+            class="brand bubble-down"
+            type="button"
+            aria-label="Agriculture"
+            style="--x: 27.6%; --y: 13.9%; --w: 15.5%; --h: 5.5%;"
+          >
+            <span class="brand__bubble" role="tooltip">
+              <strong>Agriculture</strong>
+              <p>
+                This line includes Real Salt and Redmond Clay-based livestock
+                supplements and soil amendments to help homesteaders and hobby
+                farmers care for their land and animals.
+              </p>
+            </span>
+          </button>
+
+          <button
+            class="brand bubble-right"
+            type="button"
+            aria-label="Hunt"
+            style="--x: 16.2%; --y: 22.3%; --w: 8.1%; --h: 4.9%;"
+          >
+            <span class="brand__bubble" role="tooltip">
+              <strong>Hunt</strong>
+              <p>
+                Redmond Hunt creates all-natural minerals to help hunters grow
+                bigger bucks and enjoy a successful hunt.
+              </p>
+            </span>
+          </button>
+
+          <button
+            class="brand bubble-right"
+            type="button"
+            aria-label="Ice Slicer"
+            style="--x: 14.6%; --y: 36.6%; --w: 15.8%; --h: 5.8%;"
+          >
+            <span class="brand__bubble" role="tooltip">
+              <strong>Ice Slicer</strong>
+              <p>
+                Our de-icing products are made from high-performing rock salt
+                harvested straight from our mine.
+              </p>
+            </span>
+          </button>
+
+          <button
+            class="brand bubble-left"
+            type="button"
+            aria-label="Equine"
+            style="--x: 36.1%; --y: 23.2%; --w: 8.6%; --h: 5.2%;"
+          >
+            <span class="brand__bubble" role="tooltip">
+              <strong>Equine</strong>
+              <p>
+                Redmond Equine provides natural, effective supplements and care
+                products that let you and your horse focus on what you love.
+              </p>
+            </span>
+          </button>
+
+          <button
+            class="brand bubble-left"
+            type="button"
+            aria-label="Mine"
+            style="--x: 39.4%; --y: 36.7%; --w: 8.7%; --h: 5.2%;"
+          >
+            <span class="brand__bubble" role="tooltip">
+              <strong>Mine</strong>
+              <p>
+                It all starts here. This is where we source our Redmond salt and
+                clay that forms the base of so many of our products.
+              </p>
+            </span>
+          </button>
+
+          <button
+            class="brand bubble-right"
+            type="button"
+            aria-label="Redmond Minerals"
+            style="--x: 30.8%; --y: 46.3%; --w: 11.8%; --h: 9.6%;"
+          >
+            <span class="brand__bubble" role="tooltip">
+              <strong>Redmond Minerals</strong>
+              <p>
+                Redmond Minerals encompasses our salt and clay products meant
+                for industrial and agricultural use.
+              </p>
+            </span>
+          </button>
+
+          <button
+            class="brand bubble-down"
+            type="button"
+            aria-label="Farm"
+            style="--x: 53.2%; --y: 16.5%; --w: 5.6%; --h: 3.5%;"
+          >
+            <span class="brand__bubble" role="tooltip">
+              <strong>Farm</strong>
+              <p>
+                Our farm, located in Redmond, Utah right next to our salt mine,
+                is where we produce our raw milk, pasture-raised pork, and eggs.
+              </p>
+            </span>
+          </button>
+
+          <button
+            class="brand bubble-down"
+            type="button"
+            aria-label="Market"
+            style="--x: 61%; --y: 11.3%; --w: 6.4%; --h: 3.7%;"
+          >
+            <span class="brand__bubble" role="tooltip">
+              <strong>Market</strong>
+              <p>
+                Our markets connect our communities with farm staples, Redmond
+                products, and a curated selection of products from aligned
+                vendors.
+              </p>
+            </span>
+          </button>
+
+          <button
+            class="brand bubble-down"
+            type="button"
+            aria-label="Kitchen"
+            style="--x: 69.2%; --y: 17%; --w: 7.8%; --h: 4.1%;"
+          >
+            <span class="brand__bubble" role="tooltip">
+              <strong>Kitchen</strong>
+              <p>
+                Our kitchen serves delicious, nutrient-dense dishes created with
+                care, and produces our line of House Made snacks and staples.
+              </p>
+            </span>
+          </button>
+
+          <button
+            class="brand bubble-down"
+            type="button"
+            aria-label="Redmond Farm Market and Kitchen"
+            style="--x: 62.6%; --y: 26.8%; --w: 21.6%; --h: 10.8%;"
+          >
+            <span class="brand__bubble" role="tooltip">
+              <strong>Redmond Farm Market and Kitchen</strong>
+              <p>
+                Redmond Heritage Farms brings nutrient-dense, sustainably
+                sourced foods and products to our Utah community.
+              </p>
+            </span>
+          </button>
+
+          <button
+            class="brand bubble-up"
+            type="button"
+            aria-label="Redmond Living"
+            style="--x: 48.3%; --y: 47.6%; --w: 18.2%; --h: 6.6%;"
+          >
+            <span class="brand__bubble" role="tooltip">
+              <strong>Redmond Living</strong>
+              <p>
+                Redmond Living creates natural care and nutrition products for
+                every moment in your day and everybody in your family.
+              </p>
+            </span>
+          </button>
+
+          <button
+            class="brand bubble-left"
+            type="button"
+            aria-label="Redmond Valleywide"
+            style="--x: 74.9%; --y: 46.1%; --w: 15.8%; --h: 7.4%;"
+          >
+            <span class="brand__bubble" role="tooltip">
+              <strong>Redmond Valleywide</strong>
+              <p>
+                Valleywide helps homeowners and businesses throughout Utah,
+                Colorado, Idaho, and Hawaii elevate outdoor spaces with premium
+                fencing, decking, and pergolas.
+              </p>
+            </span>
+          </button>
+
+          <button
+            class="brand bubble-up"
+            type="button"
+            aria-label="Pybus Point Lodge"
+            style="--x: 65.3%; --y: 82.9%; --w: 10.9%; --h: 9.8%;"
+          >
+            <span class="brand__bubble" role="tooltip">
+              <strong>Pybus Point Lodge</strong>
+              <p>
+                Pybus Point Lodge offers one-of-a-kind Alaskan adventures in
+                the heart of the Tongass National Forest on Admiralty Island.
+              </p>
+            </span>
+          </button>
+
+          <button
+            class="brand bubble-left"
+            type="button"
+            aria-label="Pixel"
+            style="--x: 84.8%; --y: 80.8%; --w: 10.2%; --h: 7.6%;"
+          >
+            <span class="brand__bubble" role="tooltip">
+              <strong>Pixel</strong>
+              <p>
+                Pixel is a creative agency that works primarily with companies
+                in the United States and projects for the Meso Foundation in
+                Guatemala.
+              </p>
+            </span>
+          </button>
+        </div>
+        </div>
+      </section>
+
+      <div class="scene-footer">
+        Scroll horizontally on smaller screens to explore the full map.
+      </div>
+    </main>
+
+    <script>
+      const brands = document.querySelectorAll(".brand");
+
+      const clearActiveBrands = (ignore = null) => {
+        brands.forEach((brand) => {
+          if (brand !== ignore) {
+            brand.classList.remove("is-active");
+          }
+        });
+      };
+
+      brands.forEach((brand) => {
+        brand.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const willActivate = !brand.classList.contains("is-active");
+          clearActiveBrands(brand);
+          brand.classList.toggle("is-active", willActivate);
+        });
+      });
+
+      document.addEventListener("click", () => {
+        clearActiveBrands();
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          clearActiveBrands();
+        }
+      });
+    </script>
+  </body>
+</html>
