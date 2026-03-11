@@ -34,43 +34,7 @@
       .page {
         width: min(100%, 1800px);
         margin: 0 auto;
-        padding: 12px 20px 20px;
-      }
-
-      .intro {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 20px;
-        margin-bottom: 8px;
-      }
-
-      .intro h1 {
-        margin: 0 0 8px;
-        font-size: clamp(1.6rem, 2.5vw, 2.8rem);
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-      }
-
-      .intro p {
-        margin: 0;
-        max-width: 760px;
-        color: var(--text-muted);
-        font-size: 0.98rem;
-        line-height: 1.5;
-      }
-
-      .hint {
-        flex: 0 0 auto;
-        margin-top: 6px;
-        padding: 10px 14px;
-        border: 1px solid rgba(170, 184, 166, 0.7);
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.76);
-        font-size: 0.8rem;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: #48604b;
+        padding: 0;
       }
 
       .scene-shell {
@@ -256,43 +220,15 @@
         transform: translate(0, -50%) scale(1);
       }
 
-      .scene-footer {
-        display: flex;
-        justify-content: center;
-        margin-top: 4px;
-        color: #6c6f68;
-        font-size: 0.9rem;
-      }
-
       @media (max-width: 900px) {
         .page {
-          padding: 10px 14px 20px;
-        }
-
-        .intro {
-          flex-direction: column;
-          gap: 14px;
-        }
-
-        .hint {
-          margin-top: 0;
+          padding: 0;
         }
       }
     </style>
   </head>
   <body>
     <main class="page">
-      <section class="intro">
-        <div>
-          <h1>Redmond Organization Map</h1>
-          <p>
-            Explore each company inside the Redmond ecosystem. Hover with a mouse
-            or tap on mobile to raise the information bubble for each brand.
-          </p>
-        </div>
-        <div class="hint">Hover or tap each brand</div>
-      </section>
-
       <section class="scene-shell" aria-label="Interactive organization map">
         <div class="scene-scroll">
         <div class="scene">
@@ -533,10 +469,6 @@
         </div>
         </div>
       </section>
-
-      <div class="scene-footer">
-        Scroll horizontally on smaller screens to explore the full map.
-      </div>
     </main>
 
     <script>
