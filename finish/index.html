@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Redmond University | Finish</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f4f1ee;
+        --bg-accent: #efe6dd;
+        --surface: rgba(255, 255, 255, 0.74);
+        --surface-strong: rgba(255, 255, 255, 0.92);
+        --ink: #2d2a2b;
+        --muted: #53656b;
+        --soft-muted: #80979d;
+        --brand: #e23c30;
+        --brand-dark: #bf2f25;
+        --sand: #dca55c;
+        --forest: #6e8f50;
+        --navy: #234d7a;
+        --plum: #7f3250;
+        --shadow: 0 28px 70px rgba(66, 48, 35, 0.13);
+        --shadow-strong: 0 36px 90px rgba(51, 29, 20, 0.18);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+
+      body {
+        font-family: "Avenir Next", Avenir, "Trebuchet MS", sans-serif;
+        color: var(--ink);
+        background: #ffffff;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: none;
+        pointer-events: none;
+      }
+
+      button,
+      a {
+        font: inherit;
+      }
+
+      .confetti-canvas {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 30;
+      }
+
+      .page {
+        position: relative;
+        min-height: 100vh;
+        padding: 18px clamp(18px, 4vw, 48px) 36px;
+        display: grid;
+        grid-template-rows: 1fr auto;
+        z-index: 1;
+      }
+
+      .hero {
+        position: relative;
+        display: grid;
+        place-items: center;
+        min-height: 100vh;
+        padding: 0;
+      }
+
+      .hero.is-finished {
+        place-items: start center;
+        align-content: start;
+        min-height: auto;
+        padding-top: 8px;
+      }
+
+      .launch-panel,
+      .celebration {
+        width: min(100%, 1060px);
+        transition:
+          opacity 480ms ease,
+          transform 580ms cubic-bezier(0.22, 1, 0.36, 1),
+          visibility 0s linear 0s;
+      }
+
+      .launch-panel {
+        display: grid;
+        place-items: center;
+        gap: 24px;
+        text-align: center;
+      }
+
+      .eyebrow {
+        margin: 0;
+        color: var(--soft-muted);
+        font-size: 0.88rem;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .launch-title {
+        max-width: 11ch;
+        margin: 0;
+        font-family: "Montserrat", "Avenir Next", sans-serif;
+        font-size: clamp(3rem, 10vw, 7.4rem);
+        line-height: 0.92;
+        letter-spacing: -0.06em;
+        text-transform: uppercase;
+      }
+
+      .launch-title span {
+        display: block;
+        color: var(--brand);
+      }
+
+      .launch-copy {
+        max-width: 44rem;
+        margin: 0;
+        color: var(--muted);
+        font-size: clamp(1rem, 2vw, 1.18rem);
+        line-height: 1.65;
+      }
+
+      .finish-button {
+        position: relative;
+        isolation: isolate;
+        min-width: min(86vw, 460px);
+        padding: 28px 42px 30px;
+        border: 0;
+        border-radius: 34px;
+        background:
+          linear-gradient(135deg, #f15b46 0%, var(--brand) 36%, #c92e25 100%);
+        box-shadow:
+          0 20px 40px rgba(226, 60, 48, 0.26),
+          0 0 0 0 rgba(226, 60, 48, 0.28);
+        color: #fff8f3;
+        cursor: pointer;
+        transform: translateY(0) scale(1);
+        transition:
+          transform 200ms ease,
+          box-shadow 200ms ease,
+          filter 200ms ease;
+        animation:
+          buttonPulse 2s ease-out infinite,
+          gradientShift 4.8s ease-in-out infinite;
+        background-size: 180% 180%;
+      }
+
+      .finish-button::before,
+      .finish-button::after {
+        content: "";
+        position: absolute;
+        inset: 10px;
+        border-radius: 26px;
+        z-index: -1;
+      }
+
+      .finish-button::before {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.32), transparent);
+      }
+
+      .finish-button::after {
+        inset: auto 24px -18px;
+        height: 28px;
+        border-radius: 999px;
+        background: rgba(150, 39, 31, 0.26);
+        filter: blur(16px);
+      }
+
+      .finish-button:hover,
+      .finish-button:focus-visible {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow:
+          0 28px 56px rgba(226, 60, 48, 0.34),
+          0 0 0 10px rgba(226, 60, 48, 0.1);
+        outline: none;
+        filter: saturate(1.04);
+      }
+
+      .finish-button:active {
+        transform: translateY(1px) scale(0.995);
+      }
+
+      .finish-button__label {
+        display: block;
+        font-family: "Montserrat", "Avenir Next", sans-serif;
+        font-size: clamp(2rem, 5vw, 3.6rem);
+        font-weight: 700;
+        line-height: 0.95;
+        letter-spacing: -0.05em;
+        text-transform: uppercase;
+      }
+
+      .finish-button__hint {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 12px;
+        font-size: 0.92rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        opacity: 0.9;
+      }
+
+      .finish-button__hint::after {
+        content: ">";
+        display: inline-block;
+        font-size: 1.1rem;
+        animation: nudge 900ms ease-in-out infinite alternate;
+      }
+
+      .celebration {
+        visibility: hidden;
+        opacity: 0;
+        transform: translateY(36px) scale(0.98);
+        text-align: center;
+        margin-top: 0;
+      }
+
+      .celebration.is-visible {
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+
+      .launch-panel.is-hidden {
+        visibility: hidden;
+        opacity: 0;
+        transform: translateY(-28px) scale(0.96);
+        position: absolute;
+        inset: 0 auto auto 0;
+        pointer-events: none;
+      }
+
+      .celebration-card {
+        position: relative;
+        overflow: hidden;
+        padding: 0;
+        border-radius: 0;
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        backdrop-filter: none;
+      }
+
+      .celebration-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: none;
+        pointer-events: none;
+      }
+
+      .celebration h1 {
+        position: relative;
+        margin: 0;
+        font-family: "Montserrat", "Avenir Next", sans-serif;
+        font-size: clamp(3.4rem, 10vw, 7rem);
+        line-height: 0.94;
+        letter-spacing: -0.08em;
+        text-transform: uppercase;
+        color: var(--brand);
+      }
+
+      .celebration h2 {
+        position: relative;
+        max-width: 18ch;
+        margin: 24px auto 16px;
+        color: var(--soft-muted);
+        font-size: clamp(1.2rem, 3.2vw, 2.2rem);
+        font-family: "Montserrat", "Avenir Next", sans-serif;
+        font-weight: 800;
+        line-height: 1.15;
+        letter-spacing: -0.03em;
+        text-transform: uppercase;
+      }
+
+      .celebration p {
+        position: relative;
+        max-width: 46rem;
+        margin: 0 auto;
+        color: var(--ink);
+        font-size: clamp(1rem, 2vw, 1.28rem);
+        line-height: 1.62;
+      }
+
+      .celebration p + p {
+        margin-top: 20px;
+        color: #4e4a4c;
+      }
+
+      .badge-strip {
+        position: relative;
+        margin: 42px auto 0;
+        width: min(100%, 1700px);
+      }
+
+      .badge-strip img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      @keyframes buttonPulse {
+        0%,
+        100% {
+          box-shadow:
+            0 20px 40px rgba(226, 60, 48, 0.26),
+            0 0 0 0 rgba(226, 60, 48, 0.24);
+        }
+        70% {
+          box-shadow:
+            0 26px 52px rgba(226, 60, 48, 0.32),
+            0 0 0 18px rgba(226, 60, 48, 0);
+        }
+      }
+
+      @keyframes nudge {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          transform: translateX(5px);
+        }
+      }
+
+      @keyframes gradientShift {
+        0%,
+        100% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .page {
+          padding-top: 18px;
+        }
+
+        .hero.is-finished {
+          padding-top: 0;
+        }
+
+        .badge-strip {
+          margin-top: 28px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas class="confetti-canvas" id="confetti-canvas" aria-hidden="true"></canvas>
+    <audio id="claps-audio" preload="auto" src="./claps.mp3"></audio>
+    <audio id="finish-audio" preload="auto" src="./finish game.mp3"></audio>
+
+    <main class="page">
+      <section class="hero" aria-label="Course completion">
+        <div class="launch-panel" id="launch-panel">
+          <p class="eyebrow">Ready for the final click</p>
+          <h1 class="launch-title">
+            Complete
+            <span>the course</span>
+          </h1>
+          <button class="finish-button" id="finish-button" type="button" aria-controls="celebration">
+            <span class="finish-button__label">Finalize Redmond 101</span>
+            <span class="finish-button__hint">Click to celebrate</span>
+          </button>
+        </div>
+
+        <section
+          class="celebration"
+          id="celebration"
+          aria-live="polite"
+          aria-hidden="true"
+          tabindex="-1"
+        >
+          <div class="celebration-card">
+            <h1>WE DID IT!</h1>
+            <h2>
+              We completed Redmond 101, and we're on our way to elevating the human
+              experience and finding our unique contribution at Redmond.
+            </h2>
+            <p>
+              But this isn't the end. There's always more to learn and explore.
+            </p>
+            <p>
+              Let's continue our growth with other Redmond University courses, the
+              Redmond Experience blog, and resources in the Knowledge Library.
+            </p>
+
+            <div class="badge-strip" aria-label="Redmond companies">
+              <img
+                src="./RU-Badge-11-Redmond.gif"
+                alt="Redmond brands and celebration character"
+              />
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      (() => {
+        const finishButton = document.getElementById("finish-button");
+        const hero = document.querySelector(".hero");
+        const launchPanel = document.getElementById("launch-panel");
+        const celebration = document.getElementById("celebration");
+        const confettiCanvas = document.getElementById("confetti-canvas");
+        const confettiCtx = confettiCanvas ? confettiCanvas.getContext("2d") : null;
+        const clapsAudio = document.getElementById("claps-audio");
+        const finishAudio = document.getElementById("finish-audio");
+        let confettiParticles = [];
+        let confettiFrame = 0;
+        let confettiUntil = 0;
+        let lastConfettiSpawn = 0;
+        let celebrationAudioTimer = 0;
+        let celebrationFadeStartTimer = 0;
+        let celebrationFadeTimer = 0;
+
+        function resizeConfettiCanvas() {
+          if (!confettiCanvas || !confettiCtx) return;
+          const dpr = window.devicePixelRatio || 1;
+          const width = window.innerWidth;
+          const height = window.innerHeight;
+          confettiCanvas.width = Math.floor(width * dpr);
+          confettiCanvas.height = Math.floor(height * dpr);
+          confettiCanvas.style.width = `${width}px`;
+          confettiCanvas.style.height = `${height}px`;
+          confettiCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        function createConfettiPiece(width, height) {
+          const palette = [
+            "#e23c30",
+            "#f0bf68",
+            "#7e9a58",
+            "#234d7a",
+            "#8a9ea3",
+            "#f7f2ea",
+            "#7f3250",
+          ];
+
+          return {
+            x: Math.random() * width,
+            y: -20 - Math.random() * height * 0.24,
+            w: 6 + Math.random() * 10,
+            h: 10 + Math.random() * 14,
+            vx: (Math.random() - 0.5) * 2.8,
+            vy: 2.8 + Math.random() * 4.2,
+            gravity: 0.045 + Math.random() * 0.025,
+            rotation: Math.random() * Math.PI,
+            vr: (Math.random() - 0.5) * 0.24,
+            tilt: Math.random() * Math.PI,
+            color: palette[Math.floor(Math.random() * palette.length)],
+            opacity: 1,
+            decay: 0.002 + Math.random() * 0.0022,
+          };
+        }
+
+        function spawnConfettiBatch(count) {
+          const width = window.innerWidth;
+          const height = window.innerHeight;
+          for (let i = 0; i < count; i += 1) {
+            confettiParticles.push(createConfettiPiece(width, height));
+          }
+        }
+
+        function stopConfetti() {
+          if (confettiFrame) {
+            cancelAnimationFrame(confettiFrame);
+            confettiFrame = 0;
+          }
+          confettiUntil = 0;
+          confettiParticles = [];
+          if (confettiCtx) {
+            confettiCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+          }
+        }
+
+        function animateConfetti(timestamp) {
+          if (!confettiCtx) return;
+          const width = window.innerWidth;
+          const height = window.innerHeight;
+
+          if (timestamp < confettiUntil && timestamp - lastConfettiSpawn > 85) {
+            spawnConfettiBatch(Math.max(10, Math.floor(width / 120)));
+            lastConfettiSpawn = timestamp;
+          }
+
+          confettiCtx.clearRect(0, 0, width, height);
+          confettiParticles = confettiParticles.filter((piece) => {
+            piece.vy += piece.gravity;
+            piece.x += piece.vx;
+            piece.y += piece.vy;
+            piece.rotation += piece.vr;
+            piece.tilt += 0.16;
+            piece.opacity -= piece.decay;
+
+            if (piece.opacity <= 0 || piece.y > height + 60) {
+              return false;
+            }
+
+            confettiCtx.save();
+            confettiCtx.globalAlpha = Math.max(piece.opacity, 0);
+            confettiCtx.translate(piece.x, piece.y);
+            confettiCtx.rotate(piece.rotation);
+            confettiCtx.scale(Math.cos(piece.tilt), 1);
+            confettiCtx.fillStyle = piece.color;
+            confettiCtx.fillRect(-piece.w / 2, -piece.h / 2, piece.w, piece.h);
+            confettiCtx.restore();
+            return true;
+          });
+
+          if (timestamp < confettiUntil || confettiParticles.length) {
+            confettiFrame = requestAnimationFrame(animateConfetti);
+          } else {
+            stopConfetti();
+          }
+        }
+
+        function startConfetti(durationMs) {
+          if (!confettiCtx) return;
+          stopConfetti();
+          resizeConfettiCanvas();
+          confettiUntil = performance.now() + durationMs;
+          lastConfettiSpawn = 0;
+          spawnConfettiBatch(Math.max(90, Math.floor(window.innerWidth / 8)));
+          confettiFrame = requestAnimationFrame(animateConfetti);
+        }
+
+        function stopApplause() {
+          if (celebrationAudioTimer) {
+            window.clearTimeout(celebrationAudioTimer);
+            celebrationAudioTimer = 0;
+          }
+          if (celebrationFadeStartTimer) {
+            window.clearTimeout(celebrationFadeStartTimer);
+            celebrationFadeStartTimer = 0;
+          }
+          if (celebrationFadeTimer) {
+            window.clearInterval(celebrationFadeTimer);
+            celebrationFadeTimer = 0;
+          }
+
+          [clapsAudio, finishAudio].forEach((audio) => {
+            if (!audio) return;
+            audio.pause();
+            audio.currentTime = 0;
+            audio.volume = 1;
+          });
+        }
+
+        async function startApplause(durationMs) {
+          stopApplause();
+
+          if (!clapsAudio || !finishAudio) return;
+
+          const clapsStartVolume = 0.95;
+          const finishStartVolume = 0.8;
+          const fadeDurationMs = Math.min(2200, Math.max(1400, Math.floor(durationMs * 0.3)));
+          const fadeStartMs = Math.max(0, durationMs - fadeDurationMs);
+
+          clapsAudio.currentTime = 0;
+          finishAudio.currentTime = 0;
+          clapsAudio.volume = clapsStartVolume;
+          finishAudio.volume = finishStartVolume;
+
+          await Promise.allSettled([clapsAudio.play(), finishAudio.play()]);
+
+          celebrationFadeStartTimer = window.setTimeout(() => {
+            const fadeStart = performance.now();
+            celebrationFadeTimer = window.setInterval(() => {
+              const elapsed = performance.now() - fadeStart;
+              const progress = Math.min(elapsed / fadeDurationMs, 1);
+              const nextLevel = 1 - progress;
+
+              clapsAudio.volume = Math.max(0, clapsStartVolume * nextLevel);
+              finishAudio.volume = Math.max(0, finishStartVolume * nextLevel);
+
+              if (progress >= 1) {
+                window.clearInterval(celebrationFadeTimer);
+                celebrationFadeTimer = 0;
+              }
+            }, 80);
+          }, fadeStartMs);
+
+          celebrationAudioTimer = window.setTimeout(() => {
+            stopApplause();
+          }, durationMs);
+        }
+
+        function revealCelebration() {
+          hero.classList.add("is-finished");
+          launchPanel.classList.add("is-hidden");
+          celebration.classList.add("is-visible");
+          celebration.setAttribute("aria-hidden", "false");
+          celebration.focus({ preventScroll: true });
+          startConfetti(8000);
+          startApplause(8000).catch(() => {});
+        }
+
+        finishButton.addEventListener("click", () => {
+          finishButton.disabled = true;
+          revealCelebration();
+        });
+
+        window.addEventListener("resize", resizeConfettiCanvas, { passive: true });
+        window.addEventListener("pagehide", () => {
+          stopConfetti();
+          stopApplause();
+        });
+
+        resizeConfettiCanvas();
+      })();
+    </script>
+  </body>
+</html>
