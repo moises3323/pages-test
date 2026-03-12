@@ -498,10 +498,10 @@ h3 {
 .tile.start,
 .tile.start.is-current {
   background-color: #ffffff;
-  background-image: url("assets/farmer.png");
+  background-image: url("assets/RU Cow 2.png");
   background-repeat: no-repeat;
-  background-size: auto 80%;
-  background-position: left 8px bottom 6px;
+  background-size: 46% auto;
+  background-position: left 6px bottom 12px;
   border-color: rgba(186, 141, 78, 0.65);
 }
 
@@ -524,7 +524,9 @@ h3 {
 }
 
 .tile.start::before,
-.tile.start::after {
+.tile.start::after,
+.tile.start.is-current::before,
+.tile.start.is-current::after {
   display: none;
 }
 

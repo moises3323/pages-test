@@ -57,7 +57,7 @@ const translations = {
     languageToggleAria: "Switch language to Spanish",
     boardTitle: "Redmond Farm Kitchen & Market Board",
     boardSubtitle: "Start at the freight truck and deliver to the customer.",
-    legendHazard: "Start over",
+    legendHazard: "Flat Tire",
     legendFinish: "Finish",
     startEyebrow: "Start here",
     startTitle: "Freight Truck",
@@ -83,12 +83,16 @@ const translations = {
     finishReset: "Restart",
     stopLabel: "Stop",
     badgeQuestion: "Question",
+    badgeBonus: "Bonus",
     badgeHazard: "Restart",
-    flatTire: "Forgot the milk",
-    truckIssue: "Forgot the milk!",
-    hazardText: "Go back to the farm and start the route again.",
+    bonusLabel: "Bonus Question",
+    flatTire: "Flat Tire",
+    truckIssue: "Flat Tire!",
+    hazardText: "Go back 3 spaces.",
     feedbackCorrect: "Correct! Keep moving.",
     feedbackWrong: "Incorrect Answer: Flat Tire! Go back 3 spaces.",
+    feedbackBonusCorrect: "Correct! Bonus complete.",
+    feedbackBonusWrong: "Not quite, but you still unlocked the finish.",
     startTileAlt: "Farmer at the farm",
     finishTileAlt: "Customer team",
     farmPath: "Farm Path",
@@ -110,7 +114,7 @@ const translations = {
     languageToggleAria: "Cambiar idioma a inglés",
     boardTitle: "Tablero Redmond Farm Kitchen & Market",
     boardSubtitle: "Empieza en el camión de carga y entrega al cliente.",
-    legendHazard: "Empezar de nuevo",
+    legendHazard: "Llanta pinchada",
     legendFinish: "Meta",
     startEyebrow: "Empieza aquí",
     startTitle: "Camión de carga",
@@ -136,12 +140,16 @@ const translations = {
     finishReset: "Reiniciar",
     stopLabel: "Parada",
     badgeQuestion: "Pregunta",
+    badgeBonus: "Bonus",
     badgeHazard: "Reinicio",
-    flatTire: "Olvidaste la leche",
-    truckIssue: "Olvidaste la leche",
-    hazardText: "Regresa a la granja y vuelve a iniciar la ruta.",
+    bonusLabel: "Pregunta bonus",
+    flatTire: "Llanta pinchada",
+    truckIssue: "Llanta pinchada",
+    hazardText: "Retrocede 3 espacios.",
     feedbackCorrect: "¡Correcto! Sigue avanzando.",
     feedbackWrong: "Respuesta incorrecta: llanta pinchada. Retrocede 3 espacios.",
+    feedbackBonusCorrect: "¡Correcto! Bonus completado.",
+    feedbackBonusWrong: "No fue correcta, pero igual desbloqueaste el final.",
     startTileAlt: "Granjero en la granja",
     finishTileAlt: "Equipo de clientes",
     farmPath: "Camino de granja",
@@ -154,20 +162,13 @@ const translations = {
 
 const spaceDetails = {
   1: { label: { en: "Heritage Farm", es: "Heritage Farm" }, type: "start" },
-  4: { label: { en: "Beehive Orders", es: "Pedidos Beehive" }, type: "stop" },
-  9: { label: { en: "Production Kitchen", es: "Cocina de producción" }, type: "stop" },
-  14: {
-    label: { en: "Milk Processing Facility", es: "Planta de procesamiento de leche" },
-    type: "stop",
-  },
-  18: { label: { en: "Market Truck", es: "Camión del mercado" }, type: "stop" },
-  24: { label: { en: "Market Kitchen", es: "Cocina del mercado" }, type: "stop" },
-  25: { label: { en: "The Customer", es: "El Cliente" }, type: "finish" },
-  6: { label: { en: "Forgot the milk", es: "Olvidaste la leche" }, type: "hazard" },
+  6: { label: { en: "Flat Tire", es: "Llanta pinchada" }, type: "hazard" },
+  25: { type: "finish" },
 };
 
 const questions = [
   {
+    topic: { en: "Bonus Question", es: "Pregunta bonus" },
     prompt: {
       en: "What is the official name of the Farms Collection within Redmond Inc.?",
       es: "¿Cuál es el nombre oficial de la colección de granjas dentro de Redmond Inc.?",
@@ -179,6 +180,7 @@ const questions = [
     answer: 1,
   },
   {
+    topic: { en: "Market and Kitchen", es: "Market and Kitchen" },
     prompt: {
       en: "Why was Redmond Farm Market and Kitchen originally established?",
       es: "¿Por qué se estableció originalmente Redmond Farm Market and Kitchen?",
@@ -198,17 +200,23 @@ const questions = [
     answer: 0,
   },
   {
+    topic: { en: "Market and Kitchen", es: "Market and Kitchen" },
     prompt: {
       en: "Redmond Farm Market and Kitchen’s purpose statement is: “We connect people to ________ sourced, ________ crafted food that prioritizes the wellbeing of people, animals, and the environment.”",
       es: "La declaración de propósito de Redmond Farm Market and Kitchen es: “Conectamos a las personas con alimentos ________ y ________ que priorizan el bienestar de las personas, los animales y el medio ambiente.”",
     },
     options: {
       en: ["Thoughtfully, Carefully", "Ethically, Lovingly", "Intentionally, Scratch"],
-      es: ["Con atención, con cuidado", "Ética, con amor", "Intencionalmente, desde cero"],
+      es: [
+        "Reflexivamente, cuidadosamente",
+        "Éticamente, con amor",
+        "Intencionalmente, desde cero",
+      ],
     },
     answer: 0,
   },
   {
+    topic: { en: "Farm Path", es: "Camino de granja" },
     prompt: {
       en: "Which example best reflects Redmond’s core value of Ubuntu?",
       es: "¿Qué ejemplo refleja mejor el valor central de Ubuntu en Redmond?",
@@ -228,6 +236,7 @@ const questions = [
     answer: 0,
   },
   {
+    topic: { en: "Farm Path", es: "Camino de granja" },
     prompt: {
       en: "Redmond’s Five Principles of Hospitality are:",
       es: "Los cinco principios de hospitalidad de Redmond son:",
@@ -247,9 +256,10 @@ const questions = [
     answer: 1,
   },
   {
+    topic: { en: "Milk Testing Facility", es: "Instalación de análisis de leche" },
     prompt: {
       en: "The sourcing standards of Redmond Farm Market and Kitchen includes a commitment to foods that have which three qualities?",
-      es: "Los estándares de abastecimiento de Redmond Farm Market and Kitchen incluyen el compromiso de alimentos que tengan estas tres cualidades:",
+      es: "Los estándares de abastecimiento de Redmond Farm Market and Kitchen incluyen un compromiso con alimentos que tengan estas tres cualidades:",
     },
     options: {
       en: [
@@ -266,6 +276,7 @@ const questions = [
     answer: 2,
   },
   {
+    topic: { en: "Market and Kitchen", es: "Market and Kitchen" },
     prompt: {
       en: "Which person would most likely NOT be a customer at Redmond Farm Market and Kitchen?",
       es: "¿Qué persona probablemente NO sería cliente de Redmond Farm Market and Kitchen?",
@@ -285,6 +296,7 @@ const questions = [
     answer: 1,
   },
   {
+    topic: { en: "Farm Path", es: "Camino de granja" },
     prompt: {
       en: "We currently have Redmond Farm Market locations in these five locations:",
       es: "Actualmente tenemos ubicaciones de Redmond Farm Market en estas cinco localidades:",
@@ -304,6 +316,7 @@ const questions = [
     answer: 0,
   },
   {
+    topic: { en: "Heritage Farm", es: "Heritage Farm" },
     prompt: {
       en: "The Heritage Farm property was purchased for the purpose of growing:",
       es: "La propiedad de Heritage Farm se compró con el propósito de criar:",
@@ -323,25 +336,27 @@ const questions = [
     answer: 1,
   },
   {
+    topic: { en: "Production Kitchen", es: "Cocina de producción" },
     prompt: {
       en: "The production kitchen in Springville produces what kind of House Made items?",
-      es: "La cocina de producción en Springville produce qué tipo de productos de la casa:",
+      es: "¿Qué tipo de productos House Made produce la cocina de producción en Springville?",
     },
     options: {
       en: [
         "Sprouted Corn Chips, Cinnamon Almonds, Custards, and Salad Dressings.",
-        "Organic, whole-wheat breads and pastries to be distributed to local bakeries.",
-        "Probiotic sodas, homemade ice cream, and coconut oil fried potato chips.",
+        "Organic, whole-wheat breads and pastries distributed to local bakeries.",
+        "Probiotic sodas, naturally sweetened cookies, and coconut oil fried potato chips.",
       ],
       es: [
         "Chips de maíz germinado, almendras con canela, natillas y aderezos para ensalada.",
-        "Pan y repostería orgánicos de trigo integral para distribuir a panaderías locales.",
-        "Refrescos probióticos, helado casero y papas fritas en aceite de coco.",
+        "Panes y pasteles orgánicos integrales distribuidos a panaderías locales.",
+        "Refrescos probióticos, galletas endulzadas naturalmente y papas fritas en aceite de coco.",
       ],
     },
     answer: 0,
   },
   {
+    topic: { en: "Farm Path", es: "Camino de granja" },
     prompt: {
       en: "What is the freight truck’s purpose?",
       es: "¿Cuál es el propósito del camión de carga?",
@@ -361,6 +376,7 @@ const questions = [
     answer: 2,
   },
   {
+    topic: { en: "Farm Market Truck", es: "Camión del Farm Market" },
     prompt: {
       en: "The Farm Market Truck travels to five different locations, bringing ________ and ________ to surrounding communities.",
       es: "El camión de Farm Market viaja a cinco ubicaciones distintas, llevando ________ y ________ a las comunidades cercanas.",
@@ -379,27 +395,245 @@ const questions = [
     },
     answer: 1,
   },
+  {
+    topic: { en: "Farm Path", es: "Camino de granja" },
+    prompt: {
+      en: "What animals are raised at the Redmond Heritage Farm?",
+      es: "¿Qué animales se crían en Redmond Heritage Farm?",
+    },
+    options: {
+      en: [
+        "Goats, Chicken, Pigs, and Cows",
+        "Cows and Pigs",
+        "Chickens, pigs, cows, and a couple of guard dogs",
+      ],
+      es: [
+        "Cabras, gallinas, cerdos y vacas",
+        "Vacas y cerdos",
+        "Gallinas, cerdos, vacas y un par de perros guardianes",
+      ],
+    },
+    answer: 2,
+  },
+  {
+    topic: { en: "Farm Path", es: "Camino de granja" },
+    prompt: {
+      en: "Which example best portrays Redmond’s core value of Reflection?",
+      es: "¿Qué ejemplo retrata mejor el valor central Reflection de Redmond?",
+    },
+    options: {
+      en: [
+        "A customer telling an associate about a journal they have been writing for the past five years.",
+        "A kitchen associate taking time during a slow period to think about their most recent rush, weighing what went well and what can be improved.",
+        "An associate going home after work and eating a nourishing meal before taking a long nap to feel rejuvenated and ready for their next shift.",
+      ],
+      es: [
+        "Un cliente contándole a un asociado sobre un diario que ha escrito durante los últimos cinco años.",
+        "Un asociado de cocina que aprovecha un momento lento para pensar en su rush más reciente, sopesando lo que salió bien y lo que puede mejorar.",
+        "Un asociado que llega a casa después del trabajo y come una comida nutritiva antes de tomar una siesta larga para sentirse renovado y listo para su siguiente turno.",
+      ],
+    },
+    answer: 1,
+  },
+  {
+    topic: { en: "Farm Path", es: "Camino de granja" },
+    prompt: {
+      en: "The customers that choose to support Redmond Farm Market and Kitchen are those that:",
+      es: "Los clientes que eligen apoyar a Redmond Farm Market and Kitchen son aquellos que:",
+    },
+    options: {
+      en: [
+        "Embrace a highly intentional way of life, choosing products and experiences with care and curiosity.",
+        "Are looking for home décor that aligns with a farm and market aesthetic.",
+        "Consider price and efficiency a top priority in life, choosing cheaper, rather than quality products.",
+      ],
+      es: [
+        "Adoptan una forma de vida muy intencional, eligiendo productos y experiencias con cuidado y curiosidad.",
+        "Buscan decoración para el hogar que combine con una estética de granja y market.",
+        "Consideran el precio y la eficiencia como una prioridad máxima en la vida, eligiendo productos más baratos en lugar de productos de calidad.",
+      ],
+    },
+    answer: 0,
+  },
+  {
+    topic: { en: "Farm Path", es: "Camino de granja" },
+    prompt: {
+      en: "Which example best portrays Redmond’s core value of Passion for Contribution?",
+      es: "¿Qué ejemplo retrata mejor el valor central Passion for Contribution de Redmond?",
+    },
+    options: {
+      en: [
+        "A team member prioritizing sleep and rest when away from work so that they can keep doing meaningful work in an energizing way.",
+        "A team together leaning in to where they are the most helpful to serve each other and the greater mission of elevating the human experience.",
+        "A customer dropping off flowers for an associate during business hours and asking for their number.",
+      ],
+      es: [
+        "Un miembro del equipo que prioriza dormir y descansar fuera del trabajo para poder seguir haciendo un trabajo significativo de forma energizante.",
+        "Un equipo que se inclina hacia donde puede ser más útil para servirse mutuamente y servir la misión mayor de elevar la experiencia humana.",
+        "Un cliente que deja flores para un asociado durante el horario laboral y le pide su número.",
+      ],
+    },
+    answer: 1,
+  },
+  {
+    topic: { en: "Farm Path", es: "Camino de granja" },
+    prompt: {
+      en: "The definition of Occhiolism that most resonates with Redmond is:",
+      es: "La definición de Occhiolism que más resuena con Redmond es:",
+    },
+    options: {
+      en: [
+        "The awareness of the smallness of your perspective which leads to a thirst for understanding.",
+        "Caring for yourself in body, heart, mind, and spirit.",
+        "A belief that there is only one true way to view life, and that any other way is less-than or unimportant.",
+      ],
+      es: [
+        "La conciencia de lo pequeña que es tu perspectiva, lo que conduce a una sed de entendimiento.",
+        "Cuidarte en cuerpo, corazón, mente y espíritu.",
+        "La creencia de que solo hay una forma verdadera de ver la vida y que cualquier otra forma es inferior o poco importante.",
+      ],
+    },
+    answer: 0,
+  },
+  {
+    topic: { en: "Farm Path", es: "Camino de granja" },
+    prompt: {
+      en: "Which example best portrays Redmond’s core value of Renewal?",
+      es: "¿Qué ejemplo retrata mejor el valor central Renewal de Redmond?",
+    },
+    options: {
+      en: [
+        "Meditating at least twenty minutes a day and getting a full eight hours of sleep every night.",
+        "Each market associate visiting the Heritage Farm twice a year to renew their love of raw milk.",
+        "A team member trying to solve a problem in a new way after reflecting on what didn’t work last time.",
+      ],
+      es: [
+        "Meditar al menos veinte minutos al día y dormir ocho horas completas cada noche.",
+        "Cada asociado del market visitando Heritage Farm dos veces al año para renovar su amor por la leche cruda.",
+        "Un miembro del equipo intentando resolver un problema de una nueva manera después de reflexionar sobre lo que no funcionó la vez pasada.",
+      ],
+    },
+    answer: 2,
+  },
+  {
+    topic: { en: "Freight Truck", es: "Camión de carga" },
+    prompt: {
+      en: "Which stop does the Freight Truck NOT make when transferring products from the farm to our markets?",
+      es: "¿Qué parada NO hace el Freight Truck cuando transfiere productos desde la granja hasta nuestros markets?",
+    },
+    options: {
+      en: [
+        "A state-certified lab for milk testing.",
+        "Cactus and Tropical to pick up plants displayed in the markets.",
+        "The meat packer that processes and sources Redmond’s meat.",
+      ],
+      es: [
+        "Un laboratorio certificado por el estado para analizar la leche.",
+        "Cactus and Tropical para recoger plantas que se exhiben en los markets.",
+        "La empacadora de carne que procesa y abastece la carne de Redmond.",
+      ],
+    },
+    answer: 1,
+  },
+  {
+    topic: { en: "Market and Kitchen", es: "Market and Kitchen" },
+    prompt: {
+      en: "The Redmond Farm Kitchen was created for what reason?",
+      es: "¿Por qué razón se creó Redmond Farm Kitchen?",
+    },
+    options: {
+      en: [
+        "To provide a high-quality, nutrient-dense dining option for the community.",
+        "To give the CEO and his family a private dining experience away from all the hustle and bustle of other restaurants.",
+        "To make food for the team members of the Heritage Farm when they break for lunch from caring for the animals.",
+      ],
+      es: [
+        "Para ofrecer a la comunidad una opción gastronómica de alta calidad y densa en nutrientes.",
+        "Para dar al CEO y a su familia una experiencia privada para comer lejos del ajetreo de otros restaurantes.",
+        "Para preparar comida para los miembros del equipo de Heritage Farm cuando toman su descanso de almuerzo tras cuidar a los animales.",
+      ],
+    },
+    answer: 0,
+  },
+  {
+    topic: { en: "Production Kitchen", es: "Cocina de producción" },
+    prompt: {
+      en: "Where is the Production Kitchen (which provides Redmond’s House Made products) located?",
+      es: "¿Dónde se encuentra la Production Kitchen (que provee los productos House Made de Redmond)?",
+    },
+    options: {
+      en: ["Heber, UT", "Springville, UT", "Orem, UT"],
+      es: ["Heber, UT", "Springville, UT", "Orem, UT"],
+    },
+    answer: 1,
+  },
+  {
+    topic: { en: "Market and Kitchen", es: "Market and Kitchen" },
+    prompt: {
+      en: "The Redmond Farm Market exists for what reason?",
+      es: "¿Por qué razón existe Redmond Farm Market?",
+    },
+    options: {
+      en: [
+        "To provide nourishing foods and products from the Heritage Farm and local suppliers to the wider Utah community.",
+        "To act as an indoor farmers market, providing goods from all the local farms in the area.",
+        "To offer an in-person farm-animal petting zoo experience and educate the community on what it means to be a “farm-to-table” market.",
+      ],
+      es: [
+        "Para ofrecer alimentos y productos nutritivos de Heritage Farm y proveedores locales a la comunidad más amplia de Utah.",
+        "Para funcionar como un mercado de agricultores bajo techo, ofreciendo productos de todas las granjas locales del área.",
+        "Para ofrecer una experiencia presencial de zoológico de animales de granja y educar a la comunidad sobre lo que significa ser un market “farm-to-table”.",
+      ],
+    },
+    answer: 0,
+  },
+  {
+    topic: { en: "Farm Path", es: "Camino de granja" },
+    prompt: {
+      en: "What role do the Redmond Core Values play in the Redmond Farm Market and Kitchen business model?",
+      es: "¿Qué papel juegan los valores centrales de Redmond en el modelo de negocio de Redmond Farm Market and Kitchen?",
+    },
+    options: {
+      en: [
+        "They are the black-and-white rules of Redmond Farm Market and Kitchen and must be adhered to no matter what.",
+        "They guide everything we do as a business!",
+        "They offer insights that are sometimes valuable in our company growth and sometimes not.",
+      ],
+      es: [
+        "Son las reglas absolutas de Redmond Farm Market and Kitchen y deben seguirse pase lo que pase.",
+        "¡Guían todo lo que hacemos como negocio!",
+        "Ofrecen ideas que a veces son valiosas para el crecimiento de nuestra empresa y a veces no.",
+      ],
+    },
+    answer: 1,
+  },
+  {
+    topic: { en: "Bonus Question", es: "Pregunta bonus" },
+    isBonus: true,
+    prompt: {
+      en: "BONUS QUESTION: Where was the location of the first opened Redmond Farm Market and Kitchen?",
+      es: "PREGUNTA BONUS: ¿Dónde estuvo ubicada la primera sucursal que abrió de Redmond Farm Market and Kitchen?",
+    },
+    options: {
+      en: ["Sugarhouse, UT", "Orem, UT", "Heber, UT"],
+      es: ["Sugarhouse, UT", "Orem, UT", "Heber, UT"],
+    },
+    answer: 1,
+  },
 ];
 
-const topicQuestionIndexes = {
-  marketKitchen: [0, 1, 2, 6],
-  farmPath: [3, 4, 7, 8],
-  productionKitchen: [9],
-  milkProcessingFacility: [5],
-  marketTruck: [10, 11],
-  heritageFarm: [8],
-};
+const standardQuestionSpaceOrder = Array.from({ length: 24 }, (_, index) => index + 2).filter(
+  (spaceNumber) => spaceNumber !== 6
+);
 
-const questionTopicBySpace = {
-  1: "heritageFarm",
-  4: "marketKitchen",
-  9: "productionKitchen",
-  14: "milkProcessingFacility",
-  18: "marketTruck",
-  24: "marketKitchen",
-};
-
-const questionRotationByTopic = new Map();
+const questionIndexBySpace = standardQuestionSpaceOrder.reduce(
+  (mapping, spaceNumber, index) => {
+    mapping[spaceNumber] = index;
+    return mapping;
+  },
+  {}
+);
+const bonusQuestionIndex = questions.findIndex((question) => question.isBonus);
 const TRUCK_TOKEN_IMAGE = "assets/Truck 2.png";
 
 const state = {
@@ -413,6 +647,7 @@ const state = {
   activeQuestionIndex: null,
   selectedOptionIndex: null,
   answerLocked: false,
+  bonusAnswered: false,
   facing: "right",
 };
 
@@ -436,28 +671,19 @@ function getModeLabel(mode) {
 
 function getSpace(number) {
   const detail = spaceDetails[number];
+  const questionIndex = getQuestionIndexForSpace(number);
+  const question = questionIndex === null ? null : questions[questionIndex];
   return {
     number,
-    label: detail?.label?.[currentLang] || t("farmPath"),
+    label: detail?.label?.[currentLang] || question?.topic?.[currentLang] || t("farmPath"),
     type: detail?.type || "stop",
   };
 }
 
-function getQuestionTopicForSpace(spaceNumber) {
-  return questionTopicBySpace[spaceNumber] || "farmPath";
-}
-
 function getQuestionIndexForSpace(spaceNumber) {
-  const topic = getQuestionTopicForSpace(spaceNumber);
-  const topicPool = topicQuestionIndexes[topic] || topicQuestionIndexes.farmPath;
-  if (!topicPool || topicPool.length === 0) {
-    return (spaceNumber - 1) % questions.length;
-  }
-
-  const current = questionRotationByTopic.get(topic) || 0;
-  const questionIndex = topicPool[current % topicPool.length];
-  questionRotationByTopic.set(topic, current + 1);
-  return questionIndex;
+  return Number.isInteger(questionIndexBySpace[spaceNumber])
+    ? questionIndexBySpace[spaceNumber]
+    : null;
 }
 
 function createTileIllustration(space) {
@@ -483,7 +709,7 @@ function applyTranslations() {
   if (!questionModal.classList.contains("hidden")) {
     if (state.activeModal === "hazard") {
       renderHazardModal();
-    } else if (state.activeModal === "question") {
+    } else if (state.activeModal === "question" || state.activeModal === "bonus") {
       renderQuestionModal();
     }
   }
@@ -923,12 +1149,6 @@ async function moveTruckAnimated(steps, options = {}) {
 function handleLanding() {
   const space = getSpace(state.position);
 
-  if (space.type === "finish") {
-    openFinishModal();
-    setButtonsDisabled(true);
-    return;
-  }
-
   if (space.type === "hazard") {
     openHazardModal();
     return;
@@ -962,10 +1182,11 @@ function openHazardModal() {
 function renderQuestionModal() {
   const space = getSpace(state.activeSpaceNumber);
   const question = questions[state.activeQuestionIndex];
+  const isBonus = state.activeModal === "bonus";
 
-  questionStop.textContent = `${t("stopLabel")} ${space.number}`;
-  questionTitle.textContent = space.label;
-  questionBadge.textContent = t("badgeQuestion");
+  questionStop.textContent = isBonus ? t("bonusLabel") : `${t("stopLabel")} ${space.number}`;
+  questionTitle.textContent = question.topic?.[currentLang] || space.label;
+  questionBadge.textContent = isBonus ? t("badgeBonus") : t("badgeQuestion");
   questionText.textContent = question.prompt[currentLang];
   questionOptions.innerHTML = "";
   questionFeedback.textContent = "";
@@ -994,7 +1215,7 @@ function renderQuestionModal() {
 
       const correct = index === question.answer;
       pendingOutcome = {
-        type: space.type,
+        type: isBonus ? "bonus" : "question",
         correct,
         spaceNumber: space.number,
       };
@@ -1007,15 +1228,44 @@ function renderQuestionModal() {
 
   if (state.answerLocked) {
     const correct = state.selectedOptionIndex === question.answer;
-    questionFeedback.textContent = correct ? t("feedbackCorrect") : t("feedbackWrong");
+    if (isBonus) {
+      questionFeedback.textContent = correct
+        ? t("feedbackBonusCorrect")
+        : t("feedbackBonusWrong");
+    } else {
+      questionFeedback.textContent = correct ? t("feedbackCorrect") : t("feedbackWrong");
+    }
   }
 }
 
 function openQuestionModal(space) {
+  const questionIndex = getQuestionIndexForSpace(space.number);
+  if (questionIndex === null) {
+    setButtonsDisabled(false);
+    return;
+  }
+
   setButtonsDisabled(true);
   state.activeModal = "question";
   state.activeSpaceNumber = space.number;
-  state.activeQuestionIndex = getQuestionIndexForSpace(space.number);
+  state.activeQuestionIndex = questionIndex;
+  state.selectedOptionIndex = null;
+  state.answerLocked = false;
+  pendingOutcome = null;
+  renderQuestionModal();
+  openModal(questionModal);
+}
+
+function openBonusModal(space) {
+  if (bonusQuestionIndex < 0) {
+    openFinishModal();
+    return;
+  }
+
+  setButtonsDisabled(true);
+  state.activeModal = "bonus";
+  state.activeSpaceNumber = space.number;
+  state.activeQuestionIndex = bonusQuestionIndex;
   state.selectedOptionIndex = null;
   state.answerLocked = false;
   pendingOutcome = null;
@@ -1052,12 +1302,16 @@ async function applyOutcome() {
   setButtonsDisabled(true);
 
   if (type === "hazard") {
-    state.completed.clear();
     state.completed.add(spaceNumber);
-    await moveTruckAnimated(1 - state.position, { triggerLanding: false });
-    state.completed.add(1);
-    updateBoard();
+    await moveTruckAnimated(-3, { triggerLanding: false });
     setButtonsDisabled(false);
+    return;
+  }
+
+  if (type === "bonus") {
+    state.bonusAnswered = true;
+    updateBoard();
+    openFinishModal();
     return;
   }
 
@@ -1072,8 +1326,12 @@ async function applyOutcome() {
   updateBoard();
   setButtonsDisabled(false);
   if (state.position === 25) {
-    openFinishModal();
-    setButtonsDisabled(true);
+    if (bonusQuestionIndex >= 0 && !state.bonusAnswered) {
+      openBonusModal(getSpace(state.position));
+    } else {
+      openFinishModal();
+      setButtonsDisabled(true);
+    }
   }
 }
 
@@ -1088,7 +1346,7 @@ function resetGame() {
   state.position = 1;
   state.moves = 0;
   state.completed.clear();
-  questionRotationByTopic.clear();
+  state.bonusAnswered = false;
   pendingOutcome = null;
   clearActiveModal();
   rollResult.textContent = "-";
@@ -1124,9 +1382,35 @@ async function performMove() {
 }
 
 function setLanguage(lang) {
-  currentLang = lang;
-  langSwitch.checked = lang === "es";
+  const normalized = lang === "es" ? "es" : "en";
+  currentLang = normalized;
+  langSwitch.checked = normalized === "es";
+  const nextUrl = new URL(window.location.href);
+  nextUrl.searchParams.set("lang", normalized);
+  window.history.replaceState({}, "", `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
+  try {
+    localStorage.setItem("farm-game-lang", normalized);
+  } catch (error) {
+    // Ignore storage failures.
+  }
   applyTranslations();
+}
+
+function getInitialLanguage() {
+  const params = new URLSearchParams(window.location.search);
+  const fromQuery = (params.get("lang") || "").toLowerCase();
+  if (fromQuery === "en" || fromQuery === "es") {
+    return fromQuery;
+  }
+  try {
+    const stored = localStorage.getItem("farm-game-lang");
+    if (stored === "en" || stored === "es") {
+      return stored;
+    }
+  } catch (error) {
+    // Ignore storage failures.
+  }
+  return "en";
 }
 
 spinButton.addEventListener("click", () => performMove());
@@ -1143,6 +1427,6 @@ backdrop.addEventListener("click", () => {
   stopConfetti();
 });
 
-setLanguage("en");
+setLanguage(getInitialLanguage());
 resizeConfettiCanvas();
 window.addEventListener("resize", resizeConfettiCanvas);
