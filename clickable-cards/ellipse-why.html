@@ -55,7 +55,8 @@
         display: block;
         position: relative;
         width: 100%;
-        aspect-ratio: 16 / 7;
+        aspect-ratio: 16 / 8;
+        min-height: 280px;
         border-radius: 24px;
         transform-style: preserve-3d;
         transition: transform 0.72s cubic-bezier(0.22, 1, 0.36, 1);
@@ -112,18 +113,6 @@
         text-shadow: 0 8px 20px rgba(15, 23, 42, 0.35);
       }
 
-      .front-hint {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: 12px;
-        font-size: 0.75rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: rgba(253, 248, 240, 0.85);
-        white-space: nowrap;
-      }
-
       .card-back {
         transform: rotateY(180deg);
         padding: 20px 22px;
@@ -150,9 +139,11 @@
         margin: 0;
         font-family: "Avenir", "Avenir Next", "Helvetica Neue", sans-serif;
         font-size: 16px;
-        line-height: 1.4;
-        overflow: auto;
-        padding-right: 6px;
+        line-height: 1.45;
+        width: 100%;
+        max-width: 100%;
+        overflow: visible;
+        text-wrap: pretty;
       }
 
       .flip-card:focus-visible {
@@ -168,6 +159,7 @@
 
         .flip-inner {
           aspect-ratio: 4 / 3;
+          min-height: 240px;
           border-radius: 20px;
         }
 
@@ -206,7 +198,6 @@
         <div class="flip-inner">
           <div class="card-face card-front">
             <span class="front-word">Why</span>
-            <span class="front-hint">Click to flip</span>
           </div>
           <div class="card-face card-back">
             <h2 class="back-title">Why</h2>
@@ -227,7 +218,6 @@
         <div class="flip-inner">
           <div class="card-face card-front">
             <span class="front-word">Who</span>
-            <span class="front-hint">Click to flip</span>
           </div>
           <div class="card-face card-back">
             <h2 class="back-title">Who</h2>
@@ -253,7 +243,6 @@
         <div class="flip-inner">
           <div class="card-face card-front">
             <span class="front-word">What</span>
-            <span class="front-hint">Click to flip</span>
           </div>
           <div class="card-face card-back">
             <h2 class="back-title">What</h2>
@@ -269,6 +258,41 @@
     <script>
       (function () {
         const cards = Array.from(document.querySelectorAll(".flip-card"));
+        const inners = cards
+          .map((card) => card.querySelector(".flip-inner"))
+          .filter(Boolean);
+
+        const syncCardHeights = () => {
+          inners.forEach((inner) => {
+            inner.style.height = "";
+          });
+
+          let tallestHeight = 0;
+
+          cards.forEach((card) => {
+            const inner = card.querySelector(".flip-inner");
+            const back = card.querySelector(".card-back");
+            const title = card.querySelector(".back-title");
+            const text = card.querySelector(".back-text");
+
+            if (!inner || !back || !title || !text) return;
+
+            const defaultHeight = inner.getBoundingClientRect().height;
+            const backStyles = window.getComputedStyle(back);
+            const paddingTop = parseFloat(backStyles.paddingTop) || 0;
+            const paddingBottom = parseFloat(backStyles.paddingBottom) || 0;
+            const gap = parseFloat(backStyles.rowGap || backStyles.gap) || 0;
+            const contentHeight =
+              paddingTop + title.getBoundingClientRect().height + gap + text.scrollHeight + paddingBottom;
+
+            tallestHeight = Math.max(tallestHeight, defaultHeight, contentHeight);
+          });
+
+          const resolvedHeight = Math.ceil(tallestHeight);
+          inners.forEach((inner) => {
+            inner.style.height = `${resolvedHeight}px`;
+          });
+        };
 
         const closeAll = () => {
           cards.forEach((card) => {
@@ -287,6 +311,10 @@
         document.addEventListener("keydown", (event) => {
           if (event.key === "Escape") closeAll();
         });
+
+        window.addEventListener("load", syncCardHeights);
+        window.addEventListener("resize", syncCardHeights);
+        syncCardHeights();
       })();
     </script>
   </body>
