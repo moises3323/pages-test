@@ -202,12 +202,41 @@
         margin-top: 0;
       }
 
+      .celebration.is-playing .badge-strip {
+        display: none;
+      }
+
       .celebration-actions.is-playing {
         position: fixed;
         inset: 0 clamp(18px, 4vw, 48px) clamp(90px, 12vw, 150px);
         min-height: 0;
         z-index: 20;
         pointer-events: none;
+        overflow: hidden;
+        background: #fff;
+      }
+
+      .celebration-actions.is-playing::before,
+      .celebration-actions.is-playing::after {
+        content: "";
+        position: absolute;
+        background: #fff;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .celebration-actions.is-playing::before {
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: clamp(84px, 11vh, 150px);
+      }
+
+      .celebration-actions.is-playing::after {
+        top: 0;
+        right: 0;
+        bottom: clamp(84px, 11vh, 150px);
+        width: clamp(90px, 8vw, 160px);
       }
 
       .celebration-actions > * {
@@ -267,6 +296,7 @@
         width: 100%;
         height: 100%;
         object-fit: contain;
+        z-index: 0;
         opacity: 0;
         visibility: hidden;
         transform: scale(0.92);
@@ -288,6 +318,8 @@
         opacity: 1;
         visibility: visible;
         transform: scale(1);
+        object-fit: cover;
+        object-position: center top;
         transition-delay: 0s;
       }
 
@@ -353,6 +385,15 @@
 
         .celebration-actions.is-playing {
           inset: 0 12px clamp(74px, 20vw, 120px);
+        }
+
+        .celebration-actions.is-playing::before {
+          height: clamp(74px, 18vw, 120px);
+        }
+
+        .celebration-actions.is-playing::after {
+          bottom: clamp(74px, 18vw, 120px);
+          width: clamp(48px, 10vw, 88px);
         }
 
         .badge-strip {
