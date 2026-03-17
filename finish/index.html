@@ -202,14 +202,10 @@
         margin-top: 0;
       }
 
-      .celebration.is-playing .badge-strip {
-        display: none;
-      }
-
       .celebration-actions.is-playing {
         position: fixed;
         top: 0;
-        bottom: 0;
+        bottom: clamp(140px, 16vw, 210px);
         left: 50%;
         width: min(calc(100vw - clamp(36px, 8vw, 96px)), 1200px);
         min-height: 0;
@@ -328,9 +324,21 @@
       }
 
       .badge-strip {
+        display: none;
         position: relative;
         margin: clamp(1rem, 2vw, 1.8rem) auto 0;
         width: min(100%, 1700px);
+      }
+
+      .celebration.is-playing .badge-strip {
+        display: block;
+        position: fixed;
+        left: 50%;
+        bottom: clamp(8px, 1.6vw, 18px);
+        width: min(calc(100vw - clamp(36px, 8vw, 96px)), 1200px);
+        transform: translateX(-50%);
+        z-index: 18;
+        pointer-events: none;
       }
 
       .badge-strip img {
@@ -388,7 +396,7 @@
         }
 
         .celebration-actions.is-playing {
-          bottom: 0;
+          bottom: clamp(112px, 24vw, 170px);
           width: min(calc(100vw - 24px), 1200px);
         }
 
@@ -401,8 +409,9 @@
           width: clamp(48px, 10vw, 88px);
         }
 
-        .badge-strip {
-          margin-top: 28px;
+        .celebration.is-playing .badge-strip {
+          bottom: 8px;
+          width: min(calc(100vw - 24px), 1200px);
         }
       }
 
