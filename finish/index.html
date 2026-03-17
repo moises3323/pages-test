@@ -205,7 +205,7 @@
       .celebration-actions.is-playing {
         position: fixed;
         top: 0;
-        bottom: clamp(140px, 16vw, 210px);
+        bottom: 0;
         left: 50%;
         width: min(calc(100vw - clamp(36px, 8vw, 96px)), 1200px);
         min-height: 0;
@@ -214,29 +214,6 @@
         pointer-events: none;
         overflow: hidden;
         background: #fff;
-      }
-
-      .celebration-actions.is-playing::before,
-      .celebration-actions.is-playing::after {
-        content: "";
-        position: absolute;
-        background: #fff;
-        pointer-events: none;
-        z-index: 1;
-      }
-
-      .celebration-actions.is-playing::before {
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: clamp(18px, 3vh, 32px);
-      }
-
-      .celebration-actions.is-playing::after {
-        top: 0;
-        right: 0;
-        bottom: clamp(18px, 3vh, 32px);
-        width: clamp(90px, 8vw, 160px);
       }
 
       .celebration-actions > * {
@@ -317,34 +294,10 @@
       .celebration-actions.is-playing .celebrate-explode {
         opacity: 1;
         visibility: visible;
-        transform: scale(1);
+        transform: scale(0.92);
         object-fit: contain;
-        object-position: center top;
+        object-position: center center;
         transition-delay: 0s;
-      }
-
-      .badge-strip {
-        display: none;
-        position: relative;
-        margin: clamp(1rem, 2vw, 1.8rem) auto 0;
-        width: min(100%, 1700px);
-      }
-
-      .celebration.is-playing .badge-strip {
-        display: block;
-        position: fixed;
-        left: 50%;
-        bottom: clamp(8px, 1.6vw, 18px);
-        width: min(calc(100vw - clamp(36px, 8vw, 96px)), 1200px);
-        transform: translateX(-50%);
-        z-index: 18;
-        pointer-events: none;
-      }
-
-      .badge-strip img {
-        display: block;
-        width: 100%;
-        height: auto;
       }
 
       @keyframes buttonPulse {
@@ -396,21 +349,6 @@
         }
 
         .celebration-actions.is-playing {
-          bottom: clamp(112px, 24vw, 170px);
-          width: min(calc(100vw - 24px), 1200px);
-        }
-
-        .celebration-actions.is-playing::before {
-          height: clamp(16px, 4vw, 24px);
-        }
-
-        .celebration-actions.is-playing::after {
-          bottom: clamp(16px, 4vw, 24px);
-          width: clamp(48px, 10vw, 88px);
-        }
-
-        .celebration.is-playing .badge-strip {
-          bottom: 8px;
           width: min(calc(100vw - 24px), 1200px);
         }
       }
@@ -461,18 +399,13 @@
               <img
                 class="celebrate-explode"
                 id="celebrate-explode"
-                data-src="./Shaker-Explode.gif"
+                data-phase-one-src="./Shaker-4.gif"
+                data-phase-two-src="./end celebration badge.gif"
                 alt=""
                 aria-hidden="true"
               />
             </div>
 
-            <div class="badge-strip" aria-label="Redmond companies">
-              <img
-                src="./RU-Badge-11-Redmond.gif"
-                alt="Redmond brands and celebration character"
-              />
-            </div>
           </div>
         </section>
       </section>
@@ -488,7 +421,8 @@
         const confettiCtx = confettiCanvas ? confettiCanvas.getContext("2d") : null;
         const clapsAudio = document.getElementById("claps-audio");
         const finishAudio = document.getElementById("finish-audio");
-        const celebrationDurationMs = 5000;
+        const celebrationPhaseDurationMs = 5000;
+        const celebrationDurationMs = celebrationPhaseDurationMs * 2;
         let confettiParticles = [];
         let confettiFrame = 0;
         let confettiUntil = 0;
@@ -497,6 +431,7 @@
         let celebrationFadeStartTimer = 0;
         let celebrationFadeTimer = 0;
         let celebrationUiTimer = 0;
+        let celebrationPhaseTimer = 0;
 
         function resizeConfettiCanvas() {
           if (!confettiCanvas || !confettiCtx) return;
@@ -628,6 +563,7 @@
             audio.pause();
             audio.currentTime = 0;
             audio.volume = 1;
+            audio.loop = false;
           });
         }
 
@@ -635,6 +571,10 @@
           if (celebrationUiTimer) {
             window.clearTimeout(celebrationUiTimer);
             celebrationUiTimer = 0;
+          }
+          if (celebrationPhaseTimer) {
+            window.clearTimeout(celebrationPhaseTimer);
+            celebrationPhaseTimer = 0;
           }
 
           celebrateButton.disabled = false;
@@ -653,17 +593,33 @@
             window.clearTimeout(celebrationUiTimer);
             celebrationUiTimer = 0;
           }
+          if (celebrationPhaseTimer) {
+            window.clearTimeout(celebrationPhaseTimer);
+            celebrationPhaseTimer = 0;
+          }
 
           celebrateButton.disabled = true;
           celebration.classList.add("is-playing");
           celebrationActions.classList.add("is-playing");
 
           if (celebrateExplode) {
-            const explodeSrc = celebrateExplode.dataset.src;
+            const phaseOneSrc = celebrateExplode.dataset.phaseOneSrc;
+            const phaseTwoSrc = celebrateExplode.dataset.phaseTwoSrc;
             celebrateExplode.removeAttribute("src");
             requestAnimationFrame(() => {
-              celebrateExplode.setAttribute("src", explodeSrc);
+              if (phaseOneSrc) {
+                celebrateExplode.setAttribute("src", phaseOneSrc);
+              }
             });
+
+            if (phaseTwoSrc) {
+              celebrationPhaseTimer = window.setTimeout(() => {
+                celebrateExplode.removeAttribute("src");
+                requestAnimationFrame(() => {
+                  celebrateExplode.setAttribute("src", phaseTwoSrc);
+                });
+              }, celebrationPhaseDurationMs);
+            }
           }
 
           celebrationUiTimer = window.setTimeout(() => {
@@ -685,6 +641,8 @@
           finishAudio.currentTime = 0;
           clapsAudio.volume = clapsStartVolume;
           finishAudio.volume = finishStartVolume;
+          clapsAudio.loop = true;
+          finishAudio.loop = true;
 
           await Promise.allSettled([clapsAudio.play(), finishAudio.play()]);
 
